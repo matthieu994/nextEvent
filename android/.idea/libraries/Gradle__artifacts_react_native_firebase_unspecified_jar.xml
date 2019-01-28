@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: artifacts:react-native-firebase:unspecified@jar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/react-native-firebase-release.aar/3539ee80bc97645f612ee7a442a52c85/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/react-native-firebase-release.aar/3539ee80bc97645f612ee7a442a52c85/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/react-native-firebase-release.aar/a0f4c7c41cc9f448cd9ffb1fe1f4e675/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/react-native-firebase-release.aar/a0f4c7c41cc9f448cd9ffb1fe1f4e675/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
