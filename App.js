@@ -1,11 +1,12 @@
 import React from "react";
 import { StyleSheet, Platform, Image, Text, View, ScrollView } from "react-native";
-
 import firebase from "react-native-firebase";
+import {EMAIL, PWD} from 'react-native-dotenv';
+console.warn(EMAIL);
 
 export default class App extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {};
 	}
 
@@ -28,9 +29,8 @@ export default class App extends React.Component {
 
 		firebase
 			.auth()
-			.signInWithEmailAndPassword("nograe117@gmail.com", "test22")
+			.signInWithEmailAndPassword(EMAIL, PWD)
 			.catch(function(error) {
-				var errorCode = error.code;
 				var errorMessage = error.message;
 				console.warn(errorMessage);
 			});
