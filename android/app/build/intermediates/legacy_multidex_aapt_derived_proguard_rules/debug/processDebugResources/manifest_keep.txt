@@ -1,2 +1,2 @@
-# Referenced at /home/matthieu/GitHub/EventManager/android/app/build/intermediates/merged_manifests/debug/processDebugManifest/merged/AndroidManifest.xml:43
--keep class com.dutinfo.eventmanager.MainApplication { <init>(...); }
+# Referenced at /home/matthieu/GitHub/EventManager/android/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml:43
+-keep class com.dutinfo.eventmanager.MainApplication { <init>(); }

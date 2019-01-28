@@ -4,7 +4,17 @@
             "outputFile": "/home/matthieu/GitHub/EventManager/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
             "map": [
                 {
-                    "source": "/home/matthieu/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/d36830d3f7bc8edd008193f2aca38c6b/res/values-v16/values-v16.xml",
+                    "source": "/home/matthieu/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/2be79314243cf366257575834cef9d2e/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                },
+                {
+                    "source": "/home/matthieu/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/ff451c498cbf6f94a1eb43c35e3cded8/res/values-v16/values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -20,16 +30,6 @@
                         "endLines": "6",
                         "endColumns": "12",
                         "endOffsets": "289"
-                    }
-                },
-                {
-                    "source": "/home/matthieu/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/e68d205aea179aa16b51b3af1f3cb856/res/values-v16/values-v16.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "65",
-                        "endOffsets": "116"
                     }
                 }
             ]
