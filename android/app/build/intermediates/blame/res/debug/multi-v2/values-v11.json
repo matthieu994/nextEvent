@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/home/matthieu/GitHub/EventManager/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v11/values-v11.xml",
+            "outputFile": "/Users/david/Desktop/Tigidou/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v11/values-v11.xml",
             "map": [
                 {
-                    "source": "/home/matthieu/.gradle/caches/transforms-1/files-1.1/play-services-appinvite-16.0.7.aar/975e7d42756ac9b5aeba2a48bec79cc6/res/values-v11/values.xml",
+                    "source": "/Users/david/.gradle/caches/transforms-1/files-1.1/play-services-appinvite-16.0.7.aar/fcb864f6b4fae619bc46e4e0e838b9cb/res/values-v11/values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",

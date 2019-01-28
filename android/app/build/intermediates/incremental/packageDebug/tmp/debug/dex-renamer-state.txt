@@ -1,9 +1,9 @@
-#Mon Jan 28 01:07:12 EST 2019
-base.2=/home/matthieu/GitHub/EventManager/android/app/build/intermediates/transforms/dexMerger/debug/0
+#Mon Jan 28 02:59:10 EST 2019
+base.2=/Users/david/Desktop/Tigidou/android/app/build/intermediates/transforms/dexMerger/debug/0
 path.2=classes3.dex
-base.1=/home/matthieu/GitHub/EventManager/android/app/build/intermediates/transforms/dexMerger/debug/0
+base.1=/Users/david/Desktop/Tigidou/android/app/build/intermediates/transforms/dexMerger/debug/0
 path.1=classes2.dex
-base.0=/home/matthieu/GitHub/EventManager/android/app/build/intermediates/transforms/dexMerger/debug/0
+base.0=/Users/david/Desktop/Tigidou/android/app/build/intermediates/transforms/dexMerger/debug/0
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
