@@ -1,5 +1,5 @@
 {
-  "name": "RNFirebaseStarter",
+  "name": "nextEvent",
   "version": "5.1.0",
   "private": true,
   "devDependencies": {
@@ -22,8 +22,10 @@
     "preset": "react-native"
   },
   "dependencies": {
+    "fs-extra": "^6.0.1",
     "react": "16.6.3",
-    "react-native": "0.58.0-rc.2",
-    "react-native-firebase": "^5.2.0"
+    "react-native": "^0.58.0-rc.2",
+    "react-native-firebase": "^5.2.0",
+    "replace-in-file": "^3.4.3"
   }
 }

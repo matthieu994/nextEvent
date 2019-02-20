@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "457371080349",
+    "firebase_url": "https://nextevent-869ce.firebaseio.com",
+    "project_id": "nextevent-869ce",
+    "storage_bucket": "nextevent-869ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457371080349:android:dc730e7dcfa9c72d",
+        "android_client_info": {
+          "package_name": "com.nexteventcompany.nextevent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457371080349-1lkkvm044uvalh781d76btdgkqcbnk6g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOa-NICQyEXSMVJQ9tnYYYtSaTtzVg-Zw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
