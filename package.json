@@ -11,7 +11,7 @@
     "replace-in-file": "^3.4.2"
   },
   "scripts": {
-    "android": "react-native run-android",
+    "android": "cd android && /mnt/c/Windows/System32/cmd.exe /C gradlew.bat installDebug",
     "ios": "react-native run-ios --simulator=\"iPhone X\"",
     "apk": "cd android && ./gradlew assembleRelease",
     "rename": "node ./bin/rename.js",
@@ -23,9 +23,9 @@
   },
   "dependencies": {
     "fs-extra": "^6.0.1",
-    "react": "16.6.3",
-    "react-native": "^0.58.0-rc.2",
-    "react-native-firebase": "^5.2.0",
+    "react": "^16.6.3",
+    "react-native": "^0.58.5",
+    "react-native-firebase": "^5.2.2",
     "replace-in-file": "^3.4.3"
   }
 }

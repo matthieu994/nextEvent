@@ -11,10 +11,10 @@ export default class App extends React.Component {
 
   async componentDidMount() {
     // TODO: You: Do firebase things
-    // const { user } = await firebase.auth().signInAnonymously();
-    // console.warn('User -> ', user.toJSON());
+    const { user } = await firebase.auth().signInAnonymously();
+    console.warn('User -> ', user.toJSON());
 
-    // await firebase.analytics().logEvent('foo', { bar: '123'});
+    await firebase.analytics().logEvent('foo', { bar: '123'});
   }
 
   render() {
