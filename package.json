@@ -1,6 +1,6 @@
 {
   "name": "nextEvent",
-  "version": "5.1.0",
+  "version": "0.1.1",
   "private": true,
   "devDependencies": {
     "babel-jest": "23.6.0",
@@ -11,7 +11,8 @@
     "replace-in-file": "^3.4.2"
   },
   "scripts": {
-    "android": "cd android && /mnt/c/Windows/System32/cmd.exe /C gradlew.bat installDebug",
+    "android": "react-native run-android",
+    "emulator": "S:\\Documents\\SDK\\emulator\\emulator.exe -avd Nexus_5X_API_28",
     "ios": "react-native run-ios --simulator=\"iPhone X\"",
     "apk": "cd android && ./gradlew assembleRelease",
     "rename": "node ./bin/rename.js",
