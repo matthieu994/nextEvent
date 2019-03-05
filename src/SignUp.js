@@ -42,7 +42,7 @@ export default class SignUp extends React.Component {
         />
         <TextInput
           secureTextEntry
-          placeholder="Password"
+          placeholder="Mot de passe"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={password => this.setState({ password })}
@@ -50,7 +50,7 @@ export default class SignUp extends React.Component {
         />
         <Button title="Sign Up" onPress={this.handleSignUp} />
         <Button
-          title="Already have an account? Login"
+          title="Vous avez déjà un compte ?"
           onPress={() => this.props.navigation.navigate("Login")}
         />
       </View>
