@@ -1,6 +1,8 @@
 import React from "react"
-import { StyleSheet, Platform, Image, Text, View, Button } from "react-native"
+import { StyleSheet, Platform, Image, Text, View } from "react-native"
 import firebase from "react-native-firebase"
+import { Button } from "react-native-elements"
+import Icon from "react-native-vector-icons/FontAwesome"
 
 export default class Main extends React.Component {
   state = { currentUser: null }
@@ -25,7 +27,13 @@ export default class Main extends React.Component {
     return (
       <View style={styles.container}>
         <Text>Hi {currentUser && currentUser.email}!</Text>
-        <Button title="Logout" onPress={() => this.handleLogout()} />
+        <Button
+          icon={<Icon name="arrow-right" size={15} color="white" />}
+          buttonStyle={{ backgroundColor: "red", margin: 20 }}
+          iconRight
+          title="Logout"
+          onPress={() => this.handleLogout()}
+        />
       </View>
     )
   }
