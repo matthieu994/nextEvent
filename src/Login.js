@@ -10,7 +10,8 @@ export default class Login extends React.Component {
     const { email, password } = this.state
 
     if (!isEmail(email)) {
-      this.setState({ errorMessage: "Votre adresse mail n'est pas valide." })
+      this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
+
       return
     } else if (!password) {
       this.setState({
@@ -20,10 +21,10 @@ export default class Login extends React.Component {
     }
 
     firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate("Main"))
-      .catch(error => this.setState({ errorMessage: error.message }))
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(() => this.props.navigation.navigate("Main"))
+    .catch(error => this.setState({ errorMessage: error.message }))
   }
 
   render() {
@@ -44,15 +45,14 @@ export default class Login extends React.Component {
           secureTextEntry
           style={styles.textInput}
           autoCapitalize="none"
-          placeholder="Password"
+          placeholder="Mot de passe"
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
         />
-        <Button title="Login" onPress={this.handleLogin} />
-        <Button
-          title="Vous n'avez pas encore de compte ?"
-          onPress={() => this.props.navigation.navigate("SignUp")}
-        />
+        <Button title="Se connecter" onPress={this.handleLogin} />
+        <Text onPress={() => this.props.navigation.navigate("SignUp")}>
+          Vous n'avez pas encore de compte ?
+        </Text>
       </View>
     )
   }
