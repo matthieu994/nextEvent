@@ -45,8 +45,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.asList(
         new MainReactPackage(),
-            new VectorIconsPackage(),
-            new RNGestureHandlerPackage(),
+        new VectorIconsPackage(),
+        new RNGestureHandlerPackage(),
         new RNFirebasePackage(),
         // add/remove these packages as appropriate
         new RNFirebaseAdMobPackage(),
