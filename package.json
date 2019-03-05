@@ -29,6 +29,7 @@
     "react-native-firebase": "^5.2.2",
     "react-native-gesture-handler": "^1.1.0",
     "react-navigation": "^3.3.2",
-    "replace-in-file": "^3.4.3"
+    "replace-in-file": "^3.4.3",
+    "validator": "^10.11.0"
   }
 }
