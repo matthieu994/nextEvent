@@ -165,6 +165,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
+    implementation project(':react-native-material-kit')
     implementation project(':react-native-gesture-handler')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
