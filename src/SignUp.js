@@ -1,12 +1,24 @@
 import React from "react"
 import { StyleSheet, Text, TextInput, View, Button } from "react-native"
 import firebase from "react-native-firebase"
+import { isEmail } from "validator"
 
 export default class SignUp extends React.Component {
   state = { email: "", password: "", errorMessage: null }
 
   handleSignUp = () => {
     const { email, password } = this.state
+
+    if (!isEmail(email)) {
+      this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
+      return
+    } else if (!password) {
+      this.setState({
+        errorMessage: "Votre mot de passe ne peut pas être vide."
+      })
+      return
+    }
+
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -30,7 +42,7 @@ export default class SignUp extends React.Component {
         />
         <TextInput
           secureTextEntry
-          placeholder="Password"
+          placeholder="Mot de passe"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={password => this.setState({ password })}
@@ -38,7 +50,7 @@ export default class SignUp extends React.Component {
         />
         <Button title="Sign Up" onPress={this.handleSignUp} />
         <Button
-          title="Already have an account? Login"
+          title="Vous avez déjà un compte ?"
           onPress={() => this.props.navigation.navigate("Login")}
         />
       </View>

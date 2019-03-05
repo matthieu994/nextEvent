@@ -28,4 +28,6 @@ target 'nextEvent' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'react-native-material-kit', :path => '../node_modules/react-native-material-kit'
+
 end

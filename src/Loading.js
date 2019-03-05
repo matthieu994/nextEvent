@@ -5,8 +5,7 @@ import firebase from "react-native-firebase"
 export default class Loading extends React.Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
-      if (user.isAnonymous) this.props.navigation.navigate("SignUp")
-      else this.props.navigation.navigate(user ? "Main" : "SignUp")
+      this.props.navigation.navigate(user ? "Main" : "SignUp")
     })
   }
 
