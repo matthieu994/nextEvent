@@ -1,24 +1,74 @@
-import { createSwitchNavigator, createAppContainer } from "react-navigation"
-
-// import the different screens
+import {
+  createStackNavigator,
+  createSwitchNavigator,
+  createAppContainer,
+  createDrawerNavigator
+} from "react-navigation"
+import defaultSettings from "./Drawer/header"
 import Loading from "./Loading"
 import SignUp from "./SignUp"
 import Login from "./Login"
-import Main from "./Main"
+import EventsListScreen from "./EventsListScreen"
+import FriendsListScreen from "./FriendsListScreen"
+import UserSettingsScreen from "./UserSettingsScreen"
+import drawerScreen from "./Drawer/drawerScreen"
+
+const EventsListStack = createStackNavigator(
+  {
+    EventsList: {
+      screen: EventsListScreen
+    }
+  },
+  defaultSettings
+)
+const FriendsListStack = createStackNavigator(
+  {
+    FriendsList: {
+      screen: FriendsListScreen
+    }
+  },
+  defaultSettings
+)
+const UserSettingsStack = createStackNavigator(
+  {
+    UserSettings: {
+      screen: UserSettingsScreen
+    }
+  },
+  defaultSettings
+)
+
+const drawerNavigator = createDrawerNavigator(
+  {
+    EventsList: {
+      screen: EventsListStack,
+      navigationOptions: { drawerLabel: "Mes événements" }
+    },
+    FriendsList: {
+      screen: FriendsListStack,
+      navigationOptions: { drawerLabel: "Mes amis" }
+    },
+    UserSettings: {
+      screen: UserSettingsStack,
+      navigationOptions: { drawerLabel: "Paramètres" }
+    }
+  },
+  { contentComponent: drawerScreen }
+)
 
 // create our app's navigation stack
-const AuthStack = createSwitchNavigator(
+const appStack = createSwitchNavigator(
   {
     Loading,
     SignUp,
     Login,
-    Main
+    Main: drawerNavigator
   },
   {
     initialRouteName: "Loading"
   }
 )
 
-const App = createAppContainer(AuthStack)
+const App = createAppContainer(appStack)
 
 export default App

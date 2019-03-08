@@ -13,7 +13,8 @@ export default class Login extends React.Component {
       this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
 
       return
-    } else if (!password) {
+    }
+    if (!password) {
       this.setState({
         errorMessage: "Votre mot de passe ne peut pas être vide."
       })
@@ -21,10 +22,10 @@ export default class Login extends React.Component {
     }
 
     firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(() => this.props.navigation.navigate("Main"))
-    .catch(error => this.setState({ errorMessage: error.message }))
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => this.props.navigation.navigate("Main"))
+      .catch(error => this.setState({ errorMessage: error.message }))
   }
 
   render() {
