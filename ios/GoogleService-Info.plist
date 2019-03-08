@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>457371080349-3r3u3600b5lk1rcg3pqrfgugiuu1lg62.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.457371080349-3r3u3600b5lk1rcg3pqrfgugiuu1lg62</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAPuqLD60QEopKFf1n2bfrbVW6IPflCm4A</string>
+	<key>GCM_SENDER_ID</key>
+	<string>457371080349</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nexteventcompany.nextevent</string>
+	<key>PROJECT_ID</key>
+	<string>nextevent-869ce</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nextevent-869ce.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:457371080349:ios:dc730e7dcfa9c72d</string>
+	<key>DATABASE_URL</key>
+	<string>https://nextevent-869ce.firebaseio.com</string>
+</dict>
+</plist>
