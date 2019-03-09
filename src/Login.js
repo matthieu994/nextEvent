@@ -13,6 +13,7 @@ export default class Login extends React.Component {
 
     if (!isEmail(email)) {
       this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
+
       return
     }
     if (!password) {
