@@ -4,6 +4,7 @@ import {
   createAppContainer,
   createDrawerNavigator
 } from "react-navigation"
+import React from "react"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Loading"
 import SignUp from "./SignUp"
@@ -12,6 +13,7 @@ import EventsListScreen from "./EventsListScreen"
 import FriendsListScreen from "./FriendsListScreen"
 import UserSettingsScreen from "./UserSettingsScreen"
 import drawerScreen from "./Drawer/drawerScreen"
+import UserProvider from "./Provider"
 
 const EventsListStack = createStackNavigator(
   {
@@ -42,18 +44,18 @@ const drawerNavigator = createDrawerNavigator(
   {
     EventsList: {
       screen: EventsListStack,
-      navigationOptions: { drawerLabel: "Mes événements" }
+      navigationOptions: { drawerLabel: "Événements" }
     },
     FriendsList: {
       screen: FriendsListStack,
-      navigationOptions: { drawerLabel: "Mes amis" }
+      navigationOptions: { drawerLabel: "Amis" }
     },
     UserSettings: {
       screen: UserSettingsStack,
       navigationOptions: { drawerLabel: "Paramètres" }
     }
   },
-  { contentComponent: drawerScreen }
+  { contentComponent: drawerScreen, initialRouteName: "UserSettings" }
 )
 
 // create our app's navigation stack
@@ -69,6 +71,16 @@ const appStack = createSwitchNavigator(
   }
 )
 
-const App = createAppContainer(appStack)
+const AppContainer = createAppContainer(appStack)
+
+class App extends React.Component {
+  render() {
+    return (
+      <UserProvider>
+        <AppContainer />
+      </UserProvider>
+    )
+  }
+}
 
 export default App

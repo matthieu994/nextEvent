@@ -7,22 +7,24 @@ export default {
   defaultNavigationOptions: ({ navigation }) => ({
     headerLeft: (
       <Icon
-        containerStyle={{ marginLeft: 10 }}
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
         name="menu"
+        containerStyle={{ marginLeft: 10, borderRadius: 10 }}
+        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+        underlayColor="rgb(240, 240, 240)"
       />
     ),
     headerRight: (
       <Icon
-        containerStyle={{ marginRight: 15 }}
+        name="logout-variant"
+        type="material-community"
+        underlayColor="rgb(240, 240, 240)"
+        containerStyle={{ marginRight: 15, borderRadius: 10 }}
         onPress={() =>
           firebase
             .auth()
             .signOut()
             .then(() => navigation.navigate("Login"))
         }
-        type="material-community"
-        name="logout-variant"
       />
     )
   })

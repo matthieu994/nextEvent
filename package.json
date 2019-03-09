@@ -18,7 +18,7 @@
   },
   "scripts": {
     "android": "react-native run-android",
-    "emulator": "S:\\Documents\\SDK\\emulator\\emulator.exe -avd Nexus_5X_API_28",
+    "emulator": "S:\\Documents\\SDK\\emulator\\emulator.exe -avd Nexus_5X_Edited_API_28",
     "ios": "react-native run-ios --simulator=\"iPhone X\"",
     "apk": "cd android ; .\\gradlew assembleRelease",
     "rename": "node ./bin/rename.js",
@@ -38,9 +38,11 @@
     "react-native-elements": "^1.1.0",
     "react-native-firebase": "^5.2.2",
     "react-native-gesture-handler": "^1.1.0",
+    "react-native-image-picker": "^0.28.0",
     "react-native-vector-icons": "^6.3.0",
     "react-navigation": "^3.3.2",
     "replace-in-file": "^3.4.3",
+    "rn-fetch-blob": "^0.10.15",
     "validator": "^10.11.0"
   }
 }

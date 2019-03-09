@@ -1,7 +1,9 @@
 import React from "react"
-import { StyleSheet, Text, TextInput, View, Button } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import firebase from "react-native-firebase"
+import { Button, Input } from "react-native-elements"
 import { isEmail } from "validator"
+import { UserContext } from "./Provider"
 
 export default class Login extends React.Component {
   state = { email: "", password: "", errorMessage: null }
@@ -23,7 +25,10 @@ export default class Login extends React.Component {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate("Main"))
+      .then(userCredentials => {
+        this.context.setUser(userCredentials.user)
+        this.props.navigation.navigate("Main")
+      })
       .catch(error => this.setState({ errorMessage: error.message }))
   }
 
@@ -34,14 +39,14 @@ export default class Login extends React.Component {
         {this.state.errorMessage && (
           <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
         )}
-        <TextInput
+        <Input
           style={styles.textInput}
           autoCapitalize="none"
           placeholder="Email"
           onChangeText={email => this.setState({ email })}
           value={this.state.email}
         />
-        <TextInput
+        <Input
           secureTextEntry
           style={styles.textInput}
           autoCapitalize="none"
@@ -57,6 +62,8 @@ export default class Login extends React.Component {
     )
   }
 }
+
+Login.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {
