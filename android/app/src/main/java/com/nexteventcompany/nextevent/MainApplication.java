@@ -28,6 +28,8 @@ import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.invertase.firebase.perf.RNFirebasePerformancePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
+import com.imagepicker.ImagePickerPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +47,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.asList(
         new MainReactPackage(),
+        new ImagePickerPackage(),
+        new RNFetchBlobPackage(),
         new VectorIconsPackage(),
         new RNGestureHandlerPackage(),
         new RNFirebasePackage(),
