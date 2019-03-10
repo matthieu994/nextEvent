@@ -1,10 +1,12 @@
 import React from "react"
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native"
 import firebase from "react-native-firebase"
+import { UserContext } from "./Provider/UserProvider"
 
 export default class Loading extends React.Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
+      this.context.setUser(user)
       this.props.navigation.navigate(user ? "Main" : "Login")
     })
   }
@@ -18,6 +20,8 @@ export default class Loading extends React.Component {
     )
   }
 }
+
+Loading.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {

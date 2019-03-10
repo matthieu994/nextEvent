@@ -18,9 +18,9 @@ export default class FriendsListScreen extends Component {
   }
 
   deleteUser() {
-    firebase.auth()
-      .currentUser
-      .delete()
+    firebase
+      .auth()
+      .currentUser.delete()
       .then(() => this.props.navigation.navigate("Loading"))
       .catch(error => console.warn(error))
   }
@@ -71,7 +71,11 @@ export default class FriendsListScreen extends Component {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button onPress={() => this.selectImage()} title="Ajouter une photo" />
-        <Button onPress={() => this.deleteUser()} title="Supprimer mon compte" />
+        <Button
+          onPress={() => this.deleteUser()}
+          title="Supprimer mon compte"
+          buttonStyle={{ marginTop: 10, backgroundColor: "red" }}
+        />
       </View>
     )
   }
