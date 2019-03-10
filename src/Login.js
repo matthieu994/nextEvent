@@ -6,18 +6,21 @@ import { isEmail } from "validator"
 import { UserContext } from "./Provider/UserProvider"
 
 export default class Login extends React.Component {
-  state = { email: "", password: "", errorMessage: null }
+  state = { email: "", password: "", errorMessage: null, errorCode: null }
 
   handleLogin = () => {
     const { email, password } = this.state
 
     if (!isEmail(email)) {
-      this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
-
+      this.setState({
+        errorCode: null,
+        errorMessage: "Votre adresse email n'est pas valide."
+      })
       return
     }
     if (!password) {
       this.setState({
+        errorCode: null,
         errorMessage: "Votre mot de passe ne peut pas être vide."
       })
       return
@@ -30,15 +33,30 @@ export default class Login extends React.Component {
         this.context.setUser(userCredentials.user)
         this.props.navigation.navigate("Main")
       })
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => this.setState({ errorCode: error.code }))
+  }
+
+  getMessage() {
+    if (!this.state.errorCode) return this.state.errorMessage
+    
+    if (this.state.errorCode === "auth/user-disabled")
+      return "Votre compte a été supprimé."
+    if (this.state.errorCode === "auth/invalid-email")
+      return "Votre adresse email n'est pas valide."
+    if (this.state.errorCode === "auth/user-not-found")
+      return "L'adresse email n'est pas reconnue."
+    if (this.state.errorCode === "auth/wrong-password")
+      return "Votre mot de passe n'est pas reconnu."
+    
+    else return ""
   }
 
   render() {
     return (
       <View style={styles.container}>
         <Text>Login</Text>
-        {this.state.errorMessage && (
-          <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
+        {(this.state.errorCode || this.state.errorMessage) && (
+          <Text style={{ color: "red" }}>{this.getMessage()}</Text>
         )}
         <Input
           style={styles.textInput}

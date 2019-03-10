@@ -5,7 +5,7 @@ import { Input, Button } from "react-native-elements"
 import { isEmail } from "validator"
 
 export default class SignUp extends React.Component {
-  state = { email: "", password: "", errorMessage: null }
+  state = { email: "", password: "", errorMessage: null , errorCode: null}
 
   handleSignUp = () => {
     const { email, password } = this.state
@@ -25,7 +25,20 @@ export default class SignUp extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(user => this.props.navigation.navigate("Main"))
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => this.setState({ errorCode: error.code }))
+  }
+
+  getMessage() {
+    if (!this.state.errorCode) return this.state.errorMessage
+    
+    if (this.state.errorCode === "auth/email-already-in-use")
+      return "L'adresse email est deja utilisée."
+    if (this.state.errorCode === "auth/invalid-email")
+      return "L'adresse email n'est pas valide."
+    if (this.state.errorCode === "auth/weak-password")
+      return "Le mot de passe doit faire plus de 6 caractères."
+    
+    else return ""
   }
 
   render() {
@@ -33,7 +46,7 @@ export default class SignUp extends React.Component {
       <View style={styles.container}>
         <Text>Sign Up</Text>
         {this.state.errorMessage && (
-          <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
+          <Text style={{ color: "red" }}>{this.getMessage()}</Text>
         )}
         <Input
           placeholder="Email"
