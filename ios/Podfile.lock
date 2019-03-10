@@ -181,8 +181,12 @@ PODS:
   - Protobuf (3.7.0)
   - React (0.58.6):
     - React/Core (= 0.58.6)
+  - react-native-image-picker (0.28.0):
+    - React
   - React/Core (0.58.6):
     - yoga (= 0.58.6.React)
+  - rn-fetch-blob (0.10.6):
+    - React/Core
   - RNGestureHandler (1.1.0):
     - React
   - RNVectorIcons (6.3.0):
@@ -204,6 +208,8 @@ DEPENDENCIES:
   - Firebase/RemoteConfig (~> 5.15.0)
   - Firebase/Storage (~> 5.15.0)
   - React (from `../node_modules/react-native`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -243,6 +249,10 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
+  rn-fetch-blob:
+    :path: "../node_modules/rn-fetch-blob"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNVectorIcons:
@@ -281,10 +291,12 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 130b87b2d5e2baac646954282cab87be986d98fc
+  react-native-image-picker: e6e06d4315e3c85bad17e4b2002cd29f11d202c8
+  rn-fetch-blob: 766f85cabd2992300dfa1be2bc9e4e258abc6f04
   RNGestureHandler: b65d391f4f570178d657b99a16ec99d09b8656b0
   RNVectorIcons: cb42a5653c046f12ca16c9480c571b52620559e8
   yoga: 32d7ef1081951e9a35a4c72a7be797598b138a48
 
-PODFILE CHECKSUM: beb5e61da0dcf218b6b7c00a91aee39b5261764c
+PODFILE CHECKSUM: 775649a25fc0adff447dc6b30c8b6e0ad8fa78c2
 
 COCOAPODS: 1.7.0.beta.1
