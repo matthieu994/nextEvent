@@ -18,15 +18,17 @@ export default class drawerScreen extends Component {
       <ScrollView>
         <SafeAreaView>
           <View style={styles.container}>
-            <Icon
-              name="arrow-back"
-              iconStyle={styles.customDrawerIcon}
-              onPress={() =>
-                this.props.navigation.dispatch(DrawerActions.closeDrawer())
-              }
-              onLongPress={() => Alert.alert("wsh gros tu t'es cru ou")}
-              color="#666666"
-            />
+            <View style={styles.absoluteIcon}>
+              <Icon
+                name="arrow-back"
+                iconStyle={styles.customDrawerIcon}
+                onPress={() =>
+                  this.props.navigation.dispatch(DrawerActions.closeDrawer())
+                }
+                onLongPress={() => Alert.alert("wsh gros tu t'es cru ou")}
+                color="#666666"
+              />
+            </View>
             <Text style={styles.text}>HEAAAADER</Text>
             <View style={styles.imageContainer}>
               <Avatar
@@ -56,10 +58,10 @@ const styles = StyleSheet.create({
   text: {
     display: "none"
   },
-  customDrawerIcon: {
+  absoluteIcon: {
     marginHorizontal: 10,
     position: "absolute",
-    top: 0,
+    top: 12,
     left: 0
   },
   container: {
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     paddingBottom: 17,
     paddingLeft: 3,
     borderBottomColor: "#F0F0F0",
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   imageContainer: {
     alignItems: "center"
