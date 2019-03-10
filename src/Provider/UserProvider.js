@@ -19,16 +19,6 @@ class UserProvider extends Component {
     }
   }
 
-  componentDidMount() {
-    firebase
-      .storage()
-      .ref("default_profile.png")
-      .getDownloadURL()
-      .then(url => {
-        this.setState({ defaultProfileImage: url })
-      })
-  }
-
   render() {
     return (
       <UserContext.Provider value={this.state}>

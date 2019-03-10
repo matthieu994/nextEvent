@@ -24,6 +24,7 @@ export default {
             .auth()
             .signOut()
             .then(() => navigation.navigate("Login"))
+            .catch(err => console.warn(err))
         }
       />
     )

@@ -13,7 +13,7 @@ import EventsListScreen from "./EventsListScreen"
 import FriendsListScreen from "./FriendsListScreen"
 import UserSettingsScreen from "./UserSettingsScreen"
 import drawerScreen from "./Drawer/drawerScreen"
-import UserProvider from "./Provider"
+import UserProvider from "./Provider/UserProvider"
 
 const EventsListStack = createStackNavigator(
   {

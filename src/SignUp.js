@@ -1,6 +1,7 @@
 import React from "react"
-import { StyleSheet, Text, TextInput, View, Button } from "react-native"
+import { StyleSheet, Text, TextInput, View } from "react-native"
 import firebase from "react-native-firebase"
+import { Input, Button } from "react-native-elements"
 import { isEmail } from "validator"
 
 export default class SignUp extends React.Component {
@@ -12,7 +13,8 @@ export default class SignUp extends React.Component {
     if (!isEmail(email)) {
       this.setState({ errorMessage: "Votre adresse email n'est pas valide." })
       return
-    } else if (!password) {
+    }
+    if (!password) {
       this.setState({
         errorMessage: "Votre mot de passe ne peut pas être vide."
       })
@@ -33,14 +35,14 @@ export default class SignUp extends React.Component {
         {this.state.errorMessage && (
           <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
         )}
-        <TextInput
+        <Input
           placeholder="Email"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={email => this.setState({ email })}
           value={this.state.email}
         />
-        <TextInput
+        <Input
           secureTextEntry
           placeholder="Mot de passe"
           autoCapitalize="none"
@@ -48,7 +50,10 @@ export default class SignUp extends React.Component {
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
         />
-        <Button title="Créer un compte" onPress={this.handleSignUp} />
+        <Button
+          title="Créer un compte"
+          onPress={this.handleSignUp}
+        />
         <Text onPress={() => this.props.navigation.navigate("Login")}>
           Vous avez déjà un compte ?
         </Text>
