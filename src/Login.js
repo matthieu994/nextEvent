@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native"
 import firebase from "react-native-firebase"
 import { Button, Input } from "react-native-elements"
 import { isEmail } from "validator"
-import { UserContext } from "./Provider"
+import { UserContext } from "./Provider/UserProvider"
 
 export default class Login extends React.Component {
   state = { email: "", password: "", errorMessage: null }

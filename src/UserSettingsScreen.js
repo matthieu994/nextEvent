@@ -5,7 +5,7 @@ import { DrawerActions } from "react-navigation"
 import { Button, Icon } from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
-import { UserContext } from "./Provider"
+import { UserContext } from "./Provider/UserProvider"
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -55,7 +55,6 @@ export default class FriendsListScreen extends Component {
         })
         .catch(error => {
           reject(error)
-          console.warn("Error uploading image: ", error)
         })
     })
   }

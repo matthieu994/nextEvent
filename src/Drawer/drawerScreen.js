@@ -10,9 +10,26 @@ import {
 import { DrawerItems, SafeAreaView, DrawerActions } from "react-navigation"
 import firebase from "react-native-firebase"
 import { Icon, Avatar } from "react-native-elements"
-import { UserContext } from "../Provider"
+import { UserContext } from "../Provider/UserProvider"
 
 export default class drawerScreen extends Component {
+  componentDidMount() {
+    firebase
+      .storage()
+      .ref(`default_profile.png`)
+      .getDownloadURL()
+      .then(url => {
+        this.setState({ defaultProfileImage: url })
+      })
+      .catch(err => console.warn(err))
+  }
+
+  getProfileImage() {
+    if (this.context.user.photoURL) return this.context.user.photoURL
+    if (this.state.defaultProfileImage) return this.state.defaultProfileImage
+    return ""
+  }
+
   render() {
     return (
       <ScrollView>
@@ -37,9 +54,7 @@ export default class drawerScreen extends Component {
                 // title={this.context.user.email.charAt(0)}
                 containerStyle={{ marginBottom: 12 }}
                 source={{
-                  uri:
-                    this.context.user.photoURL ||
-                    this.context.defaultProfileImage
+                  uri: this.getProfileImage()
                 }}
               />
               <Text>{this.context.user.email}</Text>
@@ -70,7 +85,7 @@ const styles = StyleSheet.create({
     paddingBottom: 17,
     paddingLeft: 3,
     borderBottomColor: "#F0F0F0",
-    borderBottomWidth: 1,
+    borderBottomWidth: 1
   },
   imageContainer: {
     alignItems: "center"
