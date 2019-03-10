@@ -17,6 +17,14 @@ export default class FriendsListScreen extends Component {
     title: "Mes paramètres"
   }
 
+  deleteUser() {
+    firebase.auth()
+      .currentUser
+      .delete()
+      .then(() => this.props.navigation.navigate("Loading"))
+      .catch(error => console.warn(error))
+  }
+
   selectImage() {
     this.props.navigation.setParams({ test: "image" })
 
@@ -63,6 +71,7 @@ export default class FriendsListScreen extends Component {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button onPress={() => this.selectImage()} title="Ajouter une photo" />
+        <Button onPress={() => this.deleteUser()} title="Supprimer mon compte" />
       </View>
     )
   }
