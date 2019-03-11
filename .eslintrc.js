@@ -22,6 +22,8 @@ module.exports = {
     "prefer-destructuring": "off",
     "import/prefer-default-export": "off",
     "react/sort-comp": "off",
+    "curly": "off",
+    "nonblock-statement-body-position": "off",
     "arrow-parens": "off"
   },
   globals: {

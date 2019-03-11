@@ -32,7 +32,7 @@ export default class drawerScreen extends Component {
     if (this.context.user && this.context.user.photoURL)
       return this.context.user.photoURL
     if (this.state.defaultProfileImage) return this.state.defaultProfileImage
-    return ""
+    return null
   }
 
   render() {
@@ -47,7 +47,6 @@ export default class drawerScreen extends Component {
                 onPress={() =>
                   this.props.navigation.dispatch(DrawerActions.closeDrawer())
                 }
-                onLongPress={() => Alert.alert("wsh gros tu t'es cru ou")}
                 color="#666666"
               />
             </View>
