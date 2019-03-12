@@ -1,13 +1,14 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Component } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { Button, Input } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
+import { checkLoginCredentials } from "./functions"
 import { UserContext } from "../Provider/UserProvider"
-import { checkCredentials, redirectUser } from "./functions"
 
 export default class Login extends Component {
-  state = { email: "", password: "", errorMessage: null }
+  state = { email: "", password: "" }
 
   constructor(props) {
     super(props)
@@ -25,13 +26,15 @@ export default class Login extends Component {
   handleLogin = () => {
     const { email, password } = this.state
 
-    if (!checkCredentials(email, password, this.setMessage)) return
+    if (!checkLoginCredentials(email, password, this.setMessage)) return
 
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(userCredentials => {
-        redirectUser(userCredentials.user).bind(this)
+      .then(() => {
+        this.context.updateUser()
+        this.context.getUserData()
+        this.props.navigation.navigate("Main")
       })
       .catch(error => this._isMounted && this.getMessage(error.code))
   }
