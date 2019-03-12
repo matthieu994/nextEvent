@@ -13,6 +13,10 @@ import { Icon, Avatar } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class drawerScreen extends Component {
+  state = {
+    defaultProfileImage: ""
+  }
+
   componentDidMount() {
     firebase
       .storage()
@@ -25,9 +29,9 @@ export default class drawerScreen extends Component {
   }
 
   getProfileImage() {
-    if (this.context.user.photoURL) return this.context.user.photoURL
+    if (this.context.photoURL) return this.context.photoURL
     if (this.state.defaultProfileImage) return this.state.defaultProfileImage
-    return ""
+    return null
   }
 
   render() {
@@ -42,7 +46,6 @@ export default class drawerScreen extends Component {
                 onPress={() =>
                   this.props.navigation.dispatch(DrawerActions.closeDrawer())
                 }
-                onLongPress={() => Alert.alert("wsh gros tu t'es cru ou")}
                 color="#666666"
               />
             </View>
@@ -57,7 +60,7 @@ export default class drawerScreen extends Component {
                   uri: this.getProfileImage()
                 }}
               />
-              <Text>{this.context.user.email}</Text>
+              <Text>{this.context.user && this.context.user.email}</Text>
             </View>
           </View>
           <DrawerItems {...this.props} />

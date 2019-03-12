@@ -6,9 +6,9 @@ import {
 } from "react-navigation"
 import React from "react"
 import defaultSettings from "./Drawer/header"
-import Loading from "./Loading"
-import SignUp from "./SignUp"
-import Login from "./Login"
+import Loading from "./Auth/Loading"
+import SignUp from "./Auth/SignUp"
+import Login from "./Auth/Login"
 import EventsListScreen from "./EventsListScreen"
 import FriendsListScreen from "./FriendsListScreen"
 import UserSettingsScreen from "./UserSettingsScreen"
@@ -55,7 +55,13 @@ const drawerNavigator = createDrawerNavigator(
       navigationOptions: { drawerLabel: "Paramètres" }
     }
   },
-  { contentComponent: drawerScreen, initialRouteName: "UserSettings" }
+  {
+    contentComponent: drawerScreen,
+    initialRouteName: "UserSettings",
+    gestureResponseDistance: {
+      horizontal: 100
+    }
+  }
 )
 
 // create our app's navigation stack
