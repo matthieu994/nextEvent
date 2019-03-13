@@ -71,11 +71,29 @@ export default class SignUp extends Component {
           ref={ref => (this.dropdown = ref)}
           closeInterval={2500}
         />
-        <Text h2 style={[styles.title, styles.text]}>
+        {/* <Icon
+          name="user-plus"
+          containerStyle={{
+            borderWidth: 3,
+            borderRadius: 15,
+            borderColor: "rgb(46, 97, 113)",
+            padding: 20,
+            marginBottom: 10
+          }}
+          color="rgb(46, 97, 113)"
+          size={70}
+          type="feather"
+        /> */}
+        <Text
+          h2
+          style={[styles.title, { fontFamily: "Roboto", fontWeight: "100" }]}
+        >
           Créer un compte
         </Text>
         <Input
-          containerStyle={styles.text}
+          inputStyle={{ color: "#2E6171" }}
+          placeholderTextColor="#62717E"
+          inputContainerStyle={styles.inputContainer}
           placeholder="Email"
           autoCapitalize="none"
           onChangeText={email => this.setState({ email })}
@@ -83,9 +101,12 @@ export default class SignUp extends Component {
           leftIconContainerStyle={{ marginLeft: 0 }}
           leftIcon={<Icon name="mail" type="feather" size={24} color="black" />}
         />
-        <View style={styles.containerInput}>
+        <View style={styles.nameInputView}>
           <Input
-            containerStyle={styles.nameInput}
+            inputStyle={{ color: "#2E6171" }}
+            placeholderTextColor="#62717E"
+            containerStyle={[styles.nameInput]}
+            inputContainerStyle={styles.inputContainer}
             autoCapitalize="none"
             placeholder="Nom d'utilisateur"
             onChangeText={displayName => this.setState({ displayName })}
@@ -96,7 +117,10 @@ export default class SignUp extends Component {
             }
           />
           <Input
-            containerStyle={styles.nameInput}
+            inputStyle={{ color: "#2E6171" }}
+            placeholderTextColor="#62717E"
+            containerStyle={[styles.nameInput]}
+            inputContainerStyle={styles.inputContainer}
             autoCapitalize="none"
             placeholder="Nom de famille"
             onChangeText={familyName => this.setState({ familyName })}
@@ -108,6 +132,9 @@ export default class SignUp extends Component {
           />
         </View>
         <Input
+          inputStyle={{ color: "#2E6171" }}
+          inputContainerStyle={styles.inputContainer}
+          placeholderTextColor="#62717E"
           secureTextEntry
           placeholder="Mot de passe"
           autoCapitalize="none"
@@ -118,11 +145,19 @@ export default class SignUp extends Component {
         />
         <Button
           containerStyle={styles.button}
+          buttonStyle={{ backgroundColor: "#2E6171" }}
           title="Créer un compte"
           onPress={this.handleSignUp}
           loading={this.state.buttonLoading}
+          titleStyle={{ color: "white" }}
         />
-        <Text onPress={() => this.props.navigation.navigate("Login")}>
+        <Text
+          style={{
+            color: "#2E6171",
+            textDecorationLine: "underline"
+          }}
+          onPress={() => this.props.navigation.navigate("Login")}
+        >
           Vous avez déjà un compte ?
         </Text>
       </View>
@@ -135,18 +170,28 @@ SignUp.contextType = UserContext
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(200, 230, 250)"
+    backgroundColor: "rgb(232, 243, 250)"
   },
   title: {
-    margin: 20
+    margin: 20,
+    color: "#2E6171"
   },
-  containerInput: {
+  nameInputView: {
     flexDirection: "row"
   },
   nameInput: {
-    width: "50%"
+    width: "49%",
+    paddingHorizontal: 5
+  },
+  inputContainer: {
+    paddingHorizontal: 5,
+    marginVertical: 3,
+    borderRadius: 10,
+    borderBottomWidth: 0,
+    backgroundColor: "rgb(210, 225, 230)"
   },
   button: {
     margin: 15

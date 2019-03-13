@@ -28,6 +28,11 @@
   "jest": {
     "preset": "react-native"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  },
   "dependencies": {
     "@types/react": "^16.8.8",
     "acorn": "^6.1.1",
