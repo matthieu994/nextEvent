@@ -1,10 +1,11 @@
+import React from "react"
 import {
   createStackNavigator,
   createSwitchNavigator,
   createAppContainer,
   createDrawerNavigator
 } from "react-navigation"
-import React from "react"
+import { fromLeft, flipX } from "react-navigation-transitions"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
 import SignUp from "./Auth/SignUp"
@@ -64,7 +65,25 @@ const drawerNavigator = createDrawerNavigator(
   }
 )
 
-// create our app's navigation stack
+const handleCustomTransition = ({ scenes }) => {
+  const prevScene = scenes[scenes.length - 2]
+  const nextScene = scenes[scenes.length - 1]
+  if (
+    prevScene &&
+    prevScene.route.routeName === "Login" &&
+    nextScene.route.routeName === "SignUp"
+  )
+    return flipX()
+
+  if (
+    prevScene &&
+    prevScene.route.routeName === "SignUp" &&
+    nextScene.route.routeName === "Login"
+  )
+    return flipX()
+  return null
+}
+
 const appStack = createSwitchNavigator(
   {
     Loading,
@@ -73,7 +92,8 @@ const appStack = createSwitchNavigator(
     Main: drawerNavigator
   },
   {
-    initialRouteName: "Loading"
+    initialRouteName: "Loading",
+    transitionConfig: nav => handleCustomTransition(nav)
   }
 )
 
