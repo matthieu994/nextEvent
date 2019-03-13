@@ -4,11 +4,11 @@ import { StyleSheet, View } from "react-native"
 import { Button, Input, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
-import { checkLoginCredentials } from "./functions"
-import { UserContext } from "../Provider/UserProvider"
+import {checkLoginCredentials} from "./functions"
+import {UserContext} from "../Provider/UserProvider"
 
 export default class Login extends Component {
-  state = { email: "", password: "" }
+  state = {email: "", password: "", buttonLoading: false}
 
   constructor(props) {
     super(props)
@@ -24,19 +24,21 @@ export default class Login extends Component {
   }
 
   handleLogin = () => {
-    const { email, password } = this.state
+    const {email, password} = this.state
 
     if (!checkLoginCredentials(email, password, this.setMessage)) return
 
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.context.updateUser()
-        this.context.getUserData()
-        this.props.navigation.navigate("Main")
-      })
-      .catch(error => this._isMounted && this.getMessage(error.code))
+    this.setState({buttonLoading: true}, () => {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          this.context.updateUser()
+          this.context.getUserData()
+          this.props.navigation.navigate("Main")
+        })
+        .catch(error => this._isMounted && this.getMessage(error.code))
+    })
   }
 
   setMessage = errorMessage => {
@@ -69,8 +71,7 @@ export default class Login extends Component {
           placeholderTextColor="#62717E"
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
-          autoCapitalize="none"
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => this.setState({email})}
           value={this.state.email}
           leftIconContainerStyle={{ marginLeft: 0 }}
           leftIcon={<Icon name="mail" type="feather" size={24} color="black" />}
@@ -81,8 +82,8 @@ export default class Login extends Component {
           placeholderTextColor="#62717E"
           secureTextEntry
           placeholder="Mot de passe"
+          onChangeText={password => this.setState({password})}
           autoCapitalize="none"
-          onChangeText={password => this.setState({ password })}
           value={this.state.password}
           leftIconContainerStyle={{ marginLeft: 0 }}
           leftIcon={<Icon name="lock" type="feather" size={24} color="black" />}
@@ -93,6 +94,7 @@ export default class Login extends Component {
           title="Se connecter"
           onPress={this.handleLogin}
           titleStyle={{ color: "white" }}
+          loading={this.state.buttonLoading}
         />
         <Text
           style={{
