@@ -59,7 +59,7 @@ const drawerNavigator = createDrawerNavigator(
     contentComponent: drawerScreen,
     initialRouteName: "UserSettings",
     gestureResponseDistance: {
-      horizontal: 100
+      horizontal: 200
     }
   }
 )
