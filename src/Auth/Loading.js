@@ -1,12 +1,12 @@
 import React from "react"
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native"
+import { View, Text, ActivityIndicator, StyleSheet, AppState } from "react-native"
 import firebase from "react-native-firebase"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class Loading extends React.Component {
   componentWillMount() {
     this.unsubscribe = firebase.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? "Main" : "SignUp")
+      this.props.navigation.navigate(user ? "Main" : "Login")
     })
   }
 
