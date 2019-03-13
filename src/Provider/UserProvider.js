@@ -15,9 +15,11 @@ class UserProvider extends Component {
       .functions()
       .httpsCallable("getUserData")()
       .then(res => {
+        res.data.email = firebase.auth().currentUser.email
         this.setState({
-          photoURL: res.data.photoURL,
-          friends: res.data.friends
+          user: res.data
+          // photoURL: res.data.photoURL,
+          // friends: res.data.friends
         })
       })
       .catch(error => {
@@ -27,6 +29,10 @@ class UserProvider extends Component {
 
   setPhotoURL = photoURL => {
     this.setState({ photoURL })
+  }
+
+  setDefaultProfileImage = defaultProfileURL => {
+    this.setState({ defaultProfileURL })
   }
 
   updateUser = () => {
@@ -43,8 +49,9 @@ class UserProvider extends Component {
 
   state = {
     user: firebase.auth().currentUser,
-    photoURL: null,
+    defaultProfileURL: null,
     setPhotoURL: this.setPhotoURL,
+    setDefaultProfileImage: this.setDefaultProfileImage,
     updateUser: this.updateUser,
     getUserData: this.getUserData,
     dropdownAlert: this.dropdownAlert

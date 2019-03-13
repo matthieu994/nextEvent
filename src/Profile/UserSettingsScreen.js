@@ -1,11 +1,10 @@
 import React, { Component } from "react"
 import { View, StyleSheet } from "react-native"
 import firebase from "react-native-firebase"
-import { DrawerActions } from "react-navigation"
 import { Button, Icon } from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
-import { UserContext } from "./Provider/UserProvider"
+import { UserContext } from "../Provider/UserProvider"
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -20,7 +19,7 @@ const options = {
   cameraType: "front"
 }
 
-export default class FriendsListScreen extends Component {
+export default class UserSettingsScreen extends Component {
   static navigationOptions = {
     title: "Mes paramètres"
   }
@@ -83,7 +82,7 @@ export default class FriendsListScreen extends Component {
   }
 
   deleteProfileImage() {
-    if (!this.context.photoURL)
+    if (!this.context.user.photoURL)
       return this.dropdownAlert(
         "error",
         "Vous n'avez pas de photo de profil !",
@@ -110,13 +109,44 @@ export default class FriendsListScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button onPress={() => this.selectImage()} title="Ajouter une photo" />
         <Button
+          icon={
+            <Icon
+              name="camera"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
+          buttonStyle={styles.buttonStyle}
+          onPress={() => this.selectImage()}
+          title="Ajouter une photo"
+        />
+        <Button
+          icon={
+            <Icon
+              name="camera-off"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
           buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
           onPress={() => this.deleteProfileImage()}
           title="Supprimer ma photo"
         />
         <Button
+          icon={
+            <Icon
+              name="account-remove"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
           onPress={() => this.deleteUser()}
           title="Supprimer mon compte"
           buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
@@ -126,10 +156,14 @@ export default class FriendsListScreen extends Component {
   }
 }
 
+UserSettingsScreen.contextType = UserContext
+
 const styles = StyleSheet.create({
+  buttonIconStyle: {
+    marginLeft: 1,
+    marginRight: 7
+  },
   buttonStyle: {
     marginTop: 10
   }
 })
-
-FriendsListScreen.contextType = UserContext

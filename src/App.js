@@ -5,17 +5,26 @@ import {
   createAppContainer,
   createDrawerNavigator
 } from "react-navigation"
-import { fromLeft, flipX } from "react-navigation-transitions"
+import { flipX, zoomIn } from "./Modules/react-navigation-transitions"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
 import SignUp from "./Auth/SignUp"
 import Login from "./Auth/Login"
-import EventsListScreen from "./EventsListScreen"
-import FriendsListScreen from "./FriendsListScreen"
-import UserSettingsScreen from "./UserSettingsScreen"
+// import UserProfileScreen from "./Profile/UserProfileScreen"
+import EventsListScreen from "./Profile/EventsListScreen"
+import FriendsListScreen from "./Profile/FriendsListScreen"
+import UserSettingsScreen from "./Profile/UserSettingsScreen"
 import drawerScreen from "./Drawer/drawerScreen"
 import UserProvider from "./Provider/UserProvider"
 
+// const UserProfileStack = createStackNavigator(
+//   {
+//     UserProfile: {
+//       screen: UserProfileScreen
+//     }
+//   },
+//   defaultSettings
+// )
 const EventsListStack = createStackNavigator(
   {
     EventsList: {
@@ -43,6 +52,10 @@ const UserSettingsStack = createStackNavigator(
 
 const drawerNavigator = createDrawerNavigator(
   {
+    // UserProfile: {
+    //   screen: UserProfileStack,
+    //   navigationOptions: { drawerLabel: "Profil" }
+    // },
     EventsList: {
       screen: EventsListStack,
       navigationOptions: { drawerLabel: "Événements" }
@@ -58,7 +71,7 @@ const drawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: drawerScreen,
-    initialRouteName: "UserSettings",
+    initialRouteName: "FriendsList",
     gestureResponseDistance: {
       horizontal: 200
     }
@@ -66,30 +79,38 @@ const drawerNavigator = createDrawerNavigator(
 )
 
 const handleCustomTransition = ({ scenes }) => {
+  if (!scenes) return zoomIn()
   const prevScene = scenes[scenes.length - 2]
   const nextScene = scenes[scenes.length - 1]
   if (
     prevScene &&
-    prevScene.route.routeName === "Login" &&
-    nextScene.route.routeName === "SignUp"
+    prevScene.route.routeName == "Login" &&
+    nextScene.route.routeName == "SignUp"
   )
-    return flipX()
-
+    return flipX(800)
   if (
     prevScene &&
     prevScene.route.routeName === "SignUp" &&
     nextScene.route.routeName === "Login"
   )
-    return flipX()
-  return null
+    return flipX(800)
+  return zoomIn()
 }
 
 const appStack = createSwitchNavigator(
   {
-    Loading,
-    SignUp,
-    Login,
-    Main: drawerNavigator
+    Loading: {
+      screen: Loading
+    },
+    SignUp: {
+      screen: SignUp
+    },
+    Login: {
+      screen: Login
+    },
+    Main: {
+      screen: drawerNavigator
+    }
   },
   {
     initialRouteName: "Loading",

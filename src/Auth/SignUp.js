@@ -8,7 +8,13 @@ import { checkSignupCredentials, createUser } from "./functions"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class SignUp extends Component {
-  state = { email: "", password: "", displayName: "", familyName: "", buttonLoading: false }
+  state = {
+    email: "",
+    password: "",
+    displayName: "",
+    familyName: "",
+    buttonLoading: false
+  }
 
   constructor(props) {
     super(props)
@@ -33,8 +39,7 @@ export default class SignUp extends Component {
     )
       return
 
-    this.setState({ButtonLoading: true},() => {
-
+    this.setState({ ButtonLoading: true }, () => {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -177,7 +182,8 @@ const styles = StyleSheet.create({
   },
   title: {
     margin: 20,
-    color: "#2E6171"
+    color: "#2E6171",
+    fontFamily: "Roboto"
   },
   nameInputView: {
     flexDirection: "row"

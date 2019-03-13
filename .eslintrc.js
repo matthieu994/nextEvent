@@ -25,6 +25,8 @@ module.exports = {
     curly: "off",
     "nonblock-statement-body-position": "off",
     "arrow-parens": "off",
+    "no-underscore-dangle": "off",
+    "react/jsx-wrap-multilines": "off",
     "react/no-unescaped-entities": "off"
   },
   globals: {
