@@ -8,7 +8,7 @@ import { checkSignupCredentials, createUser } from "./functions"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class SignUp extends Component {
-  state = { email: "", password: "", displayName: "", familyName: "" }
+  state = { email: "", password: "", displayName: "", familyName: "", buttonLoading: false }
 
   constructor(props) {
     super(props)
@@ -33,19 +33,22 @@ export default class SignUp extends Component {
     )
       return
 
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        createUser(email, displayName, familyName)
-          .then(() => {
-            this.context.updateUser()
-            this.context.getUserData()
-            this.props.navigation.navigate("Main")
-          })
-          .catch(error => console.log(error))
-      })
-      .catch(error => this._isMounted && this.getMessage(error.code))
+    this.setState({ButtonLoading: true},() => {
+
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          createUser(email, displayName, familyName)
+            .then(() => {
+              this.context.updateUser()
+              this.context.getUserData()
+              this.props.navigation.navigate("Main")
+            })
+            .catch(error => console.log(error))
+        })
+        .catch(error => this._isMounted && this.getMessage(error.code))
+    })
   }
 
   setMessage = errorMessage => {
@@ -117,6 +120,7 @@ export default class SignUp extends Component {
           containerStyle={styles.button}
           title="Créer un compte"
           onPress={this.handleSignUp}
+          loading={this.state.buttonLoading}
         />
         <Text onPress={() => this.props.navigation.navigate("Login")}>
           Vous avez déjà un compte ?

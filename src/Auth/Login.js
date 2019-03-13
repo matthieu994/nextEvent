@@ -1,14 +1,14 @@
 /* eslint-disable no-underscore-dangle */
-import React, { Component } from "react"
-import { StyleSheet, Text, View } from "react-native"
-import { Button, Input } from "react-native-elements"
+import React, {Component} from "react"
+import {StyleSheet, View} from "react-native"
+import {Button, Input, Text} from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
-import { checkLoginCredentials } from "./functions"
-import { UserContext } from "../Provider/UserProvider"
+import {checkLoginCredentials} from "./functions"
+import {UserContext} from "../Provider/UserProvider"
 
 export default class Login extends Component {
-  state = { email: "", password: "" }
+  state = {email: "", password: "", buttonLoading: false}
 
   constructor(props) {
     super(props)
@@ -24,19 +24,21 @@ export default class Login extends Component {
   }
 
   handleLogin = () => {
-    const { email, password } = this.state
+    const {email, password} = this.state
 
     if (!checkLoginCredentials(email, password, this.setMessage)) return
 
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.context.updateUser()
-        this.context.getUserData()
-        this.props.navigation.navigate("Main")
-      })
-      .catch(error => this._isMounted && this.getMessage(error.code))
+    this.setState({buttonLoading: true}, () => {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          this.context.updateUser()
+          this.context.getUserData()
+          this.props.navigation.navigate("Main")
+        })
+        .catch(error => this._isMounted && this.getMessage(error.code))
+    })
   }
 
   setMessage = errorMessage => {
@@ -57,16 +59,18 @@ export default class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Login</Text>
         <DropdownAlert
           ref={ref => (this.dropdown = ref)}
           closeInterval={2500}
         />
+        <Text h2 style={[styles.title, styles.text]}>
+          Se connecter
+        </Text>
         <Input
           style={styles.textInput}
           autoCapitalize="none"
           placeholder="Email"
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => this.setState({email})}
           value={this.state.email}
         />
         <Input
@@ -74,10 +78,15 @@ export default class Login extends Component {
           style={styles.textInput}
           autoCapitalize="none"
           placeholder="Mot de passe"
-          onChangeText={password => this.setState({ password })}
+          onChangeText={password => this.setState({password})}
           value={this.state.password}
         />
-        <Button title="Se connecter" onPress={this.handleLogin} />
+        <Button
+          title="Se connecter"
+          onPress={this.handleLogin}
+          style={styles.button}
+          loading={this.state.buttonLoading}
+        />
         <Text onPress={() => this.props.navigation.navigate("SignUp")}>
           Vous n'avez pas encore de compte ?
         </Text>
@@ -99,6 +108,13 @@ const styles = StyleSheet.create({
     width: "90%",
     borderColor: "gray",
     borderWidth: 1,
-    marginTop: 8
+    marginTop: 8,
+    marginBottom: 10
+  },
+  title: {
+    margin: 20
+  },
+  button: {
+    margin: 15
   }
 })
