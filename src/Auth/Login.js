@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from "react"
-import { StyleSheet, Text, View } from "react-native"
-import { Button, Input } from "react-native-elements"
+import { StyleSheet, View } from "react-native"
+import { Button, Input, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
 import { checkLoginCredentials } from "./functions"
@@ -57,28 +57,50 @@ export default class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Login</Text>
         <DropdownAlert
           ref={ref => (this.dropdown = ref)}
           closeInterval={2500}
         />
+        <Text h2 style={[styles.title, styles.text]}>
+          Se connecter
+        </Text>
         <Input
-          style={styles.textInput}
-          autoCapitalize="none"
+          inputStyle={{ color: "#2E6171" }}
+          placeholderTextColor="#62717E"
+          inputContainerStyle={styles.inputContainer}
           placeholder="Email"
+          autoCapitalize="none"
           onChangeText={email => this.setState({ email })}
           value={this.state.email}
+          leftIconContainerStyle={{ marginLeft: 0 }}
+          leftIcon={<Icon name="mail" type="feather" size={24} color="black" />}
         />
         <Input
+          inputStyle={{ color: "#2E6171" }}
+          inputContainerStyle={styles.inputContainer}
+          placeholderTextColor="#62717E"
           secureTextEntry
-          style={styles.textInput}
-          autoCapitalize="none"
           placeholder="Mot de passe"
+          autoCapitalize="none"
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
+          leftIconContainerStyle={{ marginLeft: 0 }}
+          leftIcon={<Icon name="lock" type="feather" size={24} color="black" />}
         />
-        <Button title="Se connecter" onPress={this.handleLogin} />
-        <Text onPress={() => this.props.navigation.navigate("SignUp")}>
+        <Button
+          containerStyle={styles.button}
+          buttonStyle={{ backgroundColor: "#2E6171" }}
+          title="Se connecter"
+          onPress={this.handleLogin}
+          titleStyle={{ color: "white" }}
+        />
+        <Text
+          style={{
+            color: "#2E6171",
+            textDecorationLine: "underline"
+          }}
+          onPress={() => this.props.navigation.navigate("SignUp")}
+        >
           Vous n'avez pas encore de compte ?
         </Text>
       </View>
@@ -91,14 +113,30 @@ Login.contextType = UserContext
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 8,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "rgb(232, 243, 250)"
   },
-  textInput: {
-    height: 40,
-    width: "90%",
-    borderColor: "gray",
-    borderWidth: 1,
-    marginTop: 8
+  title: {
+    margin: 20,
+    color: "#2E6171"
+  },
+  nameInputView: {
+    flexDirection: "row"
+  },
+  nameInput: {
+    width: "49%",
+    paddingHorizontal: 5
+  },
+  inputContainer: {
+    paddingHorizontal: 5,
+    marginVertical: 3,
+    borderRadius: 10,
+    borderBottomWidth: 0,
+    backgroundColor: "rgb(210, 225, 230)"
+  },
+  button: {
+    margin: 15
   }
 })
