@@ -58,7 +58,9 @@ class UserProvider extends Component {
   }
 
   setPhotoURL = photoURL => {
-    this.setState({ photoURL })
+    let user = this.state.user
+    user.photoURL = photoURL
+    this.setState({ user })
   }
 
   setDefaultProfileImage = defaultProfileURL => {

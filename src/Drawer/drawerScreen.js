@@ -30,7 +30,7 @@ export default class drawerScreen extends Component {
 
   getProfileImage() {
     if (this.context.user.photoURL) return this.context.user.photoURL
-    if (this.state.defaultProfileImage) return this.context.defaultProfileURL
+    if (this.context.defaultProfileURL) return this.context.defaultProfileURL
     return null
   }
 
