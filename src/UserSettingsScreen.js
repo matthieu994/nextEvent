@@ -1,11 +1,12 @@
-import React, { Component } from "react"
-import { View, StyleSheet } from "react-native"
+import React, {Component} from "react"
+import {View, StyleSheet} from "react-native"
 import firebase from "react-native-firebase"
-import { DrawerActions } from "react-navigation"
-import { Button, Icon } from "react-native-elements"
+import {DrawerActions} from "react-navigation"
+import {Button, Icon, Text, Input} from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
-import { UserContext } from "./Provider/UserProvider"
+import {UserContext} from "./Provider/UserProvider"
+import {MyOverlay, types, deleteUser} from './lib'
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -20,13 +21,44 @@ const options = {
   cameraType: "front"
 }
 
+const basicOverlay = {
+  options: () => {
+  },
+  textOverlay: "",
+  buttonTitle: "",
+  action: () => {
+  }
+}
+
 export default class FriendsListScreen extends Component {
+  state = {
+    visibleOverlay: false
+  }
+
+  overlay = basicOverlay
+
   static navigationOptions = {
     title: "Mes paramètres"
   }
 
   componentDidMount() {
     this.dropdownAlert = this.context.dropdownAlert
+  }
+
+  toggleOverlay(component) {
+    switch (component) {
+      case types.DELETEUSER:
+        this.overlay.options = deleteUser
+        this.overlay.text = "Confirmation de suppression"
+        this.overlay.buttonTitle = "Supprimer mon compte"
+        this.overlay.action = () => this.deleteUser()
+        break
+      default:
+        this.overlay = basicOverlay
+        break;
+    }
+
+    this.setState({visibleOverlay: true})
   }
 
   deleteUser() {
@@ -41,7 +73,7 @@ export default class FriendsListScreen extends Component {
   }
 
   selectImage() {
-    this.props.navigation.setParams({ test: "image" })
+    this.props.navigation.setParams({test: "image"})
 
     ImagePicker.showImagePicker(options, response => {
       if (!response.didCancel && !response.error) {
@@ -72,7 +104,7 @@ export default class FriendsListScreen extends Component {
         .child("profile.jpg")
 
       return imageRef
-        .put(uri, { contentType: mime })
+        .put(uri, {contentType: mime})
         .then(res => {
           resolve(res.downloadURL)
         })
@@ -99,7 +131,7 @@ export default class FriendsListScreen extends Component {
           .firestore()
           .collection("users")
           .doc(this.context.user.email)
-          .update({ photoURL: null })
+          .update({photoURL: null})
           .then(() => {
             this.dropdownAlert("success", "Votre photo a été supprimée !", "")
             this.context.setPhotoURL(null)
@@ -108,19 +140,30 @@ export default class FriendsListScreen extends Component {
   }
 
   render() {
+    let Overlaybutton = {
+      title: this.overlay.buttonTitle,
+      action: this.overlay.action
+    }
+
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button onPress={() => this.selectImage()} title="Ajouter une photo" />
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <Button onPress={() => this.selectImage()} title="Ajouter une photo"/>
         <Button
-          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
+          buttonStyle={[styles.buttonStyle, {backgroundColor: "red"}]}
           onPress={() => this.deleteProfileImage()}
           title="Supprimer ma photo"
         />
         <Button
-          onPress={() => this.deleteUser()}
+          onPress={() => this.toggleOverlay(types.DELETEUSER)}
           title="Supprimer mon compte"
-          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
+          buttonStyle={[styles.buttonStyle, {backgroundColor: "red"}]}
         />
+        <MyOverlay
+          remove={() => this.setState({visibleOverlay: false})}
+          visible={this.state.visibleOverlay}
+          text={this.overlay.text}
+          options={this.overlay.options}
+          button={Overlaybutton}/>
       </View>
     )
   }

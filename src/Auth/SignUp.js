@@ -33,7 +33,7 @@ export default class SignUp extends Component {
     )
       return
 
-    this.setState({ButtonLoading: true},() => {
+    this.setState({buttonLoading: true},() => {
 
       firebase
         .auth()
@@ -47,7 +47,7 @@ export default class SignUp extends Component {
             })
             .catch(error => console.log(error))
         })
-        .catch(error => this._isMounted && this.getMessage(error.code))
+        .catch(error => this._isMounted && this.getMessage(error.code) && this.setState({buttonLoading: false}))
     })
   }
 
@@ -108,7 +108,7 @@ export default class SignUp extends Component {
             containerStyle={[styles.nameInput]}
             inputContainerStyle={styles.inputContainer}
             autoCapitalize="none"
-            placeholder="Nom d'utilisateur"
+            placeholder="Prénom (nom affiché)"
             onChangeText={displayName => this.setState({ displayName })}
             value={this.state.displayName}
             leftIconContainerStyle={{ marginLeft: 0 }}
@@ -156,7 +156,7 @@ export default class SignUp extends Component {
             color: "#2E6171",
             textDecorationLine: "underline"
           }}
-          onPress={() => this.props.navigation.navigate("Login")}
+          onPress={() => !this.state.buttonLoading && this.props.navigation.navigate("Login")}
         >
           Vous avez déjà un compte ?
         </Text>
