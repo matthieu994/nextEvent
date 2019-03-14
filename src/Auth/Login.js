@@ -6,6 +6,7 @@ import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
 import {checkLoginCredentials} from "./functions"
 import {UserContext} from "../Provider/UserProvider"
+import {colors} from "../lib";
 
 export default class Login extends Component {
   state = {email: "", password: "", buttonLoading: false}
@@ -37,7 +38,11 @@ export default class Login extends Component {
           this.context.getUserData()
           this.props.navigation.navigate("Main")
         })
-        .catch(error => this._isMounted && this.getMessage(error.code))
+        .catch(error => {
+          if(this._isMounted)
+            this.getMessage(error.code)
+          this.setState({buttonLoading: false})
+        })
     })
   }
 
@@ -67,7 +72,7 @@ export default class Login extends Component {
           Se connecter
         </Text>
         <Input
-          inputStyle={{ color: "#2E6171" }}
+          inputStyle={{ color: colors.inputStyle }}
           placeholderTextColor="#62717E"
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
@@ -77,9 +82,9 @@ export default class Login extends Component {
           leftIcon={<Icon name="mail" type="feather" size={24} color="black" />}
         />
         <Input
-          inputStyle={{ color: "#2E6171" }}
+          inputStyle={{ color: colors.inputStyle }}
           inputContainerStyle={styles.inputContainer}
-          placeholderTextColor="#62717E"
+          placeholderTextColor={colors.inputPlaceholder}
           secureTextEntry
           placeholder="Mot de passe"
           onChangeText={password => this.setState({password})}
@@ -90,15 +95,15 @@ export default class Login extends Component {
         />
         <Button
           containerStyle={styles.button}
-          buttonStyle={{ backgroundColor: "#2E6171" }}
+          buttonStyle={{ backgroundColor: colors.buttonBackground }}
           title="Se connecter"
           onPress={this.handleLogin}
-          titleStyle={{ color: "white" }}
+          titleStyle={{ color: colors.buttonTitle }}
           loading={this.state.buttonLoading}
         />
         <Text
           style={{
-            color: "#2E6171",
+            color: colors.text,
             textDecorationLine: "underline"
           }}
           onPress={() => this.props.navigation.navigate("SignUp")}
@@ -118,11 +123,11 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(232, 243, 250)"
+    backgroundColor: colors.loginBackground
   },
   title: {
     margin: 20,
-    color: "#2E6171"
+    color: colors.title
   },
   nameInputView: {
     flexDirection: "row"
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     marginVertical: 3,
     borderRadius: 10,
     borderBottomWidth: 0,
-    backgroundColor: "rgb(210, 225, 230)"
+    backgroundColor: colors.inputBackground
   },
   button: {
     margin: 15

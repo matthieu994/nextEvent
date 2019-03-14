@@ -6,15 +6,10 @@ import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
 import { checkSignupCredentials, createUser } from "./functions"
 import { UserContext } from "../Provider/UserProvider"
+import {colors} from "../lib"
 
 export default class SignUp extends Component {
-  state = {
-    email: "",
-    password: "",
-    displayName: "",
-    familyName: "",
-    buttonLoading: false
-  }
+  state = { email: "", password: "", displayName: "", familyName: "", buttonLoading: false }
 
   constructor(props) {
     super(props)
@@ -39,7 +34,8 @@ export default class SignUp extends Component {
     )
       return
 
-    this.setState({ ButtonLoading: true }, () => {
+    this.setState({buttonLoading: true},() => {
+
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -52,7 +48,11 @@ export default class SignUp extends Component {
             })
             .catch(error => console.log(error))
         })
-        .catch(error => this._isMounted && this.getMessage(error.code))
+        .catch(error => {
+          if(this._isMounted)
+            this.getMessage(error.code)
+          this.setState({buttonLoading: false})
+        })
     })
   }
 
@@ -96,8 +96,8 @@ export default class SignUp extends Component {
           Créer un compte
         </Text>
         <Input
-          inputStyle={{ color: "#2E6171" }}
-          placeholderTextColor="#62717E"
+          inputStyle={{ color: colors.inputStyle }}
+          placeholderTextColor={colors.inputPlaceholder}
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
           autoCapitalize="none"
@@ -108,8 +108,8 @@ export default class SignUp extends Component {
         />
         <View style={styles.nameInputView}>
           <Input
-            inputStyle={{ color: "#2E6171" }}
-            placeholderTextColor="#62717E"
+            inputStyle={{ color: colors.inputStyle }}
+            placeholderTextColor={colors.inputPlaceholder}
             containerStyle={[styles.nameInput]}
             inputContainerStyle={styles.inputContainer}
             autoCapitalize="none"
@@ -122,8 +122,8 @@ export default class SignUp extends Component {
             }
           />
           <Input
-            inputStyle={{ color: "#2E6171" }}
-            placeholderTextColor="#62717E"
+            inputStyle={{ color: colors.inputStyle }}
+            placeholderTextColor={colors.inputPlaceholder}
             containerStyle={[styles.nameInput]}
             inputContainerStyle={styles.inputContainer}
             autoCapitalize="none"
@@ -137,9 +137,9 @@ export default class SignUp extends Component {
           />
         </View>
         <Input
-          inputStyle={{ color: "#2E6171" }}
+          inputStyle={{ color: colors.inputStyle }}
           inputContainerStyle={styles.inputContainer}
-          placeholderTextColor="#62717E"
+          placeholderTextColor={colors.inputPlaceholder}
           secureTextEntry
           placeholder="Mot de passe"
           autoCapitalize="none"
@@ -150,7 +150,7 @@ export default class SignUp extends Component {
         />
         <Button
           containerStyle={styles.button}
-          buttonStyle={{ backgroundColor: "#2E6171" }}
+          buttonStyle={{ backgroundColor: colors.buttonBackground }}
           title="Créer un compte"
           onPress={this.handleSignUp}
           loading={this.state.buttonLoading}
@@ -158,7 +158,7 @@ export default class SignUp extends Component {
         />
         <Text
           style={{
-            color: "#2E6171",
+            color: colors.text,
             textDecorationLine: "underline"
           }}
           onPress={() => this.props.navigation.navigate("Login")}
@@ -178,12 +178,11 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(232, 243, 250)"
+    backgroundColor: colors.signUpBackground
   },
   title: {
     margin: 20,
-    color: "#2E6171",
-    fontFamily: "Roboto"
+    color: colors.title
   },
   nameInputView: {
     flexDirection: "row"
@@ -197,7 +196,7 @@ const styles = StyleSheet.create({
     marginVertical: 3,
     borderRadius: 10,
     borderBottomWidth: 0,
-    backgroundColor: "rgb(210, 225, 230)"
+    backgroundColor: colors.inputBackground
   },
   button: {
     margin: 15
