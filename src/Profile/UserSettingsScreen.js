@@ -21,12 +21,10 @@ const options = {
 }
 
 const basicOverlay = {
-  options: () => {
-  },
+  options: () => {},
   textOverlay: "",
   buttonTitle: "",
-  action: () => {
-  }
+  action: () => {}
 }
 
 export default class UserSettingsScreen extends Component {
@@ -53,10 +51,10 @@ export default class UserSettingsScreen extends Component {
         break
       default:
         this.overlay = basicOverlay
-        break;
+        break
     }
 
-    this.setState({visibleOverlay: true})
+    this.setState({ visibleOverlay: true })
   }
 
   deleteUser() {
@@ -71,7 +69,7 @@ export default class UserSettingsScreen extends Component {
   }
 
   selectImage() {
-    this.props.navigation.setParams({test: "image"})
+    this.props.navigation.setParams({ test: "image" })
 
     ImagePicker.showImagePicker(options, response => {
       if (!response.didCancel && !response.error) {
@@ -102,7 +100,7 @@ export default class UserSettingsScreen extends Component {
         .child("profile.jpg")
 
       return imageRef
-        .put(uri, {contentType: mime})
+        .put(uri, { contentType: mime })
         .then(res => {
           resolve(res.downloadURL)
         })
@@ -129,7 +127,7 @@ export default class UserSettingsScreen extends Component {
           .firestore()
           .collection("users")
           .doc(this.context.user.email)
-          .update({photoURL: null})
+          .update({ photoURL: null })
           .then(() => {
             this.dropdownAlert("success", "Votre photo a été supprimée !", "")
             this.context.setPhotoURL(null)
@@ -144,36 +142,34 @@ export default class UserSettingsScreen extends Component {
 		}*/
 
     return (
-      <View style={
-        {flex: 1, alignItems: "center", justifyContent: "center"}}>
-        <Button icon={
-          <Icon
-            name="camera"
-            type="material-community"
-            size={18}
-            color="white"
-            containerStyle={styles.buttonIconStyle}
-          />
-        }
-                buttonStyle={styles.buttonStyle}
-                onPress={
-                  () => this.selectImage()}
-                title="Ajouter une photo"
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Button
+          icon={
+            <Icon
+              name="camera"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
+          buttonStyle={styles.buttonStyle}
+          onPress={() => this.selectImage()}
+          title="Ajouter une photo"
         />
-        <Button icon={
-          <Icon
-            name="camera-off"
-            type="material-community"
-            size={18}
-            color="white"
-            containerStyle={styles.buttonIconStyle}
-          />
-        }
-                buttonStyle={
-                  [styles.buttonStyle, {backgroundColor: "red"}]}
-                onPress={
-                  () => this.deleteProfileImage()}
-                title="Supprimer ma photo"
+        <Button
+          icon={
+            <Icon
+              name="camera-off"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
+          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
+          onPress={() => this.deleteProfileImage()}
+          title="Supprimer ma photo"
         />
         <Button
           icon={
@@ -185,11 +181,9 @@ export default class UserSettingsScreen extends Component {
               containerStyle={styles.buttonIconStyle}
             />
           }
-          onPress={
-            () => this.deleteUser()}
+          onPress={() => this.deleteUser()}
           title="Supprimer mon compte"
-          buttonStyle={
-            [styles.buttonStyle, {backgroundColor: "red"}]}
+          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
         />
       </View>
     )
@@ -200,7 +194,6 @@ export default class UserSettingsScreen extends Component {
             options = { this.overlay.options }
             button = { Overlaybutton }
             /> </View>*/
-
   }
 }
 
