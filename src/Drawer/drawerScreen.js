@@ -23,14 +23,14 @@ export default class drawerScreen extends Component {
       .ref(`default_profile.png`)
       .getDownloadURL()
       .then(url => {
-        this.setState({ defaultProfileImage: url })
+        this.context.setDefaultProfileImage(url)
       })
       .catch(err => console.warn(err))
   }
 
   getProfileImage() {
-    if (this.context.photoURL) return this.context.photoURL
-    if (this.state.defaultProfileImage) return this.state.defaultProfileImage
+    if (this.context.user.photoURL) return this.context.user.photoURL
+    if (this.state.defaultProfileImage) return this.context.defaultProfileURL
     return null
   }
 
@@ -60,7 +60,7 @@ export default class drawerScreen extends Component {
                   uri: this.getProfileImage()
                 }}
               />
-              <Text>{this.context.user && this.context.user.email}</Text>
+              <Text>{this.context.user.displayName}</Text>
             </View>
           </View>
           <DrawerItems {...this.props} />
@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingTop: 15,
-    // flexDirection: "row",
     paddingBottom: 17,
     paddingLeft: 3,
     borderBottomColor: "#F0F0F0",

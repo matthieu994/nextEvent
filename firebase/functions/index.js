@@ -55,6 +55,22 @@ exports.getUserData = functions
     })
   })
 
+exports.searchUser = functions
+  .runWith(runtimeOpts)
+  .https.onCall(({ email }, context) => {
+    return admin
+      .firestore()
+      .collection("users")
+      .doc(email)
+      .get()
+      .then(user => {
+        return user.data()
+      })
+      .catch(error => {
+        return error
+      })
+  })
+
 /*
 function deleteAllUsers(nextPageToken) {
   admin

@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unused-state */
-import React, { createContext, Component } from "react"
+import React, { createContext, Component, useReducer } from "react"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
 
@@ -15,18 +15,54 @@ class UserProvider extends Component {
       .functions()
       .httpsCallable("getUserData")()
       .then(res => {
+        res.data.email = firebase.auth().currentUser.email
         this.setState({
-          photoURL: res.data.photoURL,
-          friends: res.data.friends
+          user: res.data
         })
+        this.getFriends()
       })
       .catch(error => {
         console.log(error)
       })
   }
 
+  getFriends = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(this.state.user.email)
+      .collection("friends")
+      .get()
+      .then(docs => {
+        let friends = {}
+        docs.forEach(doc => {
+          friends[doc.id] = doc.data().status
+        })
+        let user = this.state.user
+        user.friends = friends
+        this.setState({
+          user
+        })
+      })
+      .catch(err => {
+        console.warn("Error getting documents", err)
+      })
+  }
+
+  setFriend = (email, status) => {
+    let user = this.state.user
+    let friends = this.state.user.friends
+    friends[email] = status
+    user.friends = friends
+    this.setState({ user })
+  }
+
   setPhotoURL = photoURL => {
     this.setState({ photoURL })
+  }
+
+  setDefaultProfileImage = defaultProfileURL => {
+    this.setState({ defaultProfileURL })
   }
 
   updateUser = () => {
@@ -43,10 +79,12 @@ class UserProvider extends Component {
 
   state = {
     user: firebase.auth().currentUser,
-    photoURL: null,
+    defaultProfileURL: null,
     setPhotoURL: this.setPhotoURL,
+    setDefaultProfileImage: this.setDefaultProfileImage,
     updateUser: this.updateUser,
     getUserData: this.getUserData,
+    setFriend: this.setFriend,
     dropdownAlert: this.dropdownAlert
   }
 
