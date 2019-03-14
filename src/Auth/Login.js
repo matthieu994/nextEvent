@@ -37,7 +37,7 @@ export default class Login extends Component {
           this.context.getUserData()
           this.props.navigation.navigate("Main")
         })
-        .catch(error => this._isMounted && this.getMessage(error.code) && this.setState({buttonLoading: false}))
+        .catch(error => this._isMounted && this.getMessage(error.code))
     })
   }
 
@@ -101,7 +101,7 @@ export default class Login extends Component {
             color: "#2E6171",
             textDecorationLine: "underline"
           }}
-          onPress={() => !this.state.buttonLoading && this.props.navigation.navigate("SignUp")}
+          onPress={() => this.props.navigation.navigate("SignUp")}
         >
           Vous n'avez pas encore de compte ?
         </Text>
