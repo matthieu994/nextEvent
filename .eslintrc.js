@@ -27,6 +27,7 @@ module.exports = {
     "arrow-parens": "off",
     "no-underscore-dangle": "off",
     "react/jsx-wrap-multilines": "off",
+    "react/no-multi-comp": "off",
     "react/no-unescaped-entities": "off"
   },
   globals: {
