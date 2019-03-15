@@ -22,6 +22,7 @@ import { isEmail } from "validator"
 import * as Animation from "react-native-animatable"
 import { UserContext } from "../Provider/UserProvider"
 import { changeFriendStatus } from "./functions"
+import { colors } from "../lib"
 
 export default class FriendsListScreen extends Component {
   static navigationOptions = {
@@ -29,7 +30,6 @@ export default class FriendsListScreen extends Component {
   }
 
   state = {
-    search: "",
     searchVisible: null,
     searchResults: null,
     displayResultsModal: false,
@@ -37,7 +37,12 @@ export default class FriendsListScreen extends Component {
   }
 
   updateSearch = input => {
-    if (isEmail(input)) this.searchUser(input)
+    if (
+      input !== this.context.user.email &&
+      !this.context.user.friends[input] &&
+      isEmail(input)
+    )
+      this.searchUser(input)
   }
 
   searchUser(input) {
@@ -68,22 +73,23 @@ export default class FriendsListScreen extends Component {
 
   endAnimation = () => {
     this.setState({
-      // searchResults: null,
-      // displayResultsModal: false,
+      searchResults: null,
+      displayResultsModal: false,
       animationRunning: false
     })
   }
 
   _onRefresh = () => {
     this.setState({ refreshing: true })
-    // fetchData().then(() => {
-    //   this.setState({ refreshing: false })
-    // })
+    this.context.getFriends().then(() => {
+      this.setState({ refreshing: false })
+    })
   }
 
   render() {
     return (
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flex: 1
         }}
@@ -117,6 +123,7 @@ export default class FriendsListScreen extends Component {
             {this.state.displayResultsModal && (
               <FriendModal
                 friend={this.state.searchResults}
+                removeFriendModal={() => this.endAnimation()}
                 defaultProfileURL={this.context.defaultProfileURL}
               />
             )}
@@ -155,6 +162,60 @@ export default class FriendsListScreen extends Component {
 FriendsListScreen.contextType = UserContext
 
 class FriendsList extends Component {
+  changeFriendStatus(friend, status) {
+    changeFriendStatus(
+      this.context.user.email,
+      friend,
+      status,
+      this.context.setFriend
+    )
+  }
+
+  displayButton(friend) {
+    if (this.props.friends[friend] === "SENT")
+      return (
+        <Button
+          title="Annuler"
+          buttonStyle={{ backgroundColor: colors.redButtonBackground }}
+          onPress={() => this.changeFriendStatus(friend, "DELETE")}
+        />
+      )
+    if (this.props.friends[friend] === "PENDING")
+      return (
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <Button
+            title="Accepter"
+            buttonStyle={{
+              backgroundColor: colors.greenButtonBackground,
+              marginRight: 7
+            }}
+            onPress={() => this.changeFriendStatus(friend, "OK")}
+          />
+          <Button
+            title="Refuser"
+            buttonStyle={{ backgroundColor: colors.redButtonBackground }}
+            onPress={() => this.changeFriendStatus(friend, "DELETE")}
+          />
+        </View>
+      )
+    if (this.props.friends[friend] === "OK")
+      return (
+        <Button
+          title="Supprimer"
+          buttonStyle={{ backgroundColor: colors.redButtonBackground }}
+          onPress={() => this.changeFriendStatus(friend, "DELETE")}
+        />
+      )
+    return null
+  }
+
+  displayName(friend) {
+    return friend
+    // return `${this.props.friends[friend].displayName} ${
+    //   this.props.friends[friend].familyName
+    // }`
+  }
+
   render() {
     if (!this.props.friends) return null
     return (
@@ -163,18 +224,23 @@ class FriendsList extends Component {
           return (
             <ListItem
               key={index}
+              title={friend}
               containerStyle={{
-                padding: 10,
+                paddingHorizontal: 9,
+                paddingVertical: 4,
                 width: "100%",
                 backgroundColor: "rgb(220, 230, 240)"
               }}
               leftAvatar={{
-                containerStyle: { width: 50, height: 50 },
+                rounded: true,
+                size: 55,
                 source: {
-                  uri: friend.photoURL || this.props.defaultProfileURL
+                  uri:
+                    this.props.friends[friend].photoURL ||
+                    this.props.defaultProfileURL
                 }
               }}
-              title={`${friend.displayName} ${friend.familyName}`}
+              rightElement={() => this.displayButton(friend)}
             />
           )
         })}
@@ -183,7 +249,19 @@ class FriendsList extends Component {
   }
 }
 
+FriendsList.contextType = UserContext
+
 class FriendModal extends Component {
+  addFriend() {
+    changeFriendStatus(
+      this.context.user.email,
+      this.props.friend.email,
+      "SENT",
+      this.context.setFriend
+    )
+    this.props.removeFriendModal()
+  }
+
   render() {
     return (
       <View style={{ width: "100%" }}>
@@ -200,17 +278,7 @@ class FriendModal extends Component {
             }
           }}
           rightElement={
-            <Button
-              title="Ajouter"
-              onPress={() =>
-                changeFriendStatus(
-                  this.context.user.email,
-                  this.props.friend.email,
-                  "SENT",
-                  this.context.setFriend
-                )
-              }
-            />
+            <Button title="Ajouter" onPress={() => this.addFriend()} />
           }
           title={
             this.props.friend.displayName + " " + this.props.friend.familyName
