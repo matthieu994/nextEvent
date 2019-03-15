@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, ScrollView, Picker, Dimensions} from 'react-nati
 import {Button, Input, Divider, CheckBox, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Header } from 'react-navigation';
+import {colors} from "../lib";
   
 
 /*
@@ -78,6 +79,7 @@ export default class ModifyPayment extends Component {
                   placeholder='Nom de la dépense'
                   defaultValue={this.state.spent.name}
                   inputContainerStyle={[styles.inputs]}
+                  style={{backgroundColor: colors.inputBackground, color: colors.inputStyle}}
                 />
               </View>
               <View style={{marginTop : 20}}>
@@ -184,7 +186,6 @@ const styles = StyleSheet.create({
   inputs : {
     height : 40,
     marginLeft : -10,
-    backgroundColor : 'rgb(210, 225, 230)',
   },
   info : {
   },

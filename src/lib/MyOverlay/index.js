@@ -6,7 +6,7 @@ import {colors} from '../'
 export const MyOverlay = (props) => {
   const children = (
     <>
-      <Text h4 style={styles.text}>{props.text}</Text>
+      <Text style={styles.text}>{props.text}</Text>
       {props.options}
     </>
   )
@@ -61,12 +61,16 @@ const styles = StyleSheet.create({
   },
   container: {
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    textAlign: 'center'
+    alignItems: 'center'
   },
   button: {
     width: '60%',
     marginBottom: 10,
     backgroundColor: colors.redButtonBackground
+  },
+  text: {
+    padding: 5,
+    position: 'absolute',
+    top: 0
   }
 })

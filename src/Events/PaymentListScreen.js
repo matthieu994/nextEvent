@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, ScrollView, Dimensions} from 'react-native';
 import {ListItem } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { Header } from 'react-navigation';
 
 /* TEMPLATE DATABASE-> DEPENSE

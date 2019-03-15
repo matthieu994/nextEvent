@@ -5,7 +5,7 @@ import {Button, Icon} from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
 import {UserContext} from "../Provider/UserProvider"
-import {MyOverlay, deleteUser, types, basicOverlay} from '../lib'
+import {MyOverlay, deleteUser, types, basicOverlay, colors} from '../lib'
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -52,10 +52,12 @@ export default class UserSettingsScreen extends Component {
   }
 
   deleteUser(password) {
+    console.warn(password)
+    return
     firebase.auth().currentUser
-      .reauthenticateAndRetrieveDataWithCredential(password)
-      .then((user) => {
-        user.delete()
+      .reauthenticateWithCredential(password)
+      .then(() => {
+        firebase.auth().currentUser.delete()
           .then(() => {
             this.dropdownAlert("success", "Votre compte a été supprimé !", "")
             this.props.navigation.navigate("Loading")
@@ -186,11 +188,11 @@ export default class UserSettingsScreen extends Component {
           }
           onPress={() => this.toggleOverlay(types.DELETEUSER)}
           title="Supprimer mon compte"
-          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
+          buttonStyle={[styles.buttonStyle, styles.deleteButton]}
         />
         <MyOverlay
           remove={() => this.setState({ visibleOverlay: false })}
-          visible={this.state.visibleOverlay}
+          visible={this.state.visibleOverlay && this._isMounted}
           text={this.overlay.text}
           options={this.overlay.options(Overlaybutton)}
         />
@@ -207,6 +209,10 @@ const styles = StyleSheet.create({
     marginRight: 7
   },
   buttonStyle: {
-    marginTop: 10
+    marginTop: 10,
+    elevation: 2
+  },
+  deleteButton: {
+    backgroundColor: colors.redButtonBackground
   }
 })
