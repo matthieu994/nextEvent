@@ -81,14 +81,15 @@ export default class FriendsListScreen extends Component {
 
   _onRefresh = () => {
     this.setState({ refreshing: true })
-    // fetchData().then(() => {
-    //   this.setState({ refreshing: false })
-    // })
+    this.context.getFriends().then(() => {
+      this.setState({ refreshing: false })
+    })
   }
 
   render() {
     return (
       <ScrollView
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flex: 1
         }}

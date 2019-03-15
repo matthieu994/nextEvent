@@ -27,7 +27,7 @@ class UserProvider extends Component {
   }
 
   getFriends = () => {
-    firebase
+    return firebase
       .firestore()
       .collection("users")
       .doc(this.state.user.email)
@@ -88,6 +88,7 @@ class UserProvider extends Component {
     updateUser: this.updateUser,
     getUserData: this.getUserData,
     setFriend: this.setFriend,
+    getFriends: this.getFriends,
     dropdownAlert: this.dropdownAlert
   }
 
