@@ -13,6 +13,12 @@ export default class EventsListScreen extends Component {
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button
           onPress={() =>
+            this.props.navigation.navigate('PaymentList')
+          }
+          title="Voir mes amis"
+        />
+        <Button
+          onPress={() =>
             this.props.navigation.dispatch(DrawerActions.toggleDrawer())
           }
           title="Voir mes amis"
