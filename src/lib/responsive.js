@@ -10,5 +10,4 @@ export const colors = {
   signUpBackground: "rgb(232, 243, 250)",
   redButtonBackground: "rgb(164, 70, 70)",
   greenButtonBackground: "rgb(80, 170, 120)"
-
 }
