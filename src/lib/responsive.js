@@ -7,5 +7,7 @@ export const colors = {
   title: "#2E6171",
   inputBackground: "rgb(210, 225, 230)",
   buttonTitle: "white",
-  signUpBackground: "rgb(232, 243, 250)"
+  signUpBackground: "rgb(232, 243, 250)",
+  redButtonBackground: "rgb(164, 70, 70)",
+  greenButtonBackground: "rgb(80, 170, 120)"
 }

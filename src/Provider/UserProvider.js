@@ -52,7 +52,8 @@ class UserProvider extends Component {
   setFriend = (email, status) => {
     let user = this.state.user
     let friends = this.state.user.friends
-    friends[email] = status
+    if (status === "DELETE") delete friends[email]
+    else friends[email] = status
     user.friends = friends
     this.setState({ user })
   }
