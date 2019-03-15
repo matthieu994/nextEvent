@@ -15,7 +15,8 @@ import EventsListScreen from "./Profile/EventsListScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
 import drawerScreen from "./Drawer/drawerScreen"
-import UserProvider from "./Provider/UserProvider"
+import PaymentListScreen from "./Events/PaymentListScreen"
+import ModifyPaymennt from "./Events/ModifyPayment"
 
 // const UserProfileStack = createStackNavigator(
 //   {
@@ -29,6 +30,12 @@ const EventsListStack = createStackNavigator(
   {
     EventsList: {
       screen: EventsListScreen
+    },
+    PaymentList: {
+      screen: PaymentListScreen
+    },
+    ModifyList: {
+      screen: ModifyPaymennt
     }
   },
   defaultSettings
