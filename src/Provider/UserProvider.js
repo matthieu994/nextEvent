@@ -17,6 +17,7 @@ class UserProvider extends Component {
     super()
     this.state = {
       user: firebase.auth().currentUser,
+      userRef: this.userRef,
       events: [],
       defaultProfileURL: null,
       setPhotoURL: this.setPhotoURL,
@@ -49,8 +50,6 @@ class UserProvider extends Component {
   }
 
   getEvents = () => {
-    let events = {}
-
     this.userRef
       .collection("events")
       .get()

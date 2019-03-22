@@ -11,24 +11,15 @@ import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
 import SignUp from "./Auth/SignUp"
 import Login from "./Auth/Login"
-// import UserProfileScreen from "./Profile/UserProfileScreen"
+import drawerScreen from "./Drawer/drawerScreen"
 import EventsListScreen from "./Profile/EventsListScreen"
-import CreateEventScreen from "./Event/CreateEventScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
-import drawerScreen from "./Drawer/drawerScreen"
-import PaymentListScreen from "./Events/PaymentListScreen"
-import ModifyPayment from "./Events/ModifyPayment"
-import UserProvider from "./Provider/UserProvider";
+import CreateEventScreen from "./Event/CreateEventScreen"
+import PaymentListScreen from "./Event/PaymentListScreen"
+import ModifyPayment from "./Event/ModifyPayment"
+import UserProvider from "./Provider/UserProvider"
 
-// const UserProfileStack = createStackNavigator(
-//   {
-//     UserProfile: {
-//       screen: UserProfileScreen
-//     }
-//   },
-//   defaultSettings
-// )
 const EventsListStack = createStackNavigator(
   {
     EventsList: {

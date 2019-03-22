@@ -11,7 +11,8 @@ export default class EventsListScreen extends Component {
   })
 
   renderEvents() {
-    if (this.context.event) return null
+    if (!this.context.events) return null
+    // console.warn(this.context.events)
     return Object.keys(this.context.events).map((event, index) => {
       return (
         <ListItem

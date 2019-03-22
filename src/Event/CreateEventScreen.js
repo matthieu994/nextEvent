@@ -1,9 +1,10 @@
 import React, { Component } from "react"
-import { View, DatePickerAndroid } from "react-native"
+import { View, DatePickerAndroid, TouchableHighlight } from "react-native"
 import firebase from "react-native-firebase"
 import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
+import { ScrollView } from "react-native-gesture-handler"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -16,14 +17,15 @@ export default class CreateEventScreen extends Component {
         underlayColor="rgb(240, 240, 240)"
       />
     ),
-    headerRight: null
+    headerRight: null,
+    title: "Créer un événement"
   })
 
   state = {
     name: "",
     desc: "",
-    friends: [],
-    date: new Date()
+    date: new Date(),
+    selectedFriends: []
   }
 
   async datePicker() {
@@ -43,6 +45,34 @@ export default class CreateEventScreen extends Component {
 
   getDate() {
     return `${this.state.date.getDate()}/${this.state.date.getMonth()}/${this.state.date.getFullYear()}`
+  }
+
+  createEvent() {
+    firebase
+      .firestore()
+      .collection("events")
+      .add({
+        name: this.state.name,
+        description: this.state.desc,
+        date: this.state.date,
+        users: this.state.selectedFriends
+      })
+      .then(event => {
+        this.context.userRef
+          .collection("events")
+          .doc(event.id)
+          .set()
+
+        this.state.selectedFriends.forEach(friend => {
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(friend)
+            .collection("events")
+            .doc(event.id)
+            .set()
+        })
+      })
   }
 
   render() {
@@ -69,6 +99,8 @@ export default class CreateEventScreen extends Component {
           }
         />
         <Input
+          multiline
+          numberOfLines={2}
           inputStyle={{ color: colors.inputStyle }}
           placeholderTextColor="#62717E"
           inputContainerStyle={[
@@ -89,17 +121,88 @@ export default class CreateEventScreen extends Component {
           }
         />
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text>{this.getDate()}</Text>
           <Button
             inputStyle={{ color: colors.inputStyle }}
+            containerStyle={{ margin: 10 }}
             inputContainerStyle={inputContainer}
             onPress={() => this.datePicker()}
             title="Changer la date"
+            icon={
+              <Icon
+                containerStyle={{ marginRight: 5 }}
+                name="calendar"
+                type="material-community"
+                size={24}
+                color="white"
+              />
+            }
           />
+          <Text h4>{this.getDate()}</Text>
         </View>
+        <ScrollView
+          style={{
+            width: "100%"
+          }}
+        >
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+            <FriendsList
+              friends={this.context.user.friends}
+              defaultProfileURL={this.context.defaultProfileURL}
+            />
+          </View>
+        </ScrollView>
+        <Button
+          inputStyle={{ color: colors.inputStyle }}
+          containerStyle={{ margin: 10 }}
+          inputContainerStyle={inputContainer}
+          onPress={() => this.createEvent()}
+          title="Créer"
+          icon={
+            <Icon
+              containerStyle={{ marginRight: 5 }}
+              name="check"
+              type="material-community"
+              size={24}
+              color="white"
+            />
+          }
+        />
       </View>
     )
   }
 }
 
 CreateEventScreen.contextType = UserContext
+
+class FriendsList extends Component {
+  render() {
+    return Object.keys(this.props.friends).map((friend, index) => {
+      return (
+        <View key={index} style={{ width: "50%" }}>
+          <TouchableHighlight activeOpacity={0.9}>
+            <ListItem
+              key={index}
+              title={friend}
+              containerStyle={{
+                paddingHorizontal: 9,
+                paddingVertical: 4,
+                borderWidth: 0.5,
+                borderColor: "rgba(150, 150, 160, 0.5)",
+                backgroundColor: "rgb(242, 245, 250)"
+              }}
+              leftAvatar={{
+                rounded: true,
+                size: 35,
+                source: {
+                  uri:
+                    this.props.friends[friend].photoURL ||
+                    this.props.defaultProfileURL
+                }
+              }}
+            />
+          </TouchableHighlight>
+        </View>
+      )
+    })
+  }
+}
