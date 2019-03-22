@@ -8,6 +8,27 @@ export const UserContext = createContext({
 })
 
 class UserProvider extends Component {
+  userRef = firebase
+    .firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser.email)
+
+  constructor() {
+    super()
+    this.state = {
+      user: firebase.auth().currentUser,
+      events: [],
+      defaultProfileURL: null,
+      setPhotoURL: this.setPhotoURL,
+      setDefaultProfileImage: this.setDefaultProfileImage,
+      updateUser: this.updateUser,
+      getUserData: this.getUserData,
+      setFriend: this.setFriend,
+      getFriends: this.getFriends,
+      dropdownAlert: this.dropdownAlert
+    }
+  }
+
   getUserData = () => {
     if (!this.state || !this.state.user) return
 
@@ -20,17 +41,35 @@ class UserProvider extends Component {
           user: res.data
         })
         this.getFriends()
+        this.getEvents()
       })
       .catch(error => {
         console.log(error)
       })
   }
 
+  getEvents = () => {
+    let events = {}
+
+    this.userRef
+      .collection("events")
+      .get()
+      .then(docs => {
+        let events = {}
+        docs.forEach(doc => {
+          events[doc.id] = {}
+        })
+        this.setState({
+          events
+        })
+      })
+      .catch(err => {
+        console.warn(err)
+      })
+  }
+
   getFriends = () => {
-    return firebase
-      .firestore()
-      .collection("users")
-      .doc(this.state.user.email)
+    this.userRef
       .collection("friends")
       .get()
       .then(docs => {
@@ -78,18 +117,6 @@ class UserProvider extends Component {
 
   componentDidMount() {
     this.state.getUserData()
-  }
-
-  state = {
-    user: firebase.auth().currentUser,
-    defaultProfileURL: null,
-    setPhotoURL: this.setPhotoURL,
-    setDefaultProfileImage: this.setDefaultProfileImage,
-    updateUser: this.updateUser,
-    getUserData: this.getUserData,
-    setFriend: this.setFriend,
-    getFriends: this.getFriends,
-    dropdownAlert: this.dropdownAlert
   }
 
   render() {

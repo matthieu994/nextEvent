@@ -5,6 +5,7 @@ import {
   createAppContainer,
   createDrawerNavigator
 } from "react-navigation"
+import { fromRight } from "react-navigation-transitions"
 import { flipX, zoomIn } from "./Modules/react-navigation-transitions"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
@@ -12,6 +13,7 @@ import SignUp from "./Auth/SignUp"
 import Login from "./Auth/Login"
 // import UserProfileScreen from "./Profile/UserProfileScreen"
 import EventsListScreen from "./Profile/EventsListScreen"
+import CreateEventScreen from "./Event/CreateEventScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
 import drawerScreen from "./Drawer/drawerScreen"
@@ -29,9 +31,15 @@ const EventsListStack = createStackNavigator(
   {
     EventsList: {
       screen: EventsListScreen
+    },
+    CreateEvent: {
+      screen: CreateEventScreen
     }
   },
-  defaultSettings
+  {
+    defaultNavigationOptions: defaultSettings.defaultNavigationOptions,
+    transitionConfig: () => fromRight()
+  }
 )
 const FriendsListStack = createStackNavigator(
   {
@@ -52,10 +60,6 @@ const UserSettingsStack = createStackNavigator(
 
 const drawerNavigator = createDrawerNavigator(
   {
-    // UserProfile: {
-    //   screen: UserProfileStack,
-    //   navigationOptions: { drawerLabel: "Profil" }
-    // },
     EventsList: {
       screen: EventsListStack,
       navigationOptions: { drawerLabel: "Événements" }
@@ -71,9 +75,9 @@ const drawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: drawerScreen,
-    initialRouteName: "FriendsList",
+    initialRouteName: "EventsList",
     gestureResponseDistance: {
-      horizontal: 200
+      horizontal: 300
     }
   }
 )
