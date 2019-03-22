@@ -1,7 +1,8 @@
 import React, { Component } from "react"
 import { View, TouchableNativeFeedback } from "react-native"
 import firebase from "react-native-firebase"
-import { Button, Icon, ListItem } from "react-native-elements"
+import { ScrollView } from "react-native-gesture-handler"
+import { Button, Icon, ListItem, Text } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors } from "../lib"
 
@@ -12,27 +13,36 @@ export default class EventsListScreen extends Component {
 
   renderEvents() {
     if (!this.context.events) return null
-    // console.warn(this.context.events)
-    return Object.keys(this.context.events).map((event, index) => {
+    return Object.keys(this.context.events).map((doc, index) => {
+      const event = this.context.events[doc]
       return (
-        <ListItem
+        <View
           key={index}
-          title={event}
-          containerStyle={{
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: "rgb(120, 130, 140)",
             paddingHorizontal: 9,
             paddingVertical: 4,
             width: "100%",
             backgroundColor: "rgb(220, 230, 240)"
           }}
-        />
+        >
+          <Text h3>{event.name}</Text>
+          <Text h4>{event.description}</Text>
+          <Text
+            h4
+          >{`${event.date.getDate()}/${event.date.getMonth()}/${event.date.getFullYear()}`}</Text>
+        </View>
       )
     })
   }
 
   render() {
     return (
-      <View style={{ flex: 1, alignItems: "center" }}>
-        {this.renderEvents()}
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, width: "100%" }}>
+          {this.renderEvents()}
+        </ScrollView>
         <BottomButton
           onPress={() => this.props.navigation.navigate("CreateEvent")}
         />

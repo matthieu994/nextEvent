@@ -1,10 +1,10 @@
 import React, { Component } from "react"
 import { View, DatePickerAndroid, TouchableHighlight } from "react-native"
 import firebase from "react-native-firebase"
+import { ScrollView } from "react-native-gesture-handler"
 import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
-import { ScrollView } from "react-native-gesture-handler"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -55,7 +55,8 @@ export default class CreateEventScreen extends Component {
         name: this.state.name,
         description: this.state.desc,
         date: this.state.date,
-        users: this.state.selectedFriends
+        users: this.state.selectedFriends,
+        owner: this.context.user.email
       })
       .then(event => {
         this.context.userRef
@@ -72,6 +73,10 @@ export default class CreateEventScreen extends Component {
             .doc(event.id)
             .set()
         })
+
+        this.context.getEvents()
+
+        this.props.navigation.goBack()
       })
   }
 

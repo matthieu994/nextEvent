@@ -19,6 +19,7 @@ class UserProvider extends Component {
       user: firebase.auth().currentUser,
       userRef: this.userRef,
       events: [],
+      getEvents: this.getEvents,
       defaultProfileURL: null,
       setPhotoURL: this.setPhotoURL,
       setDefaultProfileImage: this.setDefaultProfileImage,
@@ -53,18 +54,38 @@ class UserProvider extends Component {
     this.userRef
       .collection("events")
       .get()
-      .then(docs => {
+      .then(async docs => {
         let events = {}
         docs.forEach(doc => {
           events[doc.id] = {}
         })
-        this.setState({
-          events
+        Promise.all(
+          Object.keys(events).map(async doc => {
+            events[doc] = await this.getEventData(doc)
+            return events[doc]
+          })
+        ).then(() => {
+          this.setState({
+            events
+          })
         })
       })
       .catch(err => {
         console.warn(err)
       })
+  }
+
+  getEventData(id) {
+    return new Promise(resolve => {
+      firebase
+        .firestore()
+        .collection("events")
+        .doc(id)
+        .get()
+        .then(doc => {
+          resolve(doc.data())
+        })
+    })
   }
 
   getFriends = () => {
