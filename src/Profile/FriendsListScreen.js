@@ -21,7 +21,8 @@ import {
 import { isEmail } from "validator"
 import * as Animation from "react-native-animatable"
 import { UserContext } from "../Provider/UserProvider"
-import { changeFriendStatus, colors } from "../lib"
+import { changeFriendStatus } from "./functions"
+import { colors } from "../lib"
 
 export default class FriendsListScreen extends Component {
   static navigationOptions = {

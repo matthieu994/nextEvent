@@ -5,7 +5,7 @@ import {Button, Icon} from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
 import {UserContext} from "../Provider/UserProvider"
-import {MyOverlay, types, basicOverlay, colors, checkAccountDeleteCredentials} from '../lib'
+import {MyOverlay, deleteUser, types, basicOverlay, colors} from '../lib'
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -39,14 +39,9 @@ export default class UserSettingsScreen extends Component {
   toggleOverlay(component) {
     switch (component) {
       case types.DELETEUSER:
-        this.overlay = {
-          ...this.overlay,
-          text: "Confirmation de suppression",
-          action: (password, next) => this.deleteUser(password, next),
-          secureTextEntry: true,
-          inputPlaceholder: "Mot de passe",
-          buttonTitle: "Supprimer mon compte"
-        }
+        this.overlay.options = deleteUser
+        this.overlay.text = "Confirmation de suppression"
+        this.overlay.action = (password) => this.deleteUser(password)
         break
       default:
         this.overlay = basicOverlay
@@ -56,24 +51,26 @@ export default class UserSettingsScreen extends Component {
     this.setState({ visibleOverlay: true })
   }
 
-  deleteUser(password, next) {
-    if(!checkAccountDeleteCredentials(password, next))
-      return
-
-    const credential = firebase.auth.EmailAuthProvider.credential(this.context.user.email,password)
-
+  deleteUser(password) {
+    console.warn(password)
+    return
     firebase.auth().currentUser
-      .reauthenticateWithCredential(credential)
+      .reauthenticateWithCredential(password)
       .then(() => {
         firebase.auth().currentUser.delete()
           .then(() => {
             this.dropdownAlert("success", "Votre compte a été supprimé !", "")
             this.props.navigation.navigate("Loading")
           })
-          .catch(error => console.error(error))
+          .catch(error => {
+            this.setState({visibleOverlay: false})
+            console.error(error)
+          })
       })
-      .catch( error => console.error(error))
-    this.setState({visibleOverlay: false})
+      .catch( error => {
+        this.setState({visibleOverlay: false})
+        console.error(error)
+      })
   }
 
   selectImage() {
@@ -144,6 +141,11 @@ export default class UserSettingsScreen extends Component {
   }
 
   render() {
+    let Overlaybutton = {
+				title: this.overlay.buttonTitle,
+				action: this.overlay.action
+		}
+
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Button
@@ -190,9 +192,9 @@ export default class UserSettingsScreen extends Component {
         />
         <MyOverlay
           remove={() => this.setState({ visibleOverlay: false })}
-          visible={this.state.visibleOverlay}
-          dropdownAlert={this.dropdownAlert}
-          {...this.overlay}
+          visible={this.state.visibleOverlay && this._isMounted}
+          text={this.overlay.text}
+          options={this.overlay.options(Overlaybutton)}
         />
       </View>
     )
