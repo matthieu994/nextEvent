@@ -3,35 +3,38 @@ import {
   createStackNavigator,
   createSwitchNavigator,
   createAppContainer,
-  createDrawerNavigator
+  createDrawerNavigator,
+  createMaterialTopTabNavigator
 } from "react-navigation"
+import { fromRight } from "react-navigation-transitions"
 import { flipX, zoomIn } from "./Modules/react-navigation-transitions"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
 import SignUp from "./Auth/SignUp"
 import Login from "./Auth/Login"
-// import UserProfileScreen from "./Profile/UserProfileScreen"
+import drawerScreen from "./Drawer/drawerScreen"
 import EventsListScreen from "./Profile/EventsListScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
-import drawerScreen from "./Drawer/drawerScreen"
+import CreateEventScreen from "./Event/CreateEventScreen"
+import SingleEventScreen from "./Event/SingleEventScreen"
+import PaymentListScreen from "./Event/PaymentListScreen"
+import ModifyPayment from "./Event/ModifyPayment"
 import UserProvider from "./Provider/UserProvider"
 
-// const UserProfileStack = createStackNavigator(
-//   {
-//     UserProfile: {
-//       screen: UserProfileScreen
-//     }
-//   },
-//   defaultSettings
-// )
 const EventsListStack = createStackNavigator(
   {
     EventsList: {
       screen: EventsListScreen
+    },
+    CreateEvent: {
+      screen: CreateEventScreen
     }
   },
-  defaultSettings
+  {
+    defaultNavigationOptions: defaultSettings.defaultNavigationOptions,
+    transitionConfig: () => fromRight()
+  }
 )
 const FriendsListStack = createStackNavigator(
   {
@@ -50,12 +53,32 @@ const UserSettingsStack = createStackNavigator(
   defaultSettings
 )
 
+const PaymentStack = createStackNavigator(
+  {
+    PaymentList: {
+      screen: PaymentListScreen
+    },
+    ModifyPayment
+  },
+  {
+    headerMode: "none"
+  }
+)
+
+const EventTabNavigator = createMaterialTopTabNavigator({
+  SingleEvent: {
+    screen: SingleEventScreen
+  },
+  PaymentStack: {
+    screen: PaymentStack,
+    navigationOptions: {
+      tabBarLabel: "Dépenses"
+    }
+  }
+})
+
 const drawerNavigator = createDrawerNavigator(
   {
-    // UserProfile: {
-    //   screen: UserProfileStack,
-    //   navigationOptions: { drawerLabel: "Profil" }
-    // },
     EventsList: {
       screen: EventsListStack,
       navigationOptions: { drawerLabel: "Événements" }
@@ -71,10 +94,45 @@ const drawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: drawerScreen,
-    initialRouteName: "FriendsList",
+    initialRouteName: "EventsList",
     gestureResponseDistance: {
-      horizontal: 200
+      horizontal: 300
     }
+  }
+)
+
+const LoginSwitch = createSwitchNavigator(
+  {
+    Loading: {
+      screen: Loading
+    },
+    SignUp: {
+      screen: SignUp
+    },
+    Login: {
+      screen: Login
+    }
+  },
+  {
+    initialRouteName: "Loading"
+  }
+)
+
+const appStack = createSwitchNavigator(
+  {
+    LoginSwitch: {
+      screen: LoginSwitch
+    },
+    Main: {
+      screen: drawerNavigator
+    },
+    Event: {
+      screen: EventTabNavigator
+    }
+  },
+  {
+    initialRouteName: "LoginSwitch",
+    transitionConfig: nav => handleCustomTransition(nav)
   }
 )
 
@@ -96,27 +154,6 @@ const handleCustomTransition = ({ scenes }) => {
     return flipX(800)
   return zoomIn()
 }
-
-const appStack = createSwitchNavigator(
-  {
-    Loading: {
-      screen: Loading
-    },
-    SignUp: {
-      screen: SignUp
-    },
-    Login: {
-      screen: Login
-    },
-    Main: {
-      screen: drawerNavigator
-    }
-  },
-  {
-    initialRouteName: "Loading",
-    transitionConfig: nav => handleCustomTransition(nav)
-  }
-)
 
 const AppContainer = createAppContainer(appStack)
 

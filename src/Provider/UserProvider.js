@@ -8,6 +8,32 @@ export const UserContext = createContext({
 })
 
 class UserProvider extends Component {
+  constructor() {
+    super()
+
+    if (firebase.auth().currentUser)
+      this.userRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.email)
+    else this.userRef = null
+
+    this.state = {
+      user: firebase.auth().currentUser,
+      userRef: this.userRef,
+      events: [],
+      getEvents: this.getEvents,
+      defaultProfileURL: null,
+      setPhotoURL: this.setPhotoURL,
+      setDefaultProfileImage: this.setDefaultProfileImage,
+      updateUser: this.updateUser,
+      getUserData: this.getUserData,
+      setFriend: this.setFriend,
+      getFriends: this.getFriends,
+      dropdownAlert: this.dropdownAlert
+    }
+  }
+
   getUserData = () => {
     if (!this.state || !this.state.user) return
 
@@ -20,17 +46,53 @@ class UserProvider extends Component {
           user: res.data
         })
         this.getFriends()
+        this.getEvents()
       })
       .catch(error => {
         console.log(error)
       })
   }
 
+  getEvents = () => {
+    this.userRef
+      .collection("events")
+      .get()
+      .then(async docs => {
+        let events = {}
+        docs.forEach(doc => {
+          events[doc.id] = {}
+        })
+        Promise.all(
+          Object.keys(events).map(async doc => {
+            events[doc] = await this.getEventData(doc)
+            return events[doc]
+          })
+        ).then(() => {
+          this.setState({
+            events
+          })
+        })
+      })
+      .catch(err => {
+        console.warn(err)
+      })
+  }
+
+  getEventData(id) {
+    return new Promise(resolve => {
+      firebase
+        .firestore()
+        .collection("events")
+        .doc(id)
+        .get()
+        .then(doc => {
+          resolve(doc.data())
+        })
+    })
+  }
+
   getFriends = () => {
-    return firebase
-      .firestore()
-      .collection("users")
-      .doc(this.state.user.email)
+    this.userRef
       .collection("friends")
       .get()
       .then(docs => {
@@ -78,18 +140,6 @@ class UserProvider extends Component {
 
   componentDidMount() {
     this.state.getUserData()
-  }
-
-  state = {
-    user: firebase.auth().currentUser,
-    defaultProfileURL: null,
-    setPhotoURL: this.setPhotoURL,
-    setDefaultProfileImage: this.setDefaultProfileImage,
-    updateUser: this.updateUser,
-    getUserData: this.getUserData,
-    setFriend: this.setFriend,
-    getFriends: this.getFriends,
-    dropdownAlert: this.dropdownAlert
   }
 
   render() {
