@@ -7,11 +7,22 @@ import {
   AppState
 } from "react-native"
 import firebase from "react-native-firebase"
+import { UserContext } from "../Provider/UserProvider"
 
 export default class Loading extends React.Component {
   componentWillMount() {
     this.unsubscribe = firebase.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? "Main" : "Login")
+      if (!user) {
+        this.context.clearState()
+        this.props.navigation.navigate("Login")
+      } else {
+        this.context
+          .initProvider()
+          .then(() => {
+            this.props.navigation.navigate("Main")
+          })
+          .catch(err => console.warn(err))
+      }
     })
   }
 
@@ -28,6 +39,8 @@ export default class Loading extends React.Component {
     )
   }
 }
+
+Loading.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {

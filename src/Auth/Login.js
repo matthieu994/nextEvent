@@ -4,20 +4,21 @@ import { StyleSheet, View } from "react-native"
 import { Button, Input, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
-import {checkLoginCredentials} from "./functions"
-import {UserContext} from "../Provider/UserProvider"
-import {colors} from "../lib";
+import { checkLoginCredentials } from "./functions"
+import { UserContext } from "../Provider/UserProvider"
+import { colors } from "../lib"
 
 export default class Login extends Component {
-  state = {email: "", password: "", buttonLoading: false}
+  state = { email: "", password: "", buttonLoading: false }
 
   constructor(props) {
     super(props)
     this._isMounted = false
   }
-
+  
   componentDidMount() {
     this._isMounted = true
+    this.context.clearState()
   }
 
   componentWillUnmount() {
@@ -25,23 +26,20 @@ export default class Login extends Component {
   }
 
   handleLogin = () => {
-    const {email, password} = this.state
+    const { email, password } = this.state
 
     if (!checkLoginCredentials(email, password, this.setMessage)) return
 
-    this.setState({buttonLoading: true}, () => {
+    this.setState({ buttonLoading: true }, () => {
       firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(() => {
-          this.context.updateUser()
-          this.context.getUserData()
-          this.props.navigation.navigate("Main")
+          this.props.navigation.navigate("Loading")
         })
         .catch(error => {
-          if(this._isMounted)
-            this.getMessage(error.code)
-          this.setState({buttonLoading: false})
+          if (this._isMounted) this.getMessage(error.code)
+          this.setState({ buttonLoading: false })
         })
     })
   }
@@ -72,22 +70,26 @@ export default class Login extends Component {
           Se connecter
         </Text>
         <Input
+          autoComplete="email"
+          autoCapitalize="none"
+          keyboardType="email-address"
           inputStyle={{ color: colors.inputStyle }}
           placeholderTextColor="#62717E"
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
-          onChangeText={email => this.setState({email})}
+          onChangeText={email => this.setState({ email })}
           value={this.state.email}
           leftIconContainerStyle={{ marginLeft: 0 }}
           leftIcon={<Icon name="mail" type="feather" size={24} color="black" />}
         />
         <Input
+          autoComplete="off"
           inputStyle={{ color: colors.inputStyle }}
           inputContainerStyle={styles.inputContainer}
           placeholderTextColor={colors.inputPlaceholder}
           secureTextEntry
           placeholder="Mot de passe"
-          onChangeText={password => this.setState({password})}
+          onChangeText={password => this.setState({ password })}
           autoCapitalize="none"
           value={this.state.password}
           leftIconContainerStyle={{ marginLeft: 0 }}
