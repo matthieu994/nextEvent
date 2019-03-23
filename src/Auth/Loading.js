@@ -1,7 +1,12 @@
 import React from "react"
-import { View, Text, ActivityIndicator, StyleSheet, AppState } from "react-native"
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  AppState
+} from "react-native"
 import firebase from "react-native-firebase"
-import { UserContext } from "../Provider/UserProvider"
 
 export default class Loading extends React.Component {
   componentWillMount() {
@@ -23,8 +28,6 @@ export default class Loading extends React.Component {
     )
   }
 }
-
-Loading.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {

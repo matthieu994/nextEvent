@@ -8,13 +8,16 @@ export const UserContext = createContext({
 })
 
 class UserProvider extends Component {
-  userRef = firebase
-    .firestore()
-    .collection("users")
-    .doc(firebase.auth().currentUser.email)
-
   constructor() {
     super()
+
+    if (firebase.auth().currentUser)
+      this.userRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.email)
+    else this.userRef = null
+
     this.state = {
       user: firebase.auth().currentUser,
       userRef: this.userRef,

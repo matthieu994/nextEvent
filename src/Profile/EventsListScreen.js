@@ -1,7 +1,7 @@
 import React, { Component } from "react"
-import { View, TouchableNativeFeedback } from "react-native"
+import { View, TouchableNativeFeedback, StyleSheet } from "react-native"
 import firebase from "react-native-firebase"
-import { ScrollView } from "react-native-gesture-handler"
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { Button, Icon, ListItem, Text } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors } from "../lib"
@@ -13,26 +13,14 @@ export default class EventsListScreen extends Component {
 
   renderEvents() {
     if (!this.context.events) return null
-    return Object.keys(this.context.events).map((doc, index) => {
-      const event = this.context.events[doc]
+    return Object.keys(this.context.events).map(doc => {
       return (
-        <View
-          key={index}
-          style={{
-            borderBottomWidth: 1,
-            borderBottomColor: "rgb(120, 130, 140)",
-            paddingHorizontal: 9,
-            paddingVertical: 4,
-            width: "100%",
-            backgroundColor: "rgb(220, 230, 240)"
-          }}
-        >
-          <Text h3>{event.name}</Text>
-          <Text h4>{event.description}</Text>
-          <Text
-            h4
-          >{`${event.date.getDate()}/${event.date.getMonth()}/${event.date.getFullYear()}`}</Text>
-        </View>
+        <SingleEvent
+          event={this.context.events[doc]}
+          id={doc}
+          key={doc}
+          navigation={this.props.navigation}
+        />
       )
     })
   }
@@ -52,6 +40,55 @@ export default class EventsListScreen extends Component {
 }
 
 EventsListScreen.contextType = UserContext
+
+class SingleEvent extends Component {
+  redirectToEvent() {
+    this.props.navigation.navigate("SingleEvent", {
+      event: this.props.event,
+      id: this.props.id
+    })
+  }
+
+  render() {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.65}
+        onPress={() => this.redirectToEvent()}
+      >
+        <View style={styles.singleEventContainer}>
+          <View style={{ width: "68%", marginRight: 5 }}>
+            <Text h3 h3Style={{ color: "black" }}>
+              {this.props.event.name}
+            </Text>
+            <Text>{this.props.event.description}</Text>
+          </View>
+          <View
+            style={{
+              margin: 0
+            }}
+          >
+            <Text
+              h4
+            >{`${this.props.event.date.getDate()}/${this.props.event.date.getMonth()}/${this.props.event.date.getFullYear()}`}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
+const styles = StyleSheet.create({
+  singleEventContainer: {
+    borderBottomWidth: 0.75,
+    borderBottomColor: "rgb(120, 130, 140)",
+    paddingHorizontal: 9,
+    paddingBottom: 6,
+    width: "100%",
+    backgroundColor: "rgb(245, 250, 250)",
+    flexDirection: "row",
+    alignItems: "baseline"
+  }
+})
 
 class BottomButton extends Component {
   render() {
