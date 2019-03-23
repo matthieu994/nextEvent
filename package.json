@@ -53,7 +53,6 @@
     "react-native-web": "^0.10.1",
     "react-navigation": "^3.3.2",
     "react-navigation-transitions": "^1.0.8",
-    "replace-in-file": "^3.4.3",
     "rn-fetch-blob": "^0.10.15",
     "validator": "^10.11.0"
   }
