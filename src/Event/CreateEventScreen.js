@@ -52,7 +52,8 @@ export default class CreateEventScreen extends Component {
   }
 
   getDate() {
-    return `${this.state.date.getDate()}/${this.state.date.getMonth()}/${this.state.date.getFullYear()}`
+    return `${this.state.date.getDate()}/${this.state.date.getMonth() +
+      1}/${this.state.date.getFullYear()}`
   }
 
   selectFriend = friend => {

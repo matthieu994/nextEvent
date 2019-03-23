@@ -8,7 +8,13 @@ import { checkSignupCredentials, createUser, colors } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class SignUp extends Component {
-  state = { email: "", password: "", displayName: "", familyName: "", buttonLoading: false }
+  state = {
+    email: "",
+    password: "",
+    displayName: "",
+    familyName: "",
+    buttonLoading: false
+  }
 
   constructor(props) {
     super(props)
@@ -17,6 +23,7 @@ export default class SignUp extends Component {
 
   componentDidMount() {
     this._isMounted = true
+    this.context.clearState()
   }
 
   handleSignUp = () => {
@@ -33,24 +40,20 @@ export default class SignUp extends Component {
     )
       return
 
-    this.setState({buttonLoading: true},() => {
-
+    this.setState({ buttonLoading: true }, () => {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
           createUser(email, displayName, familyName)
             .then(() => {
-              this.context.updateUser()
-              this.context.getUserData()
-              this.props.navigation.navigate("Main")
+              this.props.navigation.navigate("Loading")
             })
             .catch(error => console.log(error))
         })
         .catch(error => {
-          if(this._isMounted)
-            this.getMessage(error.code)
-          this.setState({buttonLoading: false})
+          if (this._isMounted) this.getMessage(error.code)
+          this.setState({ buttonLoading: false })
         })
     })
   }
@@ -95,6 +98,9 @@ export default class SignUp extends Component {
           Créer un compte
         </Text>
         <Input
+          autoComplete="email"
+          keyboardType="email-address"
+          autoCapitalize="none"
           inputStyle={{ color: colors.inputStyle }}
           placeholderTextColor={colors.inputPlaceholder}
           inputContainerStyle={styles.inputContainer}
@@ -107,6 +113,7 @@ export default class SignUp extends Component {
         />
         <View style={styles.nameInputView}>
           <Input
+            autoComplete="name"
             inputStyle={{ color: colors.inputStyle }}
             placeholderTextColor={colors.inputPlaceholder}
             containerStyle={[styles.nameInput]}
@@ -121,6 +128,7 @@ export default class SignUp extends Component {
             }
           />
           <Input
+            autoComplete="name"
             inputStyle={{ color: colors.inputStyle }}
             placeholderTextColor={colors.inputPlaceholder}
             containerStyle={[styles.nameInput]}
@@ -136,6 +144,7 @@ export default class SignUp extends Component {
           />
         </View>
         <Input
+          autoComplete="off"
           inputStyle={{ color: colors.inputStyle }}
           inputContainerStyle={styles.inputContainer}
           placeholderTextColor={colors.inputPlaceholder}

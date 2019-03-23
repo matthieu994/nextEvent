@@ -56,7 +56,7 @@ class SingleEvent extends Component {
         onPress={() => this.redirectToEvent()}
       >
         <View style={styles.singleEventContainer}>
-          <View style={{ width: "68%", marginRight: 5 }}>
+          <View style={{ width: "65%" }}>
             <Text h3 h3Style={{ color: "black" }}>
               {this.props.event.name}
             </Text>
@@ -64,12 +64,14 @@ class SingleEvent extends Component {
           </View>
           <View
             style={{
-              margin: 0
+              margin: 0,
+              width: "35%"
             }}
           >
             <Text
               h4
-            >{`${this.props.event.date.getDate()}/${this.props.event.date.getMonth()}/${this.props.event.date.getFullYear()}`}</Text>
+            >{`${this.props.event.date.getDate()}/${this.props.event.date.getMonth() +
+              1}/${this.props.event.date.getFullYear()}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
