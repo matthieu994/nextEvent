@@ -4,9 +4,8 @@ import { StyleSheet, View } from "react-native"
 import { Button, Input, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
-import {checkLoginCredentials} from "./functions"
 import {UserContext} from "../Provider/UserProvider"
-import {colors} from "../lib";
+import {colors, checkLoginCredentials} from "../lib";
 
 export default class Login extends Component {
   state = {email: "", password: "", buttonLoading: false}
@@ -106,7 +105,7 @@ export default class Login extends Component {
             color: colors.text,
             textDecorationLine: "underline"
           }}
-          onPress={() => this.props.navigation.navigate("SignUp")}
+          onPress={() => !this.state.buttonLoading && this.props.navigation.navigate("SignUp")}
         >
           Vous n'avez pas encore de compte ?
         </Text>

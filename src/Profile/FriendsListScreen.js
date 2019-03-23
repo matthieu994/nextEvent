@@ -12,17 +12,12 @@ import {
   Button,
   Icon,
   SearchBar,
-  Overlay,
-  Image,
-  Text,
-  Card,
   ListItem
 } from "react-native-elements"
 import { isEmail } from "validator"
 import * as Animation from "react-native-animatable"
 import { UserContext } from "../Provider/UserProvider"
-import { changeFriendStatus } from "./functions"
-import { colors } from "../lib"
+import { colors, changeFriendStatus } from "../lib"
 
 export default class FriendsListScreen extends Component {
   static navigationOptions = {

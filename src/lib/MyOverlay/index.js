@@ -3,42 +3,49 @@ import React from "react";
 import {StyleSheet} from "react-native";
 import {colors} from '../'
 
-export const MyOverlay = (props) => {
-  const children = (
-    <>
-      <Text style={styles.text}>{props.text}</Text>
-      {props.options}
-    </>
-  )
+export class MyOverlay extends React.Component {
+  state = {
+    text: ''
+  }
 
-  return (
-    <Overlay
-      isVisible={props.visible}
-      onBackdropPress={props.remove}
-      overlayStyle={styles.container}
-      height={300}
-      children={children}
-    />
-  )
-}
+  render() {
+    const children = (
+      <>
+        <Text style={styles.text}>{this.props.text}</Text>
+        <Input
+          inputStyle={{ color: colors.inputStyle, display: this.props.inputHidden }}
+          inputContainerStyle={styles.inputContainer}
+          secureTextEntry={this.props.secureTextEntry}
+          placeHolder={this.props.inputPlaceholder}
+          value={this.state.text}
+          onChangeText={value => this.setState({ text: value })}
+        />
+        <Button
+          onPress={() => {
+            this.props.action(this.state.text, message => {
+              this.setState({ text: '' })
+              this.props.remove()
+              this.props.dropdownAlert("error", message, "")
+            })
+          }}
+          title={this.props.buttonTitle}
+          buttonStyle={styles.button}/>
+      </>
+    )
 
-export const deleteUser = (button) => {
-  let password = ""
-  return (
-    <>
-      <Input
-        inputStyle={{color: colors.inputStyle}}
-        inputContainerStyle={styles.inputContainer}
-        secureTextEntry
-        placeHolder="Mot de passe"
-        ref={(r) => password = r}
+    return (
+      <Overlay
+        isVisible={this.props.visible}
+        onBackdropPress={() => {
+          this.props.remove()
+          this.setState({text: ""})
+        }}
+        overlayStyle={styles.container}
+        height={300}
+        children={children}
       />
-      <Button onPress={()=> {
-        button.action(password)
-        password = ""
-      }} title="Supprimer mon compte" buttonStyle={styles.button}/>
-    </>
-  )
+    )
+  }
 }
 
 export const types = {
@@ -46,9 +53,12 @@ export const types = {
 }
 
 export const basicOverlay = {
-  options: () => {},
   textOverlay: "",
-  action: () => {}
+  action: () => {},
+  inputPlaceholder: '',
+  secureTextEntry: false,
+  buttonTitle: "",
+  inputHidden: "flex"
 }
 
 const styles = StyleSheet.create({
