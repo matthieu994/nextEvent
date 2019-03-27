@@ -11,18 +11,60 @@ export default class EventsListScreen extends Component {
     title: "Mes événements"
   })
 
+  state = {
+    events: []
+  }
+
   renderEvents() {
-    if (!this.context.events) return null
-    return Object.keys(this.context.events).map(doc => {
+    if (!this.state.events) return null
+    return Object.keys(this.state.events).map(doc => {
       return (
         <SingleEvent
-          event={this.context.events[doc]}
+          event={this.state.events[doc]}
           id={doc}
           key={doc}
           navigation={this.props.navigation}
         />
       )
     })
+  }
+
+  refresh() {
+    this.context.getEvents().then(() => {
+      this.setState({ events: this.context.events })
+    })
+  }
+
+  componentDidMount() {
+    if (this.context.events) this.setState({ events: this.context.events })
+  }
+
+  componentWillReceiveProps() {
+    if (this.context.events) this.setState({ events: this.context.events })
+
+    if (
+      this.context.events &&
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.delete
+    ) {
+      this.deleteEvent(this.props.navigation.state.params.delete)
+    }
+
+    if (
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.refresh === true
+    ) {
+      this.refresh()
+    }
+  }
+
+  deleteEvent(eventId) {
+    // let events = this.context.events
+    // const index = events.indexOf(eventId)
+    // if (index > -1) events.splice(index, 1)
+    // this.setState({ events })
+    // console.warn(events)
+    this.refresh()
   }
 
   render() {
@@ -43,10 +85,8 @@ EventsListScreen.contextType = UserContext
 
 class SingleEvent extends Component {
   redirectToEvent() {
-    this.props.navigation.navigate("SingleEvent", {
-      event: this.props.event,
-      id: this.props.id
-    })
+    this.props.navigation.navigate("SingleEvent")
+    this.context.setCurrentEvent(this.props.id)
   }
 
   render() {
@@ -78,6 +118,8 @@ class SingleEvent extends Component {
     )
   }
 }
+
+SingleEvent.contextType = UserContext
 
 const styles = StyleSheet.create({
   singleEventContainer: {
