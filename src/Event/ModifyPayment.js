@@ -5,7 +5,8 @@ import {
   View,
   ScrollView,
   Picker,
-  Dimensions
+  Dimensions,
+  BackHandler
 } from "react-native"
 import {
   Button,
@@ -47,7 +48,8 @@ import { colors } from "../lib"
 
 export default class ModifyPayment extends Component {
   static navigationOptions = {
-    title: "Modifier dépense "
+    title: "Modifier dépense",
+    header: null
   }
 
   constructor(props) {
@@ -66,6 +68,17 @@ export default class ModifyPayment extends Component {
         checked: true
       })
     )
+  }
+
+  componentDidMount() {
+    this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+      this.props.navigation.navigate("PaymentList")
+      return true
+    })
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove()
   }
 
   shareAmount = () => {

@@ -1,10 +1,10 @@
 import React, { Component } from "react"
-import { View, Text, BackHandler } from "react-native"
+import { StyleSheet, View, BackHandler } from "react-native"
 import firebase from "react-native-firebase"
-import { DrawerActions } from "react-navigation"
-import { Button, Icon } from "react-native-elements"
+import { Button, Icon, Text } from "react-native-elements"
 import { colors, bottomContainer } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
+import { ScrollView } from "react-native-gesture-handler"
 
 export default class SingleEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -19,10 +19,27 @@ export default class SingleEventScreen extends Component {
 
   componentDidMount() {
     this.setState({ event: this.context.events[this.context.currentEvent] })
+    this.getSpentList()
     this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       this.goBack()
       return true
     })
+  }
+
+  getSpentList() {
+    firebase
+      .firestore()
+      .collection("events")
+      .doc(this.context.currentEvent)
+      .collection("payments")
+      .get()
+      .then(payment => {
+        let payments = []
+        payment.forEach(doc => {
+          payments[doc.id] = doc.data()
+        })
+        this.setState({ payments })
+      })
   }
 
   componentWillUnmount() {
@@ -70,10 +87,7 @@ export default class SingleEventScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button
-          onPress={() => this.props.navigation.navigate("PaymentList")}
-          title="Voir ma liste de dépense"
-        />
+        <Chart event={this.state.event} payments={this.state.payments} />
         {this.isOwner() && (
           <View style={[bottomContainer]}>
             <Button
@@ -98,3 +112,39 @@ export default class SingleEventScreen extends Component {
 }
 
 SingleEventScreen.contextType = UserContext
+
+class Chart extends Component {
+  renderUsersBalance() {
+    return (
+      this.props.event.users &&
+      this.props.event.users.map(user => <UserBalance key={user} user={user} />)
+    )
+  }
+
+  render() {
+    // console.warn(this.props.payments)
+    return (
+      <ScrollView style={styles.container}>
+        {this.renderUsersBalance()}
+      </ScrollView>
+    )
+  }
+}
+
+class UserBalance extends Component {
+  render() {
+    return (
+      <View>
+        <Text>{this.props.user}</Text>
+      </View>
+    )
+  }
+}
+
+UserBalance.contextType = UserContext
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  }
+})

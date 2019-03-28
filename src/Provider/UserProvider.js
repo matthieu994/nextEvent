@@ -72,8 +72,18 @@ class UserProvider extends Component {
             return events[doc]
           })
         ).then(() => {
+          const sortedEvents = Object.keys(events)
+            .sort((a, b) => new Date(events[a].date) < new Date(events[b].date))
+            .reduce(
+              (_sortedObj, key) => ({
+                ..._sortedObj,
+                [key]: events[key]
+              }),
+              {}
+            )
+          console.warn(sortedEvents)
           this.setState({
-            events
+            events: sortedEvents
           })
         })
       })
