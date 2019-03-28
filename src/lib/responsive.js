@@ -20,3 +20,12 @@ export const inputContainer = {
   borderBottomWidth: 0,
   backgroundColor: colors.inputBackground
 }
+
+export const bottomContainer = {
+  margin: 20,
+  position: "absolute",
+  bottom: 0,
+  borderRadius: 40,
+  overflow: "hidden",
+  elevation: 2
+}

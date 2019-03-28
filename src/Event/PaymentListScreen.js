@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native"
 import { ListItem } from "react-native-elements"
 import { Header } from "react-navigation"
+import firebase from "react-native-firebase"
+import { UserContext } from "../Provider/UserProvider"
 
 /* TEMPLATE DATABASE-> DEPENSE
   spentList : [
@@ -27,9 +29,10 @@ import { Header } from "react-navigation"
 */
 
 export default class PaymentListScreen extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    tabBarLabel: "Liste des dépenses"
-  })
+  static navigationOptions = ({ navigation, screenProps }) => {
+    // console.warn("screenProps: ", screenProps)
+    return { tabBarLabel: "Liste des dépenses" }
+  }
 
   constructor() {
     super()
@@ -70,8 +73,27 @@ export default class PaymentListScreen extends Component {
       ]
     }
   }
-  static navigationOptions = {
-    title: "Event X - Liste de dépenses"
+
+  componentDidMount() {
+    this.getSpentList()
+  }
+
+  getSpentList() {
+    // console.warn(this.props.navigation.state.params)
+    // let { event, id } = this.props.navigation.state.params
+    // if (!id) return
+
+    firebase
+      .firestore()
+      .collection("events")
+      .doc(this.context.currentEvent)
+      .collection("payments")
+      .get()
+      .then(payment => {
+        payment.forEach(doc => {
+          // TOUTES LES DÉPENSES SONT ICI
+        })
+      })
   }
 
   render() {
@@ -97,9 +119,8 @@ export default class PaymentListScreen extends Component {
     )
   }
 }
-/*
 
-*/
+PaymentListScreen.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {

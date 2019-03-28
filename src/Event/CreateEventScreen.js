@@ -71,6 +71,9 @@ export default class CreateEventScreen extends Component {
   }
 
   createEvent() {
+    let users = this.state.selectedFriends
+    users.push(this.context.user.email)
+
     firebase
       .firestore()
       .collection("events")
@@ -78,7 +81,7 @@ export default class CreateEventScreen extends Component {
         name: this.state.name,
         description: this.state.desc,
         date: this.state.date,
-        users: this.state.selectedFriends.push(this.context.user.email),
+        users,
         owner: this.context.user.email
       })
       .then(event => {
@@ -99,7 +102,7 @@ export default class CreateEventScreen extends Component {
 
         this.context.getEvents()
 
-        this.props.navigation.goBack()
+        this.props.navigation.navigate("EventsList", { refresh: true })
       })
   }
 

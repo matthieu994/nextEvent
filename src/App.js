@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Component } from "react"
 import {
   createStackNavigator,
   createSwitchNavigator,
@@ -65,17 +65,44 @@ const PaymentStack = createStackNavigator(
   }
 )
 
-const EventTabNavigator = createMaterialTopTabNavigator({
-  SingleEvent: {
-    screen: SingleEventScreen
+const EventTabNavigator = createMaterialTopTabNavigator(
+  {
+    SingleEvent: {
+      screen: SingleEventScreen
+    },
+    PaymentStack: {
+      screen: PaymentStack,
+      navigationOptions: {
+        tabBarLabel: "Dépenses"
+      }
+    }
   },
-  PaymentStack: {
-    screen: PaymentStack,
-    navigationOptions: {
-      tabBarLabel: "Dépenses"
+  {
+    tabBarOptions: {
+      style: {
+        backgroundColor: "rgb(39, 137, 173)"
+      },
+      indicatorStyle: {
+        backgroundColor: "rgb(88, 221, 195)"
+      }
     }
   }
-})
+)
+
+const EventStackTabNavigator = createStackNavigator(
+  {
+    EventTabNavigator
+  },
+  {
+    headerMode: "screen",
+    defaultNavigationOptions: {
+      headerStyle: {
+        elevation: 0,
+        backgroundColor: "rgb(39, 137, 173)"
+      }
+    }
+  }
+)
 
 const drawerNavigator = createDrawerNavigator(
   {
@@ -127,7 +154,7 @@ const appStack = createSwitchNavigator(
       screen: drawerNavigator
     },
     Event: {
-      screen: EventTabNavigator
+      screen: EventStackTabNavigator
     }
   },
   {

@@ -10,10 +10,12 @@ class UserProvider extends Component {
     super()
 
     this.state = {
-      user: null,
+      user: {},
       userRef: this.userRef,
       events: [],
-      getEvents: this.getEvents,
+      currentEvent: null,
+      setCurrentEvent: this.setCurrentEvent,
+      getEvents: () => this.getEvents(),
       defaultProfileURL: null,
       setPhotoURL: this.setPhotoURL,
       setDefaultProfileImage: this.setDefaultProfileImage,
@@ -33,8 +35,9 @@ class UserProvider extends Component {
         .functions()
         .httpsCallable("getUserData")()
         .then(res => {
-          let user = []
-          Object.assign(user, firebase.auth().currentUser)
+          let user = {}
+          user.photoURL = firebase.auth().currentUser.photoURL
+          user.email = firebase.auth().currentUser.email
           Object.assign(user, res.data)
           this.setState({
             user
@@ -50,8 +53,12 @@ class UserProvider extends Component {
     })
   }
 
-  getEvents = () => {
-    this.userRef
+  setCurrentEvent = id => {
+    this.setState({ currentEvent: id })
+  }
+
+  getEvents() {
+    return this.userRef
       .collection("events")
       .get()
       .then(async docs => {
@@ -65,8 +72,18 @@ class UserProvider extends Component {
             return events[doc]
           })
         ).then(() => {
+          const sortedEvents = Object.keys(events)
+            .sort((a, b) => new Date(events[a].date) < new Date(events[b].date))
+            .reduce(
+              (_sortedObj, key) => ({
+                ..._sortedObj,
+                [key]: events[key]
+              }),
+              {}
+            )
+          console.warn(sortedEvents)
           this.setState({
-            events
+            events: sortedEvents
           })
         })
       })
