@@ -1,28 +1,51 @@
-import {Button, Input, Overlay, Text} from "react-native-elements";
+import { Button, Divider, Input, Overlay, Text } from "react-native-elements";
 import React from "react";
-import {StyleSheet} from "react-native";
-import {colors} from '../'
+import { StyleSheet, View } from "react-native";
+import { colors } from '../'
 
 export class MyOverlay extends React.Component {
   state = {
-    text: ''
+    text: '',
+    text2: ''
   }
 
   render() {
     const children = (
       <>
-        <Text style={styles.text}>{this.props.text}</Text>
+        <Text h3 style={styles.text}>{this.props.text}</Text>
+        <View>
+          <Divider style={{
+            height: 10,
+            backgroundColor: '#e1e8ee'
+          }}/>
+        </View>
         <Input
-          inputStyle={{ color: colors.inputStyle, display: this.props.inputHidden }}
+          inputStyle={{
+            color: colors.inputStyle,
+            display: this.props.inputHidden
+          }}
           inputContainerStyle={styles.inputContainer}
           secureTextEntry={this.props.secureTextEntry}
           placeHolder={this.props.inputPlaceholder}
           value={this.state.text}
           onChangeText={value => this.setState({ text: value })}
+          placeholderTextColor={colors.inputPlaceholder}
+        />
+        <Input
+          inputStyle={{
+            color: colors.inputStyle,
+            display: this.props.secondTextEntry ? 'flex' : 'none'
+          }}
+          inputContainerStyle={styles.inputContainer}
+          secureTextEntry={this.props.secureTextEntry2}
+          placeHolder={this.props.inputPlaceholder2}
+          value={this.state.text2}
+          onChangeText={value => this.setState({ text2: value })}
+          placeholderTextColor={colors.inputPlaceholder}
         />
         <Button
           onPress={() => {
-            this.props.action(this.state.text, message => {
+            this.props.action({ text: this.state.text, text2: this.state.text2 }, message => {
               this.setState({ text: '' })
               this.props.remove()
               this.props.dropdownAlert("error", message, "")
@@ -38,10 +61,10 @@ export class MyOverlay extends React.Component {
         isVisible={this.props.visible}
         onBackdropPress={() => {
           this.props.remove()
-          this.setState({text: ""})
+          this.setState({ text: "" })
         }}
         overlayStyle={styles.container}
-        height={300}
+        height={400}
         children={children}
       />
     )
@@ -49,14 +72,19 @@ export class MyOverlay extends React.Component {
 }
 
 export const types = {
-  DELETEUSER: 'DELETEUSER'
+  DELETEUSER: 'DELETEUSER',
+  CHANGEPASSWORD: 'CHANGEPASSWORD'
 }
 
 export const basicOverlay = {
-  textOverlay: "",
-  action: () => {},
+  text: "",
+  action: () => {
+  },
   inputPlaceholder: '',
-  secureTextEntry: false,
+  inputPlaceholder2: "",
+  secureTextEntry: true,
+  secureTextEntry2: true,
+  secondTextEntry: false,
   buttonTitle: "",
   inputHidden: "flex"
 }
@@ -81,6 +109,7 @@ const styles = StyleSheet.create({
   text: {
     padding: 5,
     position: 'absolute',
-    top: 0
+    top: 0,
+    textAlign: 'center'
   }
 })

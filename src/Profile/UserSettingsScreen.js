@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { View, StyleSheet } from "react-native"
 import firebase from "react-native-firebase"
-import { Button, Icon } from "react-native-elements"
+import { Button, Divider, Icon } from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
 import { UserContext } from "../Provider/UserProvider"
@@ -40,14 +40,35 @@ export default class UserSettingsScreen extends Component {
     switch (component) {
       case types.DELETEUSER:
         this.overlay = {
-          ...this.overlay,
+          ...basicOverlay,
           text: "Confirmation de suppression",
-          action: (password, next) => this.deleteUser(password, next),
-          secureTextEntry: true,
+          action: ({ text }, next) => this.deleteUser(text, next),
           inputPlaceholder: "Mot de passe",
           buttonTitle: "Supprimer mon compte"
         }
         break
+      case types.CHANGEPASSWORD:
+        this.overlay = {
+          ...basicOverlay,
+          text: "Changer mon mot de passe",
+          action: ({ text, text2 }, next) => {
+            if (!checkAccountDeleteCredentials(text, next))
+              return
+            this.checkCredentials(text)
+              .then(() => {
+                firebase.auth()
+                  .currentUser
+                  .updatePassword(text2)
+                  .then(() => this.dropdownAlert("success", "Votre mot de passe a été mis à jour", ""))
+                  .catch(err => console.log(err))
+              })
+          },
+          secondTextEntry: true,
+          inputPlaceholder: 'Mot de passe actuel',
+          inputPlaceholder2: 'Nouveau mot de passe',
+          buttonTitle: "Changer le mot de passe"
+        }
+        break;
       default:
         this.overlay = basicOverlay
         break
@@ -56,15 +77,19 @@ export default class UserSettingsScreen extends Component {
     this.setState({ visibleOverlay: true })
   }
 
+  checkCredentials(password) {
+    const credential = firebase.auth.EmailAuthProvider.credential(this.context.user.email, password)
+    return firebase.auth()
+      .currentUser
+      .reauthenticateWithCredential(credential)
+      .catch(err => console.error(err))
+  }
+
   deleteUser(password, next) {
     if (!checkAccountDeleteCredentials(password, next))
       return
 
-    const credential = firebase.auth.EmailAuthProvider.credential(this.context.user.email, password)
-
-    firebase.auth()
-      .currentUser
-      .reauthenticateWithCredential(credential)
+    this.checkCredentials(password)
       .then(() => {
         firebase.auth()
           .currentUser
@@ -75,7 +100,7 @@ export default class UserSettingsScreen extends Component {
           })
           .catch(error => console.error(error))
       })
-      .catch(error => console.error(error))
+      .catch(err => console.error(err))
     this.setState({ visibleOverlay: false })
   }
 
@@ -148,11 +173,25 @@ export default class UserSettingsScreen extends Component {
 
   render() {
     return (
-      <View style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
+      <View style={styles.container}>
+        <Button
+          icon={
+            <Icon
+              name="pencil-outline"
+              type="material-community"
+              size={18}
+              color="white"
+              containerStyle={styles.buttonIconStyle}
+            />
+          }
+          buttonStyle={styles.buttonStyle}
+          onPress={() => this.toggleOverlay(types.CHANGEPASSWORD)}
+          title="Changer mon mot de passe"
+        />
+        <Divider style={{
+          height: 10,
+          backgroundColor: 'blue'
+        }}/>
         <Button
           icon={
             <Icon
@@ -219,5 +258,9 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: colors.redButtonBackground
+  },
+  container: {
+    alignItems: 'center',
+    flex: 1,
   }
 })

@@ -23,7 +23,8 @@
     "rename": "node ./bin/rename.js",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint *.js **/*.js"
+    "lint": "eslint *.js **/*.js",
+    "log": "react-native log-android"
   },
   "jest": {
     "preset": "react-native"
