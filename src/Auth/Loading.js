@@ -33,7 +33,7 @@ export default class Loading extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Loading</Text>
+        <Text>Chargement</Text>
         <ActivityIndicator size="large" />
       </View>
     )

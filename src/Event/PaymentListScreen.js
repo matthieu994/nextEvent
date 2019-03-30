@@ -4,25 +4,18 @@ import { ListItem } from "react-native-elements"
 import { Header } from "react-navigation"
 import firebase from "react-native-firebase"
 import { UserContext } from "../Provider/UserProvider"
+import BottomButton from "../Modules/BottomButton"
 
 /* TEMPLATE DATABASE-> DEPENSE
   spentList : [
     {
       name : str,
+      date : date,
       from : str, // email
       to : [], // email
       amount : int,
       currency : str, //GLOBAL EVENT VARIABLE//
-      date : date,
-      extra : str
-    },
-    {
-      name : str,
-      from : str,
-      to : [],
-      amount : int,
-      currency : str,
-      date : date,
+      payback: bool // Remboursement
       extra : str
     }
   ]
@@ -69,6 +62,14 @@ export default class PaymentListScreen extends Component {
           amount: 1520,
           date: "28 avril 2019",
           extra: "C'était ben le fun ce WE avec les pélo"
+        },
+        {
+          name: "Mojito",
+          from: "Alice",
+          to: ["Alice", "Bob", "Philippe", "John"],
+          amount: 120,
+          date: "28 avril 2019",
+          extra: "C'était ben le fun ce WE avec les pélo"
         }
       ]
     }
@@ -98,24 +99,25 @@ export default class PaymentListScreen extends Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <Text>EventList Page</Text>
-        <View style={[styles.contents, styles.info]}>
-          {this.state.spentList.map((item, i) => (
-            <ListItem
-              key={i}
-              title={this.state.spentList[i].name}
-              onPress={() =>
-                this.props.navigation.navigate("ModifyPayment", {
-                  list: this.state.spentList[i]
-                })
-              }
-            />
-          ))}
-        </View>
-        <View />
-        <View style={styles.button} />
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        <ScrollView style={styles.container}>
+          <View style={[styles.contents, styles.info]}>
+            {this.state.spentList.map((item, i) => (
+              <ListItem
+                containerStyle={styles.payment}
+                key={i}
+                title={item.name}
+                onPress={() =>
+                  this.props.navigation.navigate("ModifyPayment", {
+                    list: item
+                  })
+                }
+              />
+            ))}
+          </View>
+        </ScrollView>
+        <BottomButton />
+      </View>
     )
   }
 }
@@ -124,8 +126,13 @@ PaymentListScreen.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {
-    //backgroundColor : 'red',
-    display: "flex",
-    height: Dimensions.get("window").height - Header.HEIGHT - 24 // extra 24 unit (notif bar)
+    // backgroundColor : 'red',
+    flex: 1
+    // height: Dimensions.get("window").height - Header.HEIGHT - 24 // extra 24 unit (notif bar)
+  },
+  payment: {
+    borderWidth: 0,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "black"
   }
 })

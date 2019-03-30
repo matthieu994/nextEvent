@@ -16,11 +16,12 @@ class UserProvider extends Component {
       currentEvent: null,
       setCurrentEvent: this.setCurrentEvent,
       getEvents: () => this.getEvents(),
+      friends: [],
+      setFriend: this.setFriend,
+      getFriends: this.getFriends,
       defaultProfileURL: null,
       setPhotoURL: this.setPhotoURL,
       setDefaultProfileImage: this.setDefaultProfileImage,
-      setFriend: this.setFriend,
-      getFriends: this.getFriends,
       dropdownAlert: this.dropdownAlert,
       initProvider: () => this.initProvider(),
       clearState: () => this.clearState()
@@ -81,7 +82,7 @@ class UserProvider extends Component {
               }),
               {}
             )
-          console.warn(sortedEvents)
+          // console.warn(sortedEvents)
           this.setState({
             events: sortedEvents
           })
@@ -114,10 +115,23 @@ class UserProvider extends Component {
         docs.forEach(doc => {
           friends[doc.id] = doc.data().status
         })
-        let user = this.state.user
-        user.friends = friends
-        this.setState({
-          user
+        Promise.all(
+          Object.keys(friends).map(async friendID => {
+            await firebase
+              .firestore()
+              .collection("users")
+              .doc(friendID)
+              .get()
+              .then(friend => {
+                const status = friends[friendID]
+                friends[friendID] = friend.data()
+                friends[friendID].status = status
+              })
+          })
+        ).then(() => {
+          this.setState({
+            friends
+          })
         })
       })
       .catch(err => {
@@ -126,12 +140,11 @@ class UserProvider extends Component {
   }
 
   setFriend = (email, status) => {
-    let user = this.state.user
-    let friends = this.state.user.friends
+    let friends = this.state.friends
+    if (status === "SENT") return this.getFriends()
     if (status === "DELETE") delete friends[email]
-    else friends[email] = status
-    user.friends = friends
-    this.setState({ user })
+    else friends[email].status = status
+    this.setState({ friends })
   }
 
   setPhotoURL = photoURL => {
@@ -144,6 +157,7 @@ class UserProvider extends Component {
     this.setState({ defaultProfileURL })
   }
 
+  // type: 'info' | 'warn' | 'error' | 'custom' | 'success'
   dropdownAlert = (type, displayType, errorMessage) => {
     this.dropdown.alertWithType(type, displayType, errorMessage)
   }

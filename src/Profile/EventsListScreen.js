@@ -4,6 +4,7 @@ import firebase from "react-native-firebase"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { Button, Icon, ListItem, Text } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
+import BottomButton from "../Modules/BottomButton"
 import { colors } from "../lib"
 
 export default class EventsListScreen extends Component {
@@ -70,9 +71,9 @@ export default class EventsListScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, width: "100%" }}>
-          {this.renderEvents()}
-        </ScrollView>
+        <View style={{ flex: 1, alignItems: "center" }}>
+          <ScrollView>{this.renderEvents()}</ScrollView>
+        </View>
         <BottomButton
           onPress={() => this.props.navigation.navigate("CreateEvent")}
         />
@@ -96,20 +97,15 @@ class SingleEvent extends Component {
         onPress={() => this.redirectToEvent()}
       >
         <View style={styles.singleEventContainer}>
-          <View style={{ width: "65%" }}>
-            <Text h3 h3Style={{ color: "black" }}>
+          <View style={styles.nameContainer}>
+            <Text h4 style={{ color: "black" }}>
               {this.props.event.name}
             </Text>
             <Text>{this.props.event.description}</Text>
           </View>
-          <View
-            style={{
-              margin: 0,
-              width: "35%"
-            }}
-          >
+          <View style={styles.dateContainer}>
             <Text
-              h4
+              style={styles.date}
             >{`${this.props.event.date.getDate()}/${this.props.event.date.getMonth() +
               1}/${this.props.event.date.getFullYear()}`}</Text>
           </View>
@@ -123,51 +119,26 @@ SingleEvent.contextType = UserContext
 
 const styles = StyleSheet.create({
   singleEventContainer: {
-    borderBottomWidth: 0.75,
+    borderBottomWidth: 0.5,
     borderBottomColor: "rgb(120, 130, 140)",
-    paddingHorizontal: 9,
+    paddingHorizontal: 8,
     paddingBottom: 6,
-    width: "100%",
+    flex: 1,
     backgroundColor: "rgb(245, 250, 250)",
     flexDirection: "row",
-    alignItems: "baseline"
+    alignItems: "center"
+  },
+  nameContainer: {
+    alignItems: "flex-start",
+    width: "70%",
+    // borderWidth: 1
+  },
+  dateContainer: {
+    alignItems: "flex-end",
+    width: "30%",
+    // borderWidth: 1
+  },
+  date: {
+    fontSize: 22
   }
 })
-
-class BottomButton extends Component {
-  render() {
-    return (
-      <View
-        style={{
-          margin: 20,
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          borderRadius: 40,
-          overflow: "hidden",
-          elevation: 2
-        }}
-      >
-        <Button
-          buttonStyle={{
-            backgroundColor: "rgb(81, 127, 164)",
-            borderRadius: 40,
-            width: 62,
-            height: 62
-          }}
-          background={TouchableNativeFeedback.Ripple("ThemeAttrAndroid", true)}
-          onPress={this.props.onPress}
-          raised
-          icon={
-            <Icon
-              name="plus"
-              type="material-community"
-              size={30}
-              color="white"
-            />
-          }
-        />
-      </View>
-    )
-  }
-}

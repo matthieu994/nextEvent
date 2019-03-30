@@ -19,33 +19,6 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import { Header } from "react-navigation"
 import { colors } from "../lib"
 
-/*
-   spentList : [
-    {
-      name : 'Ski 2019',
-      from : 'Jean',
-      to : ['Jean', 'Bob', 'Alice', 'John'],
-      amount : 120,
-      date : '02 mars 2019',
-      extra : "Journée au ski lourd xptdr"
-      
-    }
-
-    currentSelect : str,
-
-    selection : [
-      {
-        name : str,
-        checked : bool,
-        amountTopPay : int, 
-      },
-      
-    ]
-      
-
-
-    */
-
 export default class ModifyPayment extends Component {
   static navigationOptions = {
     title: "Modifier dépense",

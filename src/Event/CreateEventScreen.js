@@ -59,8 +59,8 @@ export default class CreateEventScreen extends Component {
   selectFriend = friend => {
     let selectedFriends = this.state.selectedFriends
 
-    if (this.state.selectedFriends.includes(friend)) {
-      selectedFriends.splice(friend, 1)
+    if (selectedFriends.includes(friend)) {
+      selectedFriends.splice(selectedFriends.indexOf(friend), 1)
     } else {
       selectedFriends.push(friend)
     }
@@ -71,6 +71,13 @@ export default class CreateEventScreen extends Component {
   }
 
   createEvent() {
+    if (!this.state.name)
+      this.context.dropdownAlert(
+        "error",
+        "Erreur",
+        "Le nom ne peut pas être vide."
+      )
+
     let users = this.state.selectedFriends
     users.push(this.context.user.email)
 
@@ -177,7 +184,7 @@ export default class CreateEventScreen extends Component {
         >
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             <FriendsList
-              friends={this.context.user.friends}
+              friends={this.context.friends}
               defaultProfileURL={this.context.defaultProfileURL}
               selectFriend={this.selectFriend}
               selectedFriends={this.state.selectedFriends}
@@ -210,7 +217,7 @@ CreateEventScreen.contextType = UserContext
 class FriendsList extends Component {
   render() {
     return Object.keys(this.props.friends).map((friend, index) => {
-      if (this.props.friends[friend] != "OK") return null
+      if (this.props.friends[friend].status != "OK") return null
       const selected = this.props.selectedFriends.includes(friend)
       return (
         <View key={index} style={{ width: "50%" }}>
