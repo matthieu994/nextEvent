@@ -9,8 +9,8 @@ import { UserContext } from "../Provider/UserProvider"
   spentList : [
     {
       name : str,
-      from : str,
-      to : [],
+      from : str, // email
+      to : [], // email
       amount : int,
       currency : str, //GLOBAL EVENT VARIABLE//
       date : date,
