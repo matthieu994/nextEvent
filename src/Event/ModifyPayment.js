@@ -56,14 +56,17 @@ export default class ModifyPayment extends Component {
 
   shareAmount = () => {
     let count = 0
-    this.state.selection.map(
-      (item, i) => (count = item.checked ? count + 1 : count)
-    ),
-      (share = this.state.spent.amount / count),
-      (tmp = this.state.selection),
-      this.state.selection.map(
-        (item, i) => (tmp[i].owe = item.checked ? share : 0)
-      )
+    this.state.selection.forEach(item => {
+      count = item.checked ? count + 1 : count
+    })
+
+    const share = this.state.amount / count
+
+    const tmp = this.state.selection
+
+    this.state.selection.forEach((item, i) => {
+      tmp[i].owe = item.checked ? share : 0
+    })
 
     this.setState({ selection: tmp })
   }

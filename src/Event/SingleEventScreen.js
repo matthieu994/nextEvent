@@ -5,6 +5,8 @@ import { Button, Icon, Text, ListItem, Divider } from "react-native-elements"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { colors, bottomContainer } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
+import BottomButton from "../Modules/BottomButton"
+import { sortObject, sortArray } from "../lib/functions/tools"
 
 export default class SingleEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -14,16 +16,50 @@ export default class SingleEventScreen extends Component {
   }
 
   state = {
-    event: {}
+    event: null,
+    payments: []
   }
 
   componentDidMount() {
-    this.setState({ event: this.context.events[this.context.currentEvent] })
-    this.getSpentList()
+    let event = this.context.events.find(
+      e => e.id === this.context.currentEvent
+    )
+    this.setState({
+      event
+    })
+
+    this.setListener()
+
     this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       this.goBack()
       return true
     })
+  }
+
+  componentWillReceiveProps() {
+    this.setListener()
+  }
+
+  setListener() {
+    if (!this.listener) {
+      this.listener = firebase
+        .firestore()
+        .collection("events")
+        .doc(this.context.currentEvent)
+        .collection("payments")
+        .onSnapshot(snapshot => {
+          let payments = this.state.payments
+          snapshot.docChanges.forEach(s => {
+            payments.push({ id: s.doc.id, properties: s.doc.data() })
+          })
+          this.setState({ payments: sortArray(payments, "date") })
+        })
+    } else {
+      this.listener()
+      this.listener = null
+      return this.setListener()
+    }
+    this.getSpentList()
   }
 
   getSpentList() {
@@ -33,16 +69,17 @@ export default class SingleEventScreen extends Component {
       .doc(this.context.currentEvent)
       .collection("payments")
       .get()
-      .then(payment => {
-        let payments = []
-        payment.forEach(doc => {
+      .then(docs => {
+        let payments = {}
+        docs.forEach(doc => {
           payments[doc.id] = doc.data()
         })
-        this.setState({ payments })
+        this.setState({ payments: sortObject(payments, "date") })
       })
   }
 
   componentWillUnmount() {
+    this.listener()
     this.backHandler.remove()
   }
 
@@ -53,7 +90,7 @@ export default class SingleEventScreen extends Component {
   }
 
   isOwner() {
-    return this.state.event.owner === this.context.user.email
+    return this.state.event.properties.owner === this.context.user.email
   }
 
   deleteEvent() {
@@ -70,7 +107,7 @@ export default class SingleEventScreen extends Component {
           .doc(eventId)
           .delete()
 
-        this.state.event.users.forEach(friend => {
+        this.state.event.properties.users.forEach(friend => {
           firebase
             .firestore()
             .collection("users")
@@ -85,6 +122,8 @@ export default class SingleEventScreen extends Component {
   }
 
   render() {
+    if (!this.state.event) return null
+
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Chart event={this.state.event} payments={this.state.payments} />
@@ -106,6 +145,9 @@ export default class SingleEventScreen extends Component {
             />
           </View>
         )}
+        <BottomButton
+          onPress={() => this.props.navigation.navigate("CreatePayment")}
+        />
       </View>
     )
   }
@@ -116,15 +158,14 @@ SingleEventScreen.contextType = UserContext
 class Chart extends Component {
   renderUsersBalance() {
     return (
-      this.props.event.users &&
-      this.props.event.users.map(user => (
-        <UserBalance key={user} email={user} />
+      this.props.event.properties.users &&
+      this.props.event.properties.users.map(user => (
+        <UserBalance key={user} email={user} payments={this.props.payments} />
       ))
     )
   }
 
   render() {
-    // console.warn(this.props.payments)
     return (
       <ScrollView style={styles.container}>
         {this.renderUsersBalance()}
@@ -134,38 +175,58 @@ class Chart extends Component {
 }
 
 class UserBalance extends Component {
+  state = {
+    balance: 0
+  }
+
   componentDidMount() {
     if (this.props.email === this.context.user.email)
       this.user = this.context.user
     else this.user = this.context.friends[this.props.email]
+  }
 
-    this.getBalance()
+  componentWillReceiveProps(props) {
+    if (props.payments) this.getBalance()
   }
 
   getBalance() {
-    const paymentsTo = spentList.filter(payment =>
-      payment.to.find(user => user === this.props.email)
+    // Liste des dépenses
+    const paymentsTo = this.props.payments.filter(payment =>
+      payment.properties.to.find(user => user.email === this.props.email)
     )
-    const paymentsFrom = spentList.filter(
-      payment => payment.from === this.props.email
+    // Liste des dépenses que l'user a payé
+    const paymentsFrom = this.props.payments.filter(
+      payment => payment.properties.from === this.props.email
     )
 
-    this.balance = 0
+    let balance = 0
     paymentsTo.forEach(payment => {
-      this.balance -= payment.amount / payment.to.length
+      if (payment.properties.from !== this.props.email) {
+        balance -= parseFloat(
+          payment.properties.to.find(e => e.email === this.props.email).owe,
+          10
+        )
+      }
     })
     paymentsFrom.forEach(payment => {
-      this.balance += payment.amount
+      payment.properties.to.forEach(p => {
+        if (p.email !== this.props.email) {
+          balance += parseFloat(p.owe, 10)
+        }
+      })
     })
+    this.setState({ balance })
   }
 
   getBalanceValue() {
-    return this.balance.toFixed(2)
+    return this.state.balance.toFixed(2)
   }
 
   getBalanceStyle() {
-    if (this.balance === 0) return styles.nullBalance
-    return this.balance > 0 ? styles.positiveBalance : styles.negativeBalance
+    if (this.state.balance === 0) return styles.nullBalance
+    return this.state.balance > 0
+      ? styles.positiveBalance
+      : styles.negativeBalance
   }
 
   displayName() {

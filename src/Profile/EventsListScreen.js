@@ -18,12 +18,13 @@ export default class EventsListScreen extends Component {
 
   renderEvents() {
     if (!this.state.events) return null
-    return Object.keys(this.state.events).map(doc => {
+    return this.state.events.map(doc => {
+      let event = this.state.events.find(e => e.id === doc.id)
       return (
         <SingleEvent
-          event={this.state.events[doc]}
-          id={doc}
-          key={doc}
+          event={event}
+          id={event.id}
+          key={event.id}
           navigation={this.props.navigation}
         />
       )
@@ -99,15 +100,15 @@ class SingleEvent extends Component {
         <View style={styles.singleEventContainer}>
           <View style={styles.nameContainer}>
             <Text h4 style={{ color: "black" }}>
-              {this.props.event.name}
+              {this.props.event.properties.name}
             </Text>
-            <Text>{this.props.event.description}</Text>
+            <Text>{this.props.event.properties.description}</Text>
           </View>
           <View style={styles.dateContainer}>
             <Text
               style={styles.date}
-            >{`${this.props.event.date.getDate()}/${this.props.event.date.getMonth() +
-              1}/${this.props.event.date.getFullYear()}`}</Text>
+            >{`${this.props.event.properties.date.getDate()}/${this.props.event.properties.date.getMonth() +
+              1}/${this.props.event.properties.date.getFullYear()}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -130,12 +131,12 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     alignItems: "flex-start",
-    width: "70%",
+    width: "70%"
     // borderWidth: 1
   },
   dateContainer: {
     alignItems: "flex-end",
-    width: "30%",
+    width: "30%"
     // borderWidth: 1
   },
   date: {

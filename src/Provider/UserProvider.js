@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React, { createContext, Component, useReducer } from "react"
 import firebase from "react-native-firebase"
+import { sortObject } from "../lib/functions/tools"
 import DropdownAlert from "react-native-dropdownalert"
 
 export const UserContext = createContext()
@@ -73,16 +74,7 @@ class UserProvider extends Component {
             return events[doc]
           })
         ).then(() => {
-          const sortedEvents = Object.keys(events)
-            .sort((a, b) => new Date(events[a].date) < new Date(events[b].date))
-            .reduce(
-              (_sortedObj, key) => ({
-                ..._sortedObj,
-                [key]: events[key]
-              }),
-              {}
-            )
-          // console.warn(sortedEvents)
+          let sortedEvents = sortObject(events, "date")
           this.setState({
             events: sortedEvents
           })

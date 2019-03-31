@@ -20,6 +20,7 @@ import CreateEventScreen from "./Event/CreateEventScreen"
 import SingleEventScreen from "./Event/SingleEventScreen"
 import PaymentListScreen from "./Event/PaymentListScreen"
 import ModifyPayment from "./Event/ModifyPayment"
+import CreatePayment from "./Event/CreatePayment"
 import UserProvider from "./Provider/UserProvider"
 
 const EventsListStack = createStackNavigator(
@@ -58,7 +59,8 @@ const PaymentStack = createStackNavigator(
     PaymentList: {
       screen: PaymentListScreen
     },
-    ModifyPayment
+    ModifyPayment,
+    CreatePayment
   },
   {
     headerMode: "none"
