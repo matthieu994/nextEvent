@@ -25,7 +25,8 @@ import { colors } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import firebase from "react-native-firebase"
-import { pick } from "../lib/functions/tools"
+import { isFloat, isInt } from "validator"
+import { pick, displayDate } from "../lib/functions/tools"
 
 export default class CreatePayment extends Component {
   static navigationOptions = {
@@ -54,15 +55,10 @@ export default class CreatePayment extends Component {
 
     this.setState({ event }, () => {
       let selection = []
-      this.state.event.properties.users.forEach(item => {
-        const user =
-          item === this.context.user.email
-            ? this.context.user
-            : this.context.friends[item]
-
+      Object.keys(this.state.event.properties.users).map(user => {
         selection.push({
-          email: item,
-          name: user.displayName,
+          email: user,
+          user: this.state.event.properties.users[user],
           owe: 0,
           checked: false
         })
@@ -127,18 +123,30 @@ export default class CreatePayment extends Component {
     }
   }
 
-  getDate() {
-    moment.locale("fr")
-    return moment(this.state.date).format("dddd D MMMM YYYY à HH:mm")
+  displayName(user) {
+    return `${this.state.event.properties.users[user].displayName} ${
+      this.state.event.properties.users[user].familyName
+    }`
   }
 
   componentWillUnmount() {
     this.backHandler.remove()
   }
 
-  setAmount(amount) {
-    amount = parseFloat(amount)
-    if (!Number.isInteger(amount) && amount !== "") amount = ""
+  setAmount(input) {
+    let amount = this.state.amount
+    if (input.slice(-1) === ".") {
+      amount = input
+      if ((input.match(/\./g) || []).length > 1) amount = input.slice(0, -1)
+    } else if (isInt(input) || isFloat(input)) {
+      amount = parseFloat(input)
+    } else if (input.slice(-1) === ",") {
+      amount = input.slice(0, -1)
+      if ((input.match(/\./g) || []).length === 0) amount += "."
+    } else if (input === "") {
+      amount = ""
+    }
+
     this.setState({ amount }, () => this.divideSpent())
   }
 
@@ -175,7 +183,7 @@ export default class CreatePayment extends Component {
       payment.from = this.state.currentSelect
     else payment.from = this.state.selection[0].email
 
-    payment.to = firebase
+    firebase
       .firestore()
       .collection("events")
       .doc(this.context.currentEvent)
@@ -191,7 +199,6 @@ export default class CreatePayment extends Component {
 
     return (
       <ScrollView style={styles.container}>
-        <Text />
         <View style={[styles.contents, styles.info]}>
           <View style={{}}>
             <Input
@@ -216,7 +223,7 @@ export default class CreatePayment extends Component {
             >
               <Input
                 keyboardType="numeric"
-                value={this.state.amount.toString() || ""}
+                value={this.state.amount.toString()}
                 label="Montant"
                 placeholder="Montant à partager"
                 inputContainerStyle={[styles.inputs]}
@@ -232,7 +239,9 @@ export default class CreatePayment extends Component {
               }}
             >
               <TouchableOpacity onPress={() => this.datePicker()}>
-                <Text style={[styles.date]}>{this.getDate()}</Text>
+                <Text style={[styles.date]}>
+                  {displayDate(this.state.date)}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -241,29 +250,30 @@ export default class CreatePayment extends Component {
             <Picker
               selectedValue={this.state.currentSelect}
               style={{ backgroundColor: "rgb(210, 225, 230)", height: 50 }}
-              onValueChange={item => this.setState({ currentSelect: item })}
+              onValueChange={email => this.setState({ currentSelect: email })}
             >
-              {this.state.event.properties.users.map((item, i) => {
-                const user =
-                  item === this.context.user.email
-                    ? this.context.user
-                    : this.context.friends[item]
-                return (
-                  <Picker.Item key={i} label={user.displayName} value={item} />
-                )
-              })}
+              {Object.keys(this.state.event.properties.users).map(
+                (email, i) => {
+                  return (
+                    <Picker.Item
+                      key={i}
+                      label={this.displayName(email)}
+                      value={email}
+                    />
+                  )
+                }
+              )}
             </Picker>
           </View>
         </View>
-
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 30 }} />
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
         <View style={[styles.contents, styles.member]}>
           {this.state.selection.map((item, i) => (
             <ListItem
               key={i}
               title={
                 <CheckBox
-                  title={item.name}
+                  title={this.displayName(item.email)}
                   size={15}
                   checkedIcon="dot-circle-o"
                   uncheckedIcon="circle-o"
@@ -281,13 +291,11 @@ export default class CreatePayment extends Component {
                 backgroundColor: "rgb(232, 243, 250)",
                 marginBottom: 10
               }}
-              //contentContainerStyle={{backgroundColor : 'green'}}
-              //rightContentContainerStyle={{ backgroundColor : 'grey'}}
             />
           ))}
         </View>
 
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 30 }} />
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
         <View style={[styles.contents, styles.extra]}>
           <Text>Commentaires</Text>
           <Text>{this.state.spent.extra}</Text>

@@ -6,7 +6,7 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { colors, bottomContainer } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
 import BottomButton from "../Modules/BottomButton"
-import { sortObject, sortArray } from "../lib/functions/tools"
+import { sortObject, sortArray, listenerFunction } from "../lib/functions/tools"
 
 export default class SingleEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -48,12 +48,8 @@ export default class SingleEventScreen extends Component {
         .doc(this.context.currentEvent)
         .collection("payments")
         .onSnapshot(snapshot => {
-          let payments = this.state.payments
-          snapshot.docChanges.forEach(s => {
-            if (!payments.find(e => e.id === s.doc.id))
-              payments.push({ id: s.doc.id, properties: s.doc.data() })
-          })
-          this.setState({ payments: sortArray(payments, "date") })
+          const payments = listenerFunction(snapshot, this.state.payments)
+          this.setState({ payments })
         })
     } else {
       this.listener()
@@ -103,16 +99,11 @@ export default class SingleEventScreen extends Component {
       .doc(eventId)
       .delete()
       .then(() => {
-        this.context.userRef
-          .collection("events")
-          .doc(eventId)
-          .delete()
-
-        this.state.event.properties.users.forEach(friend => {
+        this.state.event.properties.users.forEach(user => {
           firebase
             .firestore()
             .collection("users")
-            .doc(friend)
+            .doc(user)
             .collection("events")
             .doc(eventId)
             .delete()
@@ -158,10 +149,16 @@ SingleEventScreen.contextType = UserContext
 
 class Chart extends Component {
   renderUsersBalance() {
+    const users = this.props.event.properties.users
     return (
-      this.props.event.properties.users &&
-      this.props.event.properties.users.map(user => (
-        <UserBalance key={user} email={user} payments={this.props.payments} />
+      users &&
+      Object.keys(this.props.event.properties.users).map(user => (
+        <UserBalance
+          key={user}
+          email={user}
+          user={users[user]}
+          payments={this.props.payments}
+        />
       ))
     )
   }
@@ -178,12 +175,6 @@ class Chart extends Component {
 class UserBalance extends Component {
   state = {
     balance: 0
-  }
-
-  componentDidMount() {
-    if (this.props.email === this.context.user.email)
-      this.user = this.context.user
-    else this.user = this.context.friends[this.props.email]
   }
 
   componentWillReceiveProps(props) {
@@ -231,11 +222,10 @@ class UserBalance extends Component {
   }
 
   displayName() {
-    return `${this.user.displayName} ${this.user.familyName}`
+    return `${this.props.user.displayName} ${this.props.user.familyName}`
   }
 
   render() {
-    if (!this.user) return null
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
         <View style={styles.balanceContainer}>
@@ -283,38 +273,3 @@ const styles = StyleSheet.create({
     backgroundColor: colors.redButtonBackground
   }
 })
-
-const spentList = [
-  {
-    name: "Ski 2019",
-    from: "nograe117@gmail.com",
-    to: ["nograe117@gmail.com", "t@h.fr", "test@mail.com"],
-    amount: 120,
-    date: new Date(),
-    extra: "Journée au ski lourd xptdr"
-  },
-  {
-    name: "Voyage à Bab El Oued",
-    from: "test@mail.com",
-    to: ["test@mail.com", "nograe117@gmail.com"],
-    amount: 420,
-    date: new Date(),
-    extra: "C'est ben le fun"
-  },
-  {
-    name: "Le week-end des vrais",
-    from: "test@mail.com",
-    to: ["nograe117@gmail.com", "t@h.fr"],
-    amount: 1520,
-    date: new Date(),
-    extra: "C'était ben le fun ce WE avec les pélo"
-  },
-  {
-    name: "Mojito",
-    from: "test@mail.com",
-    to: ["test@mail.com", "t@h.fr"],
-    amount: 120,
-    date: new Date(),
-    extra: "C'était ben le fun ce WE avec les pélo"
-  }
-]

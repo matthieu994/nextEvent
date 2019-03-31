@@ -75,8 +75,15 @@ class UserProvider extends Component {
           })
         ).then(() => {
           let sortedEvents = sortObject(events, "date")
-          this.setState({
-            events: sortedEvents
+
+          Promise.all(
+            sortedEvents.map(async event => {
+              event.properties.users = await this.getEventUsers(event)
+            })
+          ).then(() => {
+            this.setState({
+              events: sortedEvents
+            })
           })
         })
       })
@@ -93,7 +100,7 @@ class UserProvider extends Component {
         .doc(id)
         .get()
         .then(doc => {
-          resolve(doc.data())
+          resolve(doc.data() || [])
         })
     })
   }
@@ -129,6 +136,28 @@ class UserProvider extends Component {
       .catch(err => {
         console.warn("Error getting documents", err)
       })
+  }
+
+  async getEventUsers(event) {
+    if (!event.properties) return []
+
+    const friends = this.state.friends
+    let users = {}
+
+    await Promise.all(
+      event.properties.users.map(async userID => {
+        await firebase
+          .firestore()
+          .collection("users")
+          .doc(userID)
+          .get()
+          .then(doc => {
+            users[userID] = doc.data()
+          })
+      })
+    )
+
+    return users
   }
 
   setFriend = (email, status) => {

@@ -20,14 +20,15 @@ export default class EventsListScreen extends Component {
     if (!this.state.events) return null
     return this.state.events.map(doc => {
       let event = this.state.events.find(e => e.id === doc.id)
-      return (
-        <SingleEvent
-          event={event}
-          id={event.id}
-          key={event.id}
-          navigation={this.props.navigation}
-        />
-      )
+      if (event.properties)
+        return (
+          <SingleEvent
+            event={event}
+            id={event.id}
+            key={event.id}
+            navigation={this.props.navigation}
+          />
+        )
     })
   }
 
