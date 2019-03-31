@@ -29,7 +29,7 @@ module.exports = {
 
     if (!isEmail(email)) errorMessage = errorText.wrongMailFormat
     else if (!isAlpha(displayName) || !displayName)
-      errorMessage = errorText.wrongFormatUsername
+      errorMessage = errorText.wrongFormatDisplayName
     else if (!isAlpha(familyName) || !familyName)
       errorMessage = errorText.wrongFormatFamilyName
     else if (!password)
@@ -60,8 +60,24 @@ module.exports = {
     if (!password)
       errorMessage = errorText.emptyPassword
 
-    if(errorMessage) {
+    if (errorMessage) {
       next(errorMessage)
+      return false
+    }
+
+    return true
+  },
+
+  checkNames: (displayName, familyName, next) => {
+    let errMessage = null
+
+    if (!isAlpha(displayName))
+      errMessage = errorText.wrongFormatDisplayName
+    if (!isAlpha(familyName))
+      errMessage = errorText.wrongFormatFamilyName
+
+    if(errMessage) {
+      next(errMessage)
       return false
     }
 

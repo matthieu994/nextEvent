@@ -1,11 +1,18 @@
 import React, { Component } from "react"
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, ScrollView } from "react-native"
 import firebase from "react-native-firebase"
 import { Button, Divider, Icon } from "react-native-elements"
 import ImagePicker from "react-native-image-picker"
 import RNFetchBlob from "rn-fetch-blob"
 import { UserContext } from "../Provider/UserProvider"
-import { MyOverlay, types, basicOverlay, colors, checkAccountDeleteCredentials } from '../lib'
+import {
+  MyOverlay,
+  types,
+  basicOverlay,
+  colors,
+  checkAccountDeleteCredentials,
+  checkNames
+} from '../lib'
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -23,7 +30,9 @@ const options = {
 
 export default class UserSettingsScreen extends Component {
   state = {
-    visibleOverlay: false
+    visibleOverlay: false,
+    loadingUploadingButton: false,
+    loadingDeletePhotoButton: false
   }
 
   overlay = basicOverlay
@@ -51,24 +60,26 @@ export default class UserSettingsScreen extends Component {
         this.overlay = {
           ...basicOverlay,
           text: "Changer mon mot de passe",
-          action: ({ text, text2 }, next) => {
-            if (!checkAccountDeleteCredentials(text, next))
-              return
-            this.checkCredentials(text)
-              .then(() => {
-                firebase.auth()
-                  .currentUser
-                  .updatePassword(text2)
-                  .then(() => this.dropdownAlert("success", "Votre mot de passe a été mis à jour", ""))
-                  .catch(err => console.log(err))
-              })
-          },
+          action: (texts, next) => this.changePassword(texts, next),
           secondTextEntry: true,
           inputPlaceholder: 'Mot de passe actuel',
           inputPlaceholder2: 'Nouveau mot de passe',
           buttonTitle: "Changer le mot de passe"
         }
         break;
+      case types.CHANGENAMES:
+        this.overlay = {
+          ...basicOverlay,
+          inputPlaceholder: this.context.user.displayName,
+          inputPlaceholder2: this.context.user.familyName,
+          buttonTitle: "Modifier les noms",
+          secondTextEntry: true,
+          text: "Changer Le nom affiché",
+          secureTextEntry: false,
+          secureTextEntry2: false,
+          action: (texts, next) => this.changeNames(texts, next)
+        }
+        break
       default:
         this.overlay = basicOverlay
         break
@@ -77,12 +88,55 @@ export default class UserSettingsScreen extends Component {
     this.setState({ visibleOverlay: true })
   }
 
+  changePassword({ text, text2 }, next) {
+    if (!checkAccountDeleteCredentials(text, next))
+      return
+    this.checkCredentials(text)
+      .then(() => {
+        firebase.auth()
+          .currentUser
+          .updatePassword(text2)
+          .then(() => this.dropdownAlert("success", "Votre mot de passe a été mis à jour", ""))
+          .catch(err => console.error(err))
+      })
+  }
+
+  changeNames({ text, text2 }, next) {
+    if (text === "")
+      text = this.context.user.displayName
+    if (text2 === "")
+      text2 = this.context.user.familyName
+
+    if (!checkNames(text, text2, next))
+      return
+
+    firebase.firestore()
+      .collection('users')
+      .doc(this.context.user.email)
+      .update({
+        displayName: text,
+        familyName: text2
+      })
+      .then(() => {
+        this.dropdownAlert("success", "Vos informations sont mis à jour", "")
+        this.context.setUserState({
+          displayName: text,
+          familyName: text2
+        })
+      })
+  }
+
   checkCredentials(password) {
     const credential = firebase.auth.EmailAuthProvider.credential(this.context.user.email, password)
     return firebase.auth()
       .currentUser
       .reauthenticateWithCredential(credential)
-      .catch(err => console.error(err))
+      .catch(err => this.dropdownAlert("error", UserSettingsScreen.getMessage(err.code), ""))
+  }
+
+  static getMessage(errCode) {
+    if (errCode === "auth/wrong-password")
+      return "Mot de passe incorrecte"
   }
 
   deleteUser(password, next) {
@@ -98,32 +152,37 @@ export default class UserSettingsScreen extends Component {
             this.dropdownAlert("success", "Votre compte a été supprimé !", "")
             this.props.navigation.navigate("Loading")
           })
-          .catch(error => console.error(error))
+          .catch(err => {
+          })
       })
-      .catch(err => console.error(err))
     this.setState({ visibleOverlay: false })
   }
 
   selectImage() {
-    this.props.navigation.setParams({ test: "image" })
+    if(this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
+      return
 
     ImagePicker.showImagePicker(options, response => {
-      if (!response.didCancel && !response.error) {
+      if (response.didCancel || response.error)
+        return
+      const callBack = () => {
         this.uploadImage(response.uri)
           .then(url => {
-            this.dropdownAlert("success", "Votre photo a été ajoutée !", "")
-
             firebase
               .functions()
               .httpsCallable("setPhotoURL")(url)
-              .then(() => {
+              .then(() => this.setState({ loadingUploadingButton: false }, () => {
                 this.context.setPhotoURL(url)
-              })
-              .catch(error => console.error(error))
+                  .then(() => this.dropdownAlert("success", "Votre photo a été ajoutée !", ""))
+              }))
+              .catch(error => console.error(error) && this.setState({ loadingUploadingButton: false }))
           })
-          .catch(error => console.error(error))
+          .catch(error => console.error(error) && this.setState({ loadingUploadingButton: false }))
       }
+
+      this.setState({ loadingUploadingButton: true }, callBack)
     })
+
   }
 
   uploadImage(uri, mime = "application/octet-stream") {
@@ -147,6 +206,8 @@ export default class UserSettingsScreen extends Component {
   }
 
   deleteProfileImage() {
+    if(this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
+      return
     if (!this.context.user.photoURL)
       return this.dropdownAlert(
         "error",
@@ -154,93 +215,121 @@ export default class UserSettingsScreen extends Component {
         ""
       )
 
-    firebase
-      .storage()
-      .ref(`${this.context.user.email}/images/profile.jpg`)
-      .delete()
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(this.context.user.email)
-          .update({ photoURL: null })
-          .then(() => {
-            this.dropdownAlert("success", "Votre photo a été supprimée !", "")
+    this.setState({ loadingDeletePhotoButton: true }, () => {
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(this.context.user.email)
+        .update({ photoURL: null })
+        .then(() => this.setState({ loadingDeletePhotoButton: false },
+          () => {
             this.context.setPhotoURL(null)
-          })
-      })
+            this.dropdownAlert("success", "Votre photo a été supprimée !", "")
+          }))
+        .catch(() => this.setState({ loadingDeletePhotoButton: false },
+          err => console.error(err)))
+    })
   }
+
 
   render() {
     return (
-      <View style={styles.container}>
-        <Button
-          icon={
-            <Icon
-              name="pencil-outline"
-              type="material-community"
-              size={18}
-              color="white"
-              containerStyle={styles.buttonIconStyle}
+      <ScrollView contentContainerStyle={{
+        justifyContent: 'space-between',
+        flex: 1
+      }}>
+        <View style={styles.container}>
+          <Button
+            icon={
+              <Icon
+                name="pencil-outline"
+                type="material-community"
+                size={18}
+                color="white"
+                containerStyle={styles.buttonIconStyle}
+              />
+            }
+            buttonStyle={[styles.buttonStyle, { minWidth: '60%' }]}
+            onPress={() => this.toggleOverlay(types.CHANGENAMES)}
+            title="Modifier Nom et prénom"
+          />
+
+          <Button
+            icon={
+              <Icon
+                name="pencil-outline"
+                type="material-community"
+                size={18}
+                color="white"
+                containerStyle={styles.buttonIconStyle}
+              />
+            }
+            buttonStyle={[styles.buttonStyle, { minWidth: '60%' }]}
+            onPress={() => this.toggleOverlay(types.CHANGEPASSWORD)}
+            title="Changer mon mot de passe"
+          />
+          <Divider style={styles.divider}/>
+          <View style={styles.photo}>
+            <Button
+              icon={
+                <Icon
+                  name="camera"
+                  type="material-community"
+                  size={18}
+                  color="white"
+                  containerStyle={styles.buttonIconStyle}
+                />
+              }
+              loading={this.state.loadingUploadingButton}
+              buttonStyle={styles.buttonStyle}
+              containerStyle={{ width: '48%' }}
+              onPress={() => this.selectImage()}
+              title="Ajouter une photo"
             />
-          }
-          buttonStyle={styles.buttonStyle}
-          onPress={() => this.toggleOverlay(types.CHANGEPASSWORD)}
-          title="Changer mon mot de passe"
-        />
-        <Divider style={{
-          height: 10,
-          backgroundColor: 'blue'
-        }}/>
-        <Button
-          icon={
-            <Icon
-              name="camera"
-              type="material-community"
-              size={18}
-              color="white"
-              containerStyle={styles.buttonIconStyle}
+            <Button
+              icon={
+                <Icon
+                  name="camera-off"
+                  type="material-community"
+                  size={18}
+                  color="white"
+                  containerStyle={styles.buttonIconStyle}
+                />
+              }
+              loading={this.state.loadingDeletePhotoButton}
+              buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
+              containerStyle={{ width: '48%' }}
+              disabled={!this.context.user.photoURL}
+              onPress={() => this.deleteProfileImage()}
+              title="Supprimer ma photo"
             />
-          }
-          buttonStyle={styles.buttonStyle}
-          onPress={() => this.selectImage()}
-          title="Ajouter une photo"
-        />
-        <Button
-          icon={
-            <Icon
-              name="camera-off"
-              type="material-community"
-              size={18}
-              color="white"
-              containerStyle={styles.buttonIconStyle}
-            />
-          }
-          buttonStyle={[styles.buttonStyle, { backgroundColor: "red" }]}
-          onPress={() => this.deleteProfileImage()}
-          title="Supprimer ma photo"
-        />
-        <Button
-          icon={
-            <Icon
-              name="account-remove"
-              type="material-community"
-              size={18}
-              color="white"
-              containerStyle={styles.buttonIconStyle}
-            />
-          }
-          onPress={() => this.toggleOverlay(types.DELETEUSER)}
-          title="Supprimer mon compte"
-          buttonStyle={[styles.buttonStyle, styles.deleteButton]}
-        />
+          </View>
+        </View>
+
+        <View style={{ alignItems: 'center' }}>
+          <Divider style={styles.divider}/>
+          <Button
+            icon={
+              <Icon
+                name="account-remove"
+                type="material-community"
+                size={18}
+                color="white"
+                containerStyle={styles.buttonIconStyle}
+              />
+            }
+            onPress={() => this.toggleOverlay(types.DELETEUSER)}
+            title="Supprimer mon compte"
+            buttonStyle={[styles.buttonStyle, styles.deleteButton]}
+          />
+        </View>
         <MyOverlay
           remove={() => this.setState({ visibleOverlay: false })}
           visible={this.state.visibleOverlay}
           dropdownAlert={this.dropdownAlert}
           {...this.overlay}
         />
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -254,13 +343,27 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     marginTop: 10,
-    elevation: 2
+    elevation: 5
   },
   deleteButton: {
-    backgroundColor: colors.redButtonBackground
+    backgroundColor: colors.redButtonBackground,
+    marginBottom: 40
   },
   container: {
     alignItems: 'center',
     flex: 1,
+  },
+  photo: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%'
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'gray',
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 20
   }
 })

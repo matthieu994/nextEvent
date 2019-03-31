@@ -1,11 +1,11 @@
 const functions = require("firebase-functions")
 const admin = require("firebase-admin")
-
-var serviceAccount = require("./admin-key.json")
+const serviceAccount = require("./admin-key.json")
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://nextevent-869ce.firebaseio.com"
+  databaseURL: "https://nextevent-869ce.firebaseio.com",
+  storageBucket: "nextevent-869ce.appspot.com"
 })
 
 const runtimeOpts = {
@@ -14,7 +14,8 @@ const runtimeOpts = {
 
 exports.setPhotoURL = functions
   .runWith(runtimeOpts)
-  .https.onCall((photoURL, context) => {
+  .https
+  .onCall((photoURL, context) => {
     return admin
       .firestore()
       .collection("users")
@@ -26,7 +27,8 @@ exports.setPhotoURL = functions
 
 exports.createUserDocument = functions
   .runWith(runtimeOpts)
-  .https.onCall(({ displayName, familyName, email }, _context) => {
+  .https
+  .onCall(({ displayName, familyName, email }, _context) => {
     return admin
       .firestore()
       .collection("users")
@@ -39,7 +41,8 @@ exports.createUserDocument = functions
 
 exports.getUserData = functions
   .runWith(runtimeOpts)
-  .https.onCall((_data, context) => {
+  .https
+  .onCall((_data, context) => {
     return new Promise((resolve, reject) => {
       admin
         .firestore()
@@ -57,7 +60,8 @@ exports.getUserData = functions
 
 exports.searchUser = functions
   .runWith(runtimeOpts)
-  .https.onCall(({ email }, context) => {
+  .https
+  .onCall(({ email }, context) => {
     return admin
       .firestore()
       .collection("users")
@@ -71,6 +75,39 @@ exports.searchUser = functions
       })
   })
 
+exports.deletePhoto = functions.firestore.document('users/{emailId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+
+      admin.storage()
+        .bucket()
+        .getFiles((err, data)=> {
+          if(err) {
+            console.error(err)
+            return
+          }
+          console.log("les fichiers :")
+          console.log(data)
+        })
+
+    return Promise.all([() => {
+      if (newValue.photoURL)
+        return
+      admin.storage()
+        .bucket()
+        .file(`${context.params.emailId}/images/profile.jpg`)
+        .delete()
+        .then(() => {
+          return console.log(`photo supprimé user:${context.params.emailId}`);
+        })
+        .catch(err => console.error(err))
+    }, () => {
+      change.after.ref.set(newValue)
+    }])
+      .then(() => console.log("all done"))
+      .catch(err => console.error(err))
+
+  })
 /*
 function deleteAllUsers(nextPageToken) {
   admin
