@@ -1,28 +1,22 @@
 import React, { Component } from "react"
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native"
-import { ListItem } from "react-native-elements"
+import { StyleSheet, View, ScrollView, Dimensions } from "react-native"
+import { ListItem, Text } from "react-native-elements"
 import { Header } from "react-navigation"
 import firebase from "react-native-firebase"
 import { UserContext } from "../Provider/UserProvider"
+import BottomButton from "../Modules/BottomButton"
+import { sortObject, sortArray } from "../lib/functions/tools"
 
 /* TEMPLATE DATABASE-> DEPENSE
   spentList : [
     {
       name : str,
-      from : str,
-      to : [],
+      date : date,
+      from : str, // email
+      to : [], // email
       amount : int,
       currency : str, //GLOBAL EVENT VARIABLE//
-      date : date,
-      extra : str
-    },
-    {
-      name : str,
-      from : str,
-      to : [],
-      amount : int,
-      currency : str,
-      date : date,
+      payback: bool // Remboursement
       extra : str
     }
   ]
@@ -34,55 +28,40 @@ export default class PaymentListScreen extends Component {
     return { tabBarLabel: "Liste des dépenses" }
   }
 
-  constructor() {
-    super()
-    this.state = {
-      spentList: [
-        {
-          name: "Ski 2019",
-          from: "Jean",
-          to: ["Jean", "Bob", "Alice", "John"],
-          amount: 120,
-          date: "02 mars 2019",
-          extra: "Journée au ski lourd xptdr"
-        },
-        {
-          name: "Voyage à Bab El Oued",
-          from: "Alice",
-          to: ["Alice", "Jean"],
-          amount: 420,
-          date: "01 avril 2018",
-          extra: "C'est ben le fun"
-        },
-        {
-          name: "Le week-end des vrais",
-          from: "Alice",
-          to: [
-            "Alice",
-            "Bob",
-            "Philippe",
-            "John",
-            "Gerard",
-            "Rallye",
-            "JeSaisPlus"
-          ],
-          amount: 1520,
-          date: "28 avril 2019",
-          extra: "C'était ben le fun ce WE avec les pélo"
-        }
-      ]
-    }
+  state = {
+    payments: []
   }
 
   componentDidMount() {
     this.getSpentList()
+
+    this.listener = firebase
+      .firestore()
+      .collection("events")
+      .doc(this.context.currentEvent)
+      .collection("payments")
+      .onSnapshot(() => {
+        this.listener = firebase
+          .firestore()
+          .collection("events")
+          .doc(this.context.currentEvent)
+          .collection("payments")
+          .onSnapshot(snapshot => {
+            let payments = this.state.payments
+            snapshot.docChanges.forEach(s => {
+              if (!payments.find(e => e.id === s.doc.id))
+                payments.push({ id: s.doc.id, properties: s.doc.data() })
+            })
+            this.setState({ payments: sortArray(payments, "date") })
+          })
+      })
+  }
+
+  componentWillUnmount() {
+    this.listener()
   }
 
   getSpentList() {
-    // console.warn(this.props.navigation.state.params)
-    // let { event, id } = this.props.navigation.state.params
-    // if (!id) return
-
     firebase
       .firestore()
       .collection("events")
@@ -90,32 +69,38 @@ export default class PaymentListScreen extends Component {
       .collection("payments")
       .get()
       .then(payment => {
+        let payments = {}
         payment.forEach(doc => {
-          // TOUTES LES DÉPENSES SONT ICI
+          payments[doc.id] = doc.data()
         })
+        this.setState({ payments: sortObject(payments, "date") })
       })
   }
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <Text>EventList Page</Text>
-        <View style={[styles.contents, styles.info]}>
-          {this.state.spentList.map((item, i) => (
-            <ListItem
-              key={i}
-              title={this.state.spentList[i].name}
-              onPress={() =>
-                this.props.navigation.navigate("ModifyPayment", {
-                  list: this.state.spentList[i]
-                })
-              }
-            />
-          ))}
-        </View>
-        <View />
-        <View style={styles.button} />
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.list}>
+            {this.state.payments.length < 1 && <Text>Aucune dépense</Text>}
+            {this.state.payments.map((item, i) => (
+              <ListItem
+                containerStyle={styles.payment}
+                key={i}
+                title={item.properties.name}
+                onPress={() =>
+                  this.props.navigation.navigate("ModifyPayment", {
+                    list: item
+                  })
+                }
+              />
+            ))}
+          </View>
+        </ScrollView>
+        <BottomButton
+          onPress={() => this.props.navigation.navigate("CreatePayment")}
+        />
+      </View>
     )
   }
 }
@@ -124,8 +109,50 @@ PaymentListScreen.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {
-    //backgroundColor : 'red',
-    display: "flex",
-    height: Dimensions.get("window").height - Header.HEIGHT - 24 // extra 24 unit (notif bar)
+    justifyContent: "center",
+    flex: 1
+  },
+  list: {
+    flex: 1
+  },
+  payment: {
+    borderWidth: 0,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "black"
   }
 })
+
+const spentList = [
+  {
+    name: "Ski 2019",
+    from: "nograe117@gmail.com",
+    to: ["nograe117@gmail.com", "t@h.fr", "test@mail.com"],
+    amount: 120,
+    date: new Date(),
+    extra: "Journée au ski lourd xptdr"
+  },
+  {
+    name: "Voyage à Bab El Oued",
+    from: "test@mail.com",
+    to: ["test@mail.com", "nograe117@gmail.com"],
+    amount: 420,
+    date: new Date(),
+    extra: "C'est ben le fun"
+  },
+  {
+    name: "Le week-end des vrais",
+    from: "test@mail.com",
+    to: ["nograe117@gmail.com", "t@h.fr"],
+    amount: 1520,
+    date: new Date(),
+    extra: "C'était ben le fun ce WE avec les pélo"
+  },
+  {
+    name: "Mojito",
+    from: "test@mail.com",
+    to: ["test@mail.com", "t@h.fr"],
+    amount: 120,
+    date: new Date(),
+    extra: "C'était ben le fun ce WE avec les pélo"
+  }
+]

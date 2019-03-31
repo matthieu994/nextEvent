@@ -8,12 +8,7 @@ import {
   Keyboard
 } from "react-native"
 import firebase from "react-native-firebase"
-import {
-  Button,
-  Icon,
-  SearchBar,
-  ListItem
-} from "react-native-elements"
+import { Button, Icon, SearchBar, ListItem } from "react-native-elements"
 import { isEmail } from "validator"
 import * as Animation from "react-native-animatable"
 import { UserContext } from "../Provider/UserProvider"
@@ -34,7 +29,7 @@ export default class FriendsListScreen extends Component {
   updateSearch = input => {
     if (
       input !== this.context.user.email &&
-      !this.context.user.friends[input] &&
+      !this.context.friends[input] &&
       isEmail(input)
     )
       this.searchUser(input)
@@ -118,14 +113,12 @@ export default class FriendsListScreen extends Component {
             {this.state.displayResultsModal && (
               <FriendModal
                 friend={this.state.searchResults}
+                hideSearchBar={() => this.toggleSearchBar()}
                 removeFriendModal={() => this.endAnimation()}
                 defaultProfileURL={this.context.defaultProfileURL}
               />
             )}
-            <FriendsList
-              friends={this.context.user.friends}
-              defaultProfileURL={this.context.defaultProfileURL}
-            />
+            <FriendsList />
           </View>
           <View style={styles.bottom}>
             <Button
@@ -167,7 +160,7 @@ class FriendsList extends Component {
   }
 
   displayButton(friend) {
-    if (this.props.friends[friend] === "SENT")
+    if (this.context.friends[friend].status === "SENT")
       return (
         <Button
           title="Annuler"
@@ -175,7 +168,7 @@ class FriendsList extends Component {
           onPress={() => this.changeFriendStatus(friend, "DELETE")}
         />
       )
-    if (this.props.friends[friend] === "PENDING")
+    if (this.context.friends[friend].status === "PENDING")
       return (
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <Button
@@ -193,7 +186,7 @@ class FriendsList extends Component {
           />
         </View>
       )
-    if (this.props.friends[friend] === "OK")
+    if (this.context.friends[friend].status === "OK")
       return (
         <Button
           title="Supprimer"
@@ -205,21 +198,20 @@ class FriendsList extends Component {
   }
 
   displayName(friend) {
-    return friend
-    // return `${this.props.friends[friend].displayName} ${
-    //   this.props.friends[friend].familyName
-    // }`
+    return `${this.context.friends[friend].displayName} ${
+      this.context.friends[friend].familyName
+    }`
   }
 
   render() {
-    if (!this.props.friends) return null
+    if (!this.context.friends) return null
     return (
       <View style={{ width: "100%" }}>
-        {Object.keys(this.props.friends).map((friend, index) => {
+        {Object.keys(this.context.friends).map((friend, index) => {
           return (
             <ListItem
               key={index}
-              title={friend}
+              title={this.displayName(friend)}
               containerStyle={{
                 paddingHorizontal: 9,
                 paddingVertical: 4,
@@ -231,8 +223,8 @@ class FriendsList extends Component {
                 size: 55,
                 source: {
                   uri:
-                    this.props.friends[friend].photoURL ||
-                    this.props.defaultProfileURL
+                    this.context.friends[friend].photoURL ||
+                    this.context.defaultProfileURL
                 }
               }}
               rightElement={() => this.displayButton(friend)}
@@ -255,6 +247,7 @@ class FriendModal extends Component {
       this.context.setFriend
     )
     this.props.removeFriendModal()
+    this.props.hideSearchBar()
   }
 
   render() {
@@ -275,9 +268,9 @@ class FriendModal extends Component {
           rightElement={
             <Button title="Ajouter" onPress={() => this.addFriend()} />
           }
-          title={
-            this.props.friend.displayName + " " + this.props.friend.familyName
-          }
+          title={`${this.props.friend.displayName} ${
+            this.props.friend.familyName
+          }`}
         />
       </View>
     )

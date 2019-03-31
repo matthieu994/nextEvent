@@ -19,33 +19,6 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import { Header } from "react-navigation"
 import { colors } from "../lib"
 
-/*
-   spentList : [
-    {
-      name : 'Ski 2019',
-      from : 'Jean',
-      to : ['Jean', 'Bob', 'Alice', 'John'],
-      amount : 120,
-      date : '02 mars 2019',
-      extra : "Journée au ski lourd xptdr"
-      
-    }
-
-    currentSelect : str,
-
-    selection : [
-      {
-        name : str,
-        checked : bool,
-        amountTopPay : int, 
-      },
-      
-    ]
-      
-
-
-    */
-
 export default class ModifyPayment extends Component {
   static navigationOptions = {
     title: "Modifier dépense",
@@ -83,14 +56,17 @@ export default class ModifyPayment extends Component {
 
   shareAmount = () => {
     let count = 0
-    this.state.selection.map(
-      (item, i) => (count = item.checked ? count + 1 : count)
-    ),
-      (share = this.state.spent.amount / count),
-      (tmp = this.state.selection),
-      this.state.selection.map(
-        (item, i) => (tmp[i].owe = item.checked ? share : 0)
-      )
+    this.state.selection.forEach(item => {
+      count = item.checked ? count + 1 : count
+    })
+
+    const share = this.state.amount / count
+
+    const tmp = this.state.selection
+
+    this.state.selection.forEach((item, i) => {
+      tmp[i].owe = item.checked ? share : 0
+    })
 
     this.setState({ selection: tmp })
   }
