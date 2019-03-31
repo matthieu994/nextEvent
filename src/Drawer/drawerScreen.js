@@ -5,7 +5,8 @@ import {
   View,
   Text,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  AppState
 } from "react-native"
 import { DrawerItems, SafeAreaView, DrawerActions } from "react-navigation"
 import firebase from "react-native-firebase"
@@ -18,6 +19,7 @@ export default class drawerScreen extends Component {
   }
 
   componentDidMount() {
+    AppState.addEventListener("change", () => this.props.navigation.dispatch(DrawerActions.closeDrawer()))
     firebase
       .storage()
       .ref(`default_profile.png`)

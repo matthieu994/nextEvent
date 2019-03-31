@@ -1,12 +1,16 @@
 import { Button, Divider, Input, Overlay, Text } from "react-native-elements";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { AppState, StyleSheet, View } from "react-native";
 import { colors } from '../'
 
 export class MyOverlay extends React.Component {
   state = {
     text: '',
     text2: ''
+  }
+
+  componentDidMount(): void {
+    AppState.addEventListener("change", () => this.props.remove())
   }
 
   render() {
@@ -26,7 +30,7 @@ export class MyOverlay extends React.Component {
           }}
           inputContainerStyle={styles.inputContainer}
           secureTextEntry={this.props.secureTextEntry}
-          placeHolder={this.props.inputPlaceholder}
+          placeholder={this.props.inputPlaceholder}
           value={this.state.text}
           onChangeText={value => this.setState({ text: value })}
           placeholderTextColor={colors.inputPlaceholder}
@@ -38,7 +42,7 @@ export class MyOverlay extends React.Component {
           }}
           inputContainerStyle={styles.inputContainer}
           secureTextEntry={this.props.secureTextEntry2}
-          placeHolder={this.props.inputPlaceholder2}
+          placeholder={this.props.inputPlaceholder2}
           value={this.state.text2}
           onChangeText={value => this.setState({ text2: value })}
           placeholderTextColor={colors.inputPlaceholder}
@@ -47,9 +51,9 @@ export class MyOverlay extends React.Component {
           onPress={() => {
             this.props.action({ text: this.state.text, text2: this.state.text2 }, message => {
               this.setState({ text: '' })
-              this.props.remove()
               this.props.dropdownAlert("error", message, "")
             })
+            this.props.remove()
           }}
           title={this.props.buttonTitle}
           buttonStyle={styles.button}/>
@@ -73,7 +77,8 @@ export class MyOverlay extends React.Component {
 
 export const types = {
   DELETEUSER: 'DELETEUSER',
-  CHANGEPASSWORD: 'CHANGEPASSWORD'
+  CHANGEPASSWORD: 'CHANGEPASSWORD',
+  CHANGENAMES: 'CHANGENAMES'
 }
 
 export const basicOverlay = {

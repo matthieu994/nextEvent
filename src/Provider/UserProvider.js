@@ -25,7 +25,8 @@ class UserProvider extends Component {
       setDefaultProfileImage: this.setDefaultProfileImage,
       dropdownAlert: this.dropdownAlert,
       initProvider: () => this.initProvider(),
-      clearState: () => this.clearState()
+      clearState: () => this.clearState(),
+      setUserState: obj => this.setState({user: {...this.state.user, ...obj}})
     }
   }
 
@@ -139,10 +140,10 @@ class UserProvider extends Component {
     this.setState({ friends })
   }
 
-  setPhotoURL = photoURL => {
+  setPhotoURL = async photoURL => {
     let user = this.state.user
     user.photoURL = photoURL
-    this.setState({ user })
+    await this.setState({ user })
   }
 
   setDefaultProfileImage = defaultProfileURL => {
