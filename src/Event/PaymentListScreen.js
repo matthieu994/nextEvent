@@ -49,7 +49,8 @@ export default class PaymentListScreen extends Component {
           .onSnapshot(snapshot => {
             let payments = this.state.payments
             snapshot.docChanges.forEach(s => {
-              payments.push({ id: s.doc.id, properties: s.doc.data() })
+              if (!payments.find(e => e.id === s.doc.id))
+                payments.push({ id: s.doc.id, properties: s.doc.data() })
             })
             this.setState({ payments: sortArray(payments, "date") })
           })
