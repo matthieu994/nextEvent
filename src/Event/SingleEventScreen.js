@@ -93,17 +93,19 @@ export default class SingleEventScreen extends Component {
   deleteEvent() {
     const eventId = this.context.currentEvent
 
+    // Delete payments
+
     firebase
       .firestore()
       .collection("events")
       .doc(eventId)
       .delete()
       .then(() => {
-        this.state.event.properties.users.forEach(user => {
+        Object.keys(this.state.event.properties.users).map(email => {
           firebase
             .firestore()
             .collection("users")
-            .doc(user)
+            .doc(email)
             .collection("events")
             .doc(eventId)
             .delete()

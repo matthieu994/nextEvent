@@ -54,7 +54,10 @@ export default class FriendsListScreen extends Component {
 
   toggleSearchBar() {
     if (this.state.searchVisible == null) this.setState({ searchVisible: true })
-    else this.setState({ searchVisible: !this.state.searchVisible },() => Keyboard.dismiss())
+    else
+      this.setState({ searchVisible: !this.state.searchVisible }, () =>
+        Keyboard.dismiss()
+      )
   }
 
   startAnimation = () => {
@@ -209,26 +212,36 @@ class FriendsList extends Component {
       <View style={{ width: "100%" }}>
         {Object.keys(this.context.friends).map((friend, index) => {
           return (
-            <ListItem
-              key={index}
-              title={this.displayName(friend)}
-              containerStyle={{
+            <View
+              style={{
                 paddingHorizontal: 9,
                 paddingVertical: 4,
                 width: "100%",
+                marginBottom: 1,
+                justifyContent: "center",
                 backgroundColor: "rgb(220, 230, 240)"
               }}
-              leftAvatar={{
-                rounded: true,
-                size: 55,
-                source: {
-                  uri:
-                    this.context.friends[friend].photoURL ||
-                    this.context.defaultProfileURL
-                }
-              }}
-              rightElement={() => this.displayButton(friend)}
-            />
+              key={index}
+            >
+              <ListItem
+                containerStyle={{
+                  margin: 0,
+                  padding: 0,
+                  backgroundColor: "rgb(220, 230, 240)"
+                }}
+                title={this.displayName(friend)}
+                leftAvatar={{
+                  rounded: true,
+                  size: 55,
+                  source: {
+                    uri:
+                      this.context.friends[friend].photoURL ||
+                      this.context.defaultProfileURL
+                  }
+                }}
+                rightElement={() => this.displayButton(friend)}
+              />
+            </View>
           )
         })}
       </View>
