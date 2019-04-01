@@ -88,8 +88,9 @@ EventsListScreen.contextType = UserContext
 
 class SingleEvent extends Component {
   redirectToEvent() {
-    this.props.navigation.navigate("SingleEvent")
+    this.props.navigation.setParams({ name: this.props.event.properties.name })
     this.context.setCurrentEvent(this.props.id)
+    this.props.navigation.navigate("Event")
   }
 
   render() {

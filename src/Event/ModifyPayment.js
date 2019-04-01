@@ -127,7 +127,7 @@ export default class ModifyPayment extends Component {
       console.warn("Cannot open date picker", message)
     }
   }
-  
+
   displayName(user) {
     return `${this.state.event.properties.users[user].displayName} ${
       this.state.event.properties.users[user].familyName
