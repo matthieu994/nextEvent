@@ -10,6 +10,7 @@ import { ScrollView } from "react-native-gesture-handler"
 import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
+import { displayDate } from "../lib/functions/tools"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -51,11 +52,6 @@ export default class CreateEventScreen extends Component {
     }
   }
 
-  getDate() {
-    return `${this.state.date.getDate()}/${this.state.date.getMonth() +
-      1}/${this.state.date.getFullYear()}`
-  }
-
   selectFriend = friend => {
     let selectedFriends = this.state.selectedFriends
 
@@ -72,7 +68,7 @@ export default class CreateEventScreen extends Component {
 
   createEvent() {
     if (!this.state.name)
-      this.context.dropdownAlert(
+      return this.context.dropdownAlert(
         "error",
         "Erreur",
         "Le nom ne peut pas être vide."
@@ -175,7 +171,9 @@ export default class CreateEventScreen extends Component {
               />
             }
           />
-          <Text h4>{this.getDate()}</Text>
+          <Text style={{ fontSize: 18 }}>
+            {displayDate(this.state.date, "dddd D MMMM YYYY")}
+          </Text>
         </View>
         <ScrollView
           style={{

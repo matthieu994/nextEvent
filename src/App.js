@@ -16,6 +16,7 @@ import drawerScreen from "./Drawer/drawerScreen"
 import EventsListScreen from "./Profile/EventsListScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
+import EventHeader from "./Event/Header"
 import CreateEventScreen from "./Event/CreateEventScreen"
 import SingleEventScreen from "./Event/SingleEventScreen"
 import PaymentListScreen from "./Event/PaymentListScreen"
@@ -97,12 +98,7 @@ const EventStackTabNavigator = createStackNavigator(
   },
   {
     headerMode: "screen",
-    defaultNavigationOptions: {
-      headerStyle: {
-        elevation: 0,
-        backgroundColor: "rgb(39, 137, 173)"
-      }
-    }
+    defaultNavigationOptions: EventHeader.defaultNavigationOptions
   }
 )
 

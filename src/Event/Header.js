@@ -1,20 +1,26 @@
-import React from "react"
+import React, { Component } from "react"
 import firebase from "react-native-firebase"
 import { Icon } from "react-native-elements"
 import { DrawerActions } from "react-navigation"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import { UserContext } from "../Provider/UserProvider"
 
-export default {
+const Header = {
   defaultNavigationOptions: ({ navigation }) => ({
+    headerStyle: {
+      elevation: 0,
+      backgroundColor: "rgb(39, 137, 173)"
+    },
     headerLeft: (
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+        onPress={() => navigation.navigate("Main")}
         style={{ padding: 10 }}
       >
-        <Icon name="menu" underlayColor="rgb(240, 240, 240)" />
+        <Icon name="arrow-back" color="rgb(240, 240, 240)" />
       </TouchableOpacity>
     ),
+    title: this.contextType,
     headerRight: (
       <TouchableOpacity
         activeOpacity={0.6}
@@ -30,9 +36,12 @@ export default {
         <Icon
           name="logout-variant"
           type="material-community"
-          underlayColor="rgb(240, 240, 240)"
+          color="rgb(240, 240, 240)"
         />
       </TouchableOpacity>
     )
   })
 }
+
+Header.contextType = UserContext
+export default Header

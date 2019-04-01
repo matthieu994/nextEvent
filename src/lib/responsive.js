@@ -24,6 +24,7 @@ export const inputContainer = {
 export const bottomContainer = {
   margin: 20,
   position: "absolute",
+  left: 0,
   bottom: 0,
   borderRadius: 40,
   overflow: "hidden",

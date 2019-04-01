@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 2,
     backgroundColor: 'gray',
-    width: '100%',
+    width: '90%',
     marginTop: 15,
     marginBottom: 15
   }
