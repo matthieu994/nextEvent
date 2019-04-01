@@ -54,7 +54,7 @@ export default class FriendsListScreen extends Component {
 
   toggleSearchBar() {
     if (this.state.searchVisible == null) this.setState({ searchVisible: true })
-    else this.setState({ searchVisible: !this.state.searchVisible })
+    else this.setState({ searchVisible: !this.state.searchVisible },() => Keyboard.dismiss())
   }
 
   startAnimation = () => {
