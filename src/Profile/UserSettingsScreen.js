@@ -11,7 +11,8 @@ import {
   basicOverlay,
   colors,
   checkAccountDeleteCredentials,
-  checkNames
+  checkNames,
+  firebaseErrorCode
 } from '../lib'
 
 const Blob = RNFetchBlob.polyfill.Blob
@@ -50,7 +51,6 @@ export default class UserSettingsScreen extends Component {
       case types.DELETEUSER:
         this.overlay = {
           ...basicOverlay,
-          text: "Confirmation de suppression",
           action: ({ text }, next) => this.deleteUser(text, next),
           inputPlaceholder: "Mot de passe",
           buttonTitle: "Supprimer mon compte"
@@ -59,7 +59,6 @@ export default class UserSettingsScreen extends Component {
       case types.CHANGEPASSWORD:
         this.overlay = {
           ...basicOverlay,
-          text: "Changer mon mot de passe",
           action: (texts, next) => this.changePassword(texts, next),
           secondTextEntry: true,
           inputPlaceholder: 'Mot de passe actuel',
@@ -74,7 +73,6 @@ export default class UserSettingsScreen extends Component {
           inputPlaceholder2: this.context.user.familyName,
           buttonTitle: "Modifier les noms",
           secondTextEntry: true,
-          text: "Changer Le nom affiché",
           secureTextEntry: false,
           secureTextEntry2: false,
           action: (texts, next) => this.changeNames(texts, next)
@@ -131,12 +129,7 @@ export default class UserSettingsScreen extends Component {
     return firebase.auth()
       .currentUser
       .reauthenticateWithCredential(credential)
-      .catch(err => this.dropdownAlert("error", UserSettingsScreen.getMessage(err.code), ""))
-  }
-
-  static getMessage(errCode) {
-    if (errCode === "auth/wrong-password")
-      return "Mot de passe incorrecte"
+      .catch(err => this.dropdownAlert("error", firebaseErrorCode(err.code), ""))
   }
 
   deleteUser(password, next) {
@@ -251,7 +244,7 @@ export default class UserSettingsScreen extends Component {
             }
             buttonStyle={[styles.buttonStyle, { minWidth: '60%' }]}
             onPress={() => this.toggleOverlay(types.CHANGENAMES)}
-            title="Modifier Nom et prénom"
+            title="Modifier nom et prénom"
           />
 
           <Button
@@ -360,10 +353,10 @@ const styles = StyleSheet.create({
     width: '90%'
   },
   divider: {
-    height: 1,
+    height: 2,
     backgroundColor: 'gray',
     width: '90%',
-    marginTop: 20,
-    marginBottom: 20
+    marginTop: 15,
+    marginBottom: 15
   }
 })

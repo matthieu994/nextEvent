@@ -11,6 +11,8 @@ admin.initializeApp({
 const runtimeOpts = {
   timeoutSeconds: 10
 }
+const bucket = admin.storage()
+  .bucket()
 
 exports.setPhotoURL = functions
   .runWith(runtimeOpts)
@@ -28,7 +30,7 @@ exports.setPhotoURL = functions
 exports.createUserDocument = functions
   .runWith(runtimeOpts)
   .https
-  .onCall(({ displayName, familyName, email }, _context) => {
+  .onCall(({ displayName, familyName, email }) => {
     return admin
       .firestore()
       .collection("users")
@@ -78,35 +80,19 @@ exports.searchUser = functions
 exports.deletePhoto = functions.firestore.document('users/{emailId}')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
+    const { emailId } = context.params
 
-      admin.storage()
-        .bucket()
-        .getFiles((err, data)=> {
-          if(err) {
-            console.error(err)
-            return
-          }
-          console.log("les fichiers :")
-          console.log(data)
-        })
-
-    return Promise.all([() => {
-      if (newValue.photoURL)
-        return
-      admin.storage()
-        .bucket()
-        .file(`${context.params.emailId}/images/profile.jpg`)
+    if (!newValue.photoURL)
+      bucket.file(`${emailId}/images/profile.jpg`)
         .delete()
         .then(() => {
-          return console.log(`photo supprimé user:${context.params.emailId}`);
+          return console.log("photo supprimé")
         })
         .catch(err => console.error(err))
-    }, () => {
-      change.after.ref.set(newValue)
-    }])
-      .then(() => console.log("all done"))
-      .catch(err => console.error(err))
 
+    return change.after.ref.set(newValue)
+      .then(() => console.log("all done !!"))
+      .catch(err => console.error(err))
   })
 /*
 function deleteAllUsers(nextPageToken) {

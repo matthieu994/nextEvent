@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native"
 import { Input, Button, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
-import { checkSignupCredentials, createUser, colors } from "../lib"
+import { checkSignupCredentials, createUser, colors, firebaseErrorCode } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class SignUp extends Component {
@@ -52,7 +52,7 @@ export default class SignUp extends Component {
             .catch(error => console.log(error))
         })
         .catch(error => {
-          if (this._isMounted) this.getMessage(error.code)
+          if (this._isMounted) this.setMessage(firebaseErrorCode(error.code))
           this.setState({ buttonLoading: false })
         })
     })
@@ -60,15 +60,6 @@ export default class SignUp extends Component {
 
   setMessage = errorMessage => {
     this.dropdown.alertWithType("error", "Erreur", errorMessage)
-  }
-
-  getMessage(errorCode) {
-    if (errorCode === "auth/email-already-in-use")
-      this.setMessage("L'adresse email est deja utilisée.")
-    if (errorCode === "auth/invalid-email")
-      this.setMessage("L'adresse email n'est pas valide.")
-    if (errorCode === "auth/weak-password")
-      this.setMessage("Le mot de passe doit faire plus de 6 caractères.")
   }
 
   render() {
@@ -105,7 +96,6 @@ export default class SignUp extends Component {
           placeholderTextColor={colors.inputPlaceholder}
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
-          autoCapitalize="none"
           onChangeText={email => this.setState({ email })}
           value={this.state.email}
           leftIconContainerStyle={{ marginLeft: 0 }}

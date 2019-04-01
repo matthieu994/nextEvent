@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React, { createContext, Component, useReducer } from "react"
 import firebase from "react-native-firebase"
-import { sortObject } from "../lib/functions/tools"
+import { sortObject } from "../lib"
 import DropdownAlert from "react-native-dropdownalert"
 
 export const UserContext = createContext()
