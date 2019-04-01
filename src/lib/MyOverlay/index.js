@@ -16,13 +16,6 @@ export class MyOverlay extends React.Component {
   render() {
     const children = (
       <>
-        <Text h3 style={styles.text}>{this.props.text}</Text>
-        <View>
-          <Divider style={{
-            height: 10,
-            backgroundColor: '#e1e8ee'
-          }}/>
-        </View>
         <Input
           inputStyle={{
             color: colors.inputStyle,
@@ -60,6 +53,8 @@ export class MyOverlay extends React.Component {
       </>
     )
 
+    const taille = this.props.secondTextEntry ? 250 : 180
+
     return (
       <Overlay
         isVisible={this.props.visible}
@@ -68,7 +63,7 @@ export class MyOverlay extends React.Component {
           this.setState({ text: "" })
         }}
         overlayStyle={styles.container}
-        height={400}
+        height={taille}
         children={children}
       />
     )
@@ -82,7 +77,6 @@ export const types = {
 }
 
 export const basicOverlay = {
-  text: "",
   action: () => {
   },
   inputPlaceholder: '',
@@ -107,14 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   button: {
-    width: '60%',
     marginBottom: 10,
     backgroundColor: colors.redButtonBackground
-  },
-  text: {
-    padding: 5,
-    position: 'absolute',
-    top: 0,
-    textAlign: 'center'
   }
 })

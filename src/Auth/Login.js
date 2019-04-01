@@ -5,7 +5,7 @@ import { Button, Input, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
 import { UserContext } from "../Provider/UserProvider"
-import { colors, checkLoginCredentials } from "../lib"
+import { colors, checkLoginCredentials, firebaseErrorCode } from "../lib"
 
 export default class Login extends Component {
   state = { email: "", password: "", buttonLoading: false }
@@ -14,7 +14,7 @@ export default class Login extends Component {
     super(props)
     this._isMounted = false
   }
-  
+
   componentDidMount() {
     this._isMounted = true
     this.context.clearState()
@@ -37,7 +37,7 @@ export default class Login extends Component {
           this.props.navigation.navigate("Loading")
         })
         .catch(error => {
-          if (this._isMounted) this.getMessage(error.code)
+          if (this._isMounted) this.setMessage(firebaseErrorCode(error.code))
           this.setState({ buttonLoading: false })
         })
     })
@@ -45,17 +45,6 @@ export default class Login extends Component {
 
   setMessage = errorMessage => {
     this.dropdown.alertWithType("error", "Erreur", errorMessage)
-  }
-
-  getMessage(errorCode) {
-    if (errorCode === "auth/user-disabled")
-      this.setMessage("Votre compte a été supprimé.")
-    if (errorCode === "auth/invalid-email")
-      this.setMessage("Votre adresse email n'est pas valide.")
-    if (errorCode === "auth/user-not-found")
-      this.setMessage("L'adresse email n'est pas reconnue.")
-    if (errorCode === "auth/wrong-password")
-      this.setMessage("Votre mot de passe n'est pas reconnu.")
   }
 
   render() {
@@ -73,7 +62,7 @@ export default class Login extends Component {
           autoCapitalize="none"
           keyboardType="email-address"
           inputStyle={{ color: colors.inputStyle }}
-          placeholderTextColor="#62717E"
+          placeholderTextColor={colors.inputPlaceholder}
           inputContainerStyle={styles.inputContainer}
           placeholder="Email"
           onChangeText={email => this.setState({ email })}
