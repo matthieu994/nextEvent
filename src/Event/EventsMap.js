@@ -4,6 +4,7 @@ import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps"
 import { Icon, Text, Button, Overlay } from "react-native-elements"
 import firebase from "react-native-firebase"
 import { UserContext } from "../Provider/UserProvider"
+import { colors } from "../lib"
 
 export default class EventsMap extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -102,7 +103,10 @@ export default class EventsMap extends Component {
     if (this.context.events.find(event => event.id === id)) {
       button = (
         <Button
-          buttonStyle={{ margin: 5 }}
+          buttonStyle={{
+            margin: 5,
+            backgroundColor: colors.redButtonBackground
+          }}
           title="Quitter l'événement"
           onPress={() => this.leaveEvent(id)}
         />
