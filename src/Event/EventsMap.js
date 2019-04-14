@@ -1,10 +1,11 @@
 import React, { Component } from "react"
 import { StyleSheet, View } from "react-native"
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps"
-import { Icon, Text, Button } from "react-native-elements"
+import { Icon, Text, Button, Overlay } from "react-native-elements"
 import firebase from "react-native-firebase"
+import { UserContext } from "../Provider/UserProvider"
 
-export default class MapPicker extends Component {
+export default class EventsMap extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
       headerMode: "none",
@@ -13,8 +14,8 @@ export default class MapPicker extends Component {
   }
 
   state = {
-    selectCoordinates: null,
-    events: []
+    events: [],
+    overlay: null
   }
 
   getEvents() {
@@ -44,6 +45,89 @@ export default class MapPicker extends Component {
       })
   }
 
+  joinEvent(id) {
+    this.setState({ overlay: null })
+    this.context.userRef
+      .collection("events")
+      .doc(id)
+      .set()
+      .then(() => {
+        firebase
+          .firestore()
+          .collection("events")
+          .doc(id)
+          .update({
+            users: firebase.firestore.FieldValue.arrayUnion(
+              this.context.user.email
+            )
+          })
+        this.props.navigation.state.params.refreshEvents()
+        this.context.setCurrentEvent(id)
+        this.props.navigation.goBack()
+      })
+  }
+
+  leaveEvent(id) {
+    this.context.userRef
+      .collection("events")
+      .doc(id)
+      .delete()
+      .then(() => {
+        firebase
+          .firestore()
+          .collection("events")
+          .doc(id)
+          .update({
+            users: firebase.firestore.FieldValue.arrayRemove(
+              this.context.user.email
+            )
+          })
+        this.props.navigation.state.params.refreshEvents()
+        this.getEvents()
+        this.setState({ overlay: null })
+      })
+  }
+
+  renderEvent(id) {
+    if (!id) return <View />
+    let event = this.state.events[id]
+    let button = (
+      <Button
+        buttonStyle={{ margin: 5 }}
+        title="Rejoindre l'événement"
+        onPress={() => this.joinEvent(id)}
+      />
+    )
+
+    if (this.context.events.find(event => event.id === id)) {
+      button = (
+        <Button
+          buttonStyle={{ margin: 5 }}
+          title="Quitter l'événement"
+          onPress={() => this.leaveEvent(id)}
+        />
+      )
+    }
+
+    return (
+      <View style={{ alignItems: "center" }}>
+        <Text h2>{event.name}</Text>
+        <Text h4 style={{ marginVertical: 8 }}>
+          {event.description}
+        </Text>
+        <View style={{ marginBottom: 10, alignItems: "center" }}>
+          <Text style={{ fontSize: 20, fontStyle: "italic", margin: 5 }}>
+            Participants:
+          </Text>
+          {event.users.map(user => (
+            <Text key={user}>{user}</Text>
+          ))}
+        </View>
+        {button}
+      </View>
+    )
+  }
+
   componentDidMount() {
     this.getEvents()
     navigator.geolocation.getCurrentPosition(
@@ -55,18 +139,6 @@ export default class MapPicker extends Component {
     )
   }
 
-  setLocation(e) {
-    this.setState({ selectCoordinates: e.nativeEvent.coordinate })
-  }
-
-  goBack() {
-    let coords = this.state.selectCoordinates
-      ? this.state.selectCoordinates
-      : this.coords
-    this.props.navigation.goBack()
-    this.props.navigation.state.params.setCoords(coords)
-  }
-
   renderMarkers() {
     if (this.state.events.length < 1) return
 
@@ -76,13 +148,21 @@ export default class MapPicker extends Component {
       return (
         <Marker
           key={id}
-          title={event.name}
-          description={event.description}
           coordinate={{
             latitude: event.coords._latitude,
             longitude: event.coords._longitude
           }}
-        />
+        >
+          <Callout
+            style={{ flex: 1 }}
+            onPress={() => this.setState({ overlay: id })}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              {event.name}
+            </Text>
+            <Text>{event.description}</Text>
+          </Callout>
+        </Marker>
       )
     })
   }
@@ -91,6 +171,15 @@ export default class MapPicker extends Component {
     if (!this.coords) return null
     return (
       <View style={styles.container}>
+        <Overlay
+          width="auto"
+          height="auto"
+          isVisible={this.state.overlay != null}
+          overlayStyle={{ alignItems: "center" }}
+          onBackdropPress={() => this.setState({ overlay: null })}
+        >
+          {this.renderEvent(this.state.overlay)}
+        </Overlay>
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
@@ -106,35 +195,22 @@ export default class MapPicker extends Component {
           loadingEnabled
           toolbarEnabled
           customMapStyle={mapConfig}
-          onPress={e => this.setLocation(e)}
         >
-          {this.state.selectCoordinates && (
-            <Marker coordinate={this.state.selectCoordinates}>
-              <View>
-                <Text>
-                  {this.props.navigation.state.params.name || "Événement"}
-                </Text>
-                <Icon
-                  type="material-community"
-                  size={30}
-                  name="account-group"
-                />
-              </View>
-            </Marker>
-          )}
           {this.renderMarkers()}
         </MapView>
         <View style={styles.floatingButtonContainer}>
           <Button
-            title="Définir la localisation"
+            title="Retour"
             buttonStyle={styles.floatingButton}
-            onPress={() => this.goBack()}
+            onPress={() => this.props.navigation.goBack()}
           />
         </View>
       </View>
     )
   }
 }
+
+EventsMap.contextType = UserContext
 
 const styles = StyleSheet.create({
   container: {

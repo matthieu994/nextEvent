@@ -24,6 +24,7 @@ import ModifyPayment from "./Event/ModifyPayment"
 import CreatePayment from "./Event/CreatePayment"
 import UserProvider from "./Provider/UserProvider"
 import MapPicker from "./Event/MapPicker"
+import EventsMap from "./Event/EventsMap"
 
 const EventsListStack = createStackNavigator(
   {
@@ -33,7 +34,8 @@ const EventsListStack = createStackNavigator(
     CreateEvent: {
       screen: CreateEventScreen
     },
-    MapPicker
+    MapPicker,
+    EventsMap
   },
   {
     defaultNavigationOptions: defaultSettings.defaultNavigationOptions,

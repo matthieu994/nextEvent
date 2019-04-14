@@ -11,6 +11,7 @@ import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
 import { displayDate } from "../lib/functions/tools"
+import BottomButton from "../Modules/BottomButton"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -206,7 +207,7 @@ export default class CreateEventScreen extends Component {
           />
           {this.state.coords.latitude && (
             <Icon
-              containerStyle={{ margin: 5 }}
+              containerStyle={{ margin: 5, marginBottom: 16 }}
               name="check"
               type="material-community"
               size={24}

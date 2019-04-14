@@ -78,6 +78,16 @@ export default class EventsListScreen extends Component {
         </View>
         <BottomButton
           onPress={() => this.props.navigation.navigate("CreateEvent")}
+          style={{ alignItems: "flex-start" }}
+        />
+        <BottomButton
+          name="arrow-right"
+          width={60}
+          onPress={() =>
+            this.props.navigation.navigate("EventsMap", {
+              refreshEvents: () => this.refresh()
+            })
+          }
         />
       </View>
     )
