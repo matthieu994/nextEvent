@@ -31,6 +31,16 @@ export default class Loading extends React.Component {
       .then(enabled => {
         if (!enabled) firebase.messaging().requestPermission()
       })
+
+    this.notificationDisplayedListener = firebase
+      .notifications()
+      .onNotificationDisplayed(notification => {
+        // Process your notification as required
+        // ANDROID: Remote notifications do not contain the channel ID. You will have to specify this manually if you'd like to re-display the notification.
+      })
+    this.notificationListener = firebase
+      .notifications()
+      .onNotification(notification => {})
   }
 
   componentWillUnmount() {
