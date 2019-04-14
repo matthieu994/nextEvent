@@ -24,10 +24,19 @@ export default class Loading extends React.Component {
           .catch(err => console.warn(err))
       }
     })
+
+    firebase
+      .messaging()
+      .hasPermission()
+      .then(enabled => {
+        if (!enabled) firebase.messaging().requestPermission()
+      })
   }
 
   componentWillUnmount() {
     this.unsubscribe()
+    this.notificationDisplayedListener()
+    this.notificationListener()
   }
 
   render() {
