@@ -11,8 +11,7 @@ admin.initializeApp({
 const runtimeOpts = {
   timeoutSeconds: 10
 }
-const bucket = admin.storage()
-  .bucket()
+const bucket = admin.storage().bucket()
 
 exports.setPhotoURL = functions
   .runWith(runtimeOpts)
@@ -46,17 +45,9 @@ exports.getUserData = functions
   .https
   .onCall((_data, context) => {
     return new Promise((resolve, reject) => {
-      admin
-        .firestore()
-        .collection("users")
-        .doc(context.auth.token.email)
-        .get()
-        .then(user => {
-          return resolve(user.data())
-        })
-        .catch(error => {
-          reject(error)
-        })
+      getUser(context.auth.token.email)
+        .then(user => resolve(user))
+        .catch(error => reject(error))
     })
   })
 
@@ -64,18 +55,45 @@ exports.searchUser = functions
   .runWith(runtimeOpts)
   .https
   .onCall(({ email }, context) => {
-    return admin
-      .firestore()
-      .collection("users")
-      .doc(email)
-      .get()
-      .then(user => {
-        return user.data()
-      })
+    return getUser(email)
       .catch(error => {
         return error
       })
   })
+
+exports.sendNotification = functions
+  .runWith(runtimeOpts)
+  .https
+  .onCall(({notification}) => admin.messaging().send(notification))
+
+exports.eventNotification = functions.firestore.document('events/{eventId}')
+  .onCreate(async (change, context) => {
+    const event = change.data()
+
+    event.users.splice(event.users.findIndex(user => user === event.owner),1)
+    const eventOwner = await getUser(event.owner)
+    event.users.forEach(async user => {
+      const {fcmToken} = await getUser(user)
+      console.log(fcmToken)
+      if(!fcmToken) return
+
+      const message = {
+        token: fcmToken,
+        notification: {
+          title: 'Nouvel Evénement !!',
+          body: eventOwner.displayName + " vous a ajouté dans l'événement : " + event.name
+        }
+      }
+
+      exports.sendNotification(message)
+        .then(() => console.log('Message de l\'événement ' + event.name))
+        .catch(err => console.error(err))
+    })
+  })
+
+function getUser(user) {
+  return admin.firestore().collection('users').doc(user).get().then(user => user.data() )
+}
 
 exports.deletePhoto = functions.firestore.document('users/{emailId}')
   .onUpdate((change, context) => {

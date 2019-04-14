@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React from "react"
 import {
   createStackNavigator,
   createSwitchNavigator,
@@ -167,8 +167,8 @@ const handleCustomTransition = ({ scenes }) => {
   const nextScene = scenes[scenes.length - 1]
   if (
     prevScene &&
-    prevScene.route.routeName == "Login" &&
-    nextScene.route.routeName == "SignUp"
+    prevScene.route.routeName === "Login" &&
+    nextScene.route.routeName === "SignUp"
   )
     return flipX(800)
   if (
@@ -183,6 +183,7 @@ const handleCustomTransition = ({ scenes }) => {
 const AppContainer = createAppContainer(appStack)
 
 class App extends React.Component {
+
   render() {
     return (
       <UserProvider>
