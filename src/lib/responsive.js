@@ -33,5 +33,6 @@ export const bottomContainer = {
 
 export const notificationTypes = {
   addUser: 'addUser',
-  newEvent: 'newEvent'
+  newEvent: 'newEvent',
+  friendReqAccepted: 'friendReqAccepted'
 }
