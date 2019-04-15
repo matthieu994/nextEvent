@@ -49,6 +49,12 @@ export default class MapPicker extends Component {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.coords = position.coords
+        this._map.animateToRegion({
+          latitude: this.coords.latitude,
+          longitude: this.coords.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121
+        })
       },
       error => console.warn(error),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
@@ -60,9 +66,10 @@ export default class MapPicker extends Component {
   }
 
   goBack() {
-    let coords = this.state.selectCoordinates
-      ? this.state.selectCoordinates
-      : this.coords
+    const coords =
+      this.state.selectCoordinates && this.state.selectCoordinates.latitude
+        ? this.state.selectCoordinates
+        : this.coords
     this.props.navigation.goBack()
     this.props.navigation.state.params.setCoords(coords)
   }
@@ -88,25 +95,25 @@ export default class MapPicker extends Component {
   }
 
   render() {
-    if (!this.coords) return null
     return (
       <View style={styles.container}>
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
-          region={{
-            latitude: this.coords.latitude,
-            longitude: this.coords.longitude,
+          initialRegion={{
+            latitude: 45.5087,
+            longitude: -73.554,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121
           }}
+          ref={component => (this._map = component)}
+          onPress={e => this.setLocation(e)}
+          customMapStyle={mapConfig}
           showsCompass
           showsMyLocationButton
           showsUserLocation
           loadingEnabled
           toolbarEnabled
-          customMapStyle={mapConfig}
-          onPress={e => this.setLocation(e)}
         >
           {this.state.selectCoordinates && (
             <Marker coordinate={this.state.selectCoordinates}>

@@ -233,7 +233,6 @@ class UserProvider extends Component {
     return (
       <UserContext.Provider value={this.state}>
         <DropdownAlert
-          safeAreaStyle={{}}
           ref={ref => (this.dropdown = ref)}
           closeInterval={2500}
         />
