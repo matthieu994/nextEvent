@@ -13,6 +13,11 @@ const runtimeOpts = {
 }
 const bucket = admin.storage().bucket()
 
+const NotifcationTypes = {
+  newEvent: 'Event',
+  addUser: 'addUser'
+}
+
 exports.setPhotoURL = functions
   .runWith(runtimeOpts)
   .https
@@ -64,7 +69,19 @@ exports.searchUser = functions
 exports.sendNotification = functions
   .runWith(runtimeOpts)
   .https
-  .onCall(({notification}) => admin.messaging().send(notification))
+  .onCall(async ({message, email}) => {
+    if(email) {
+      let { fcmToken } = await getUser(email)
+      message.token = fcmToken
+    }
+
+    if(!message.token)
+      return Promise.resolve()
+
+    console.log(message)
+    return await admin.messaging().send(message)
+      .catch(err => console.error(err))
+  })
 
 exports.eventNotification = functions.firestore.document('events/{eventId}')
   .onCreate(async (change, context) => {
@@ -74,7 +91,6 @@ exports.eventNotification = functions.firestore.document('events/{eventId}')
     const eventOwner = await getUser(event.owner)
     event.users.forEach(async user => {
       const {fcmToken} = await getUser(user)
-      console.log(fcmToken)
       if(!fcmToken) return
 
       const message = {
@@ -82,10 +98,13 @@ exports.eventNotification = functions.firestore.document('events/{eventId}')
         notification: {
           title: 'Nouvel Evénement !!',
           body: eventOwner.displayName + " vous a ajouté dans l'événement : " + event.name
+        },
+        data: {
+          type: NotifcationTypes.newEvent
         }
       }
 
-      exports.sendNotification(message)
+      sendNotification({message})
         .then(() => console.log('Message de l\'événement ' + event.name))
         .catch(err => console.error(err))
     })
