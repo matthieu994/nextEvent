@@ -17,7 +17,7 @@
   },
   "scripts": {
     "android": "react-native run-android",
-    "emulator": "S:\\Documents\\SDK\\emulator\\emulator.exe -avd Nexus_5X_API_28",
+    "emulator": "S:\\Documents\\SDK\\emulator\\emulator.exe -avd Nexus_5X_Edited_API_28",
     "ios": "react-native run-ios --simulator=\"iPhone 8 Plus\"",
     "apk": "sh S:\\Documents\\nextEvent\\android\\gradlew tasks",
     "rename": "node ./bin/rename.js",
