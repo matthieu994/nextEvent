@@ -12,8 +12,12 @@ export default class Notification {
     * */
     this.notificationListener = firebase.notifications()
       .onNotification((notification) => {
+        if (!notification)
+          return
         const { title, body } = notification;
         this.context.dropdownAlert('info', title, body);
+        if (notification.data.type === notificationTypes.addUser)
+          this.context.getFriends()
       });
 
     /*
@@ -21,6 +25,8 @@ export default class Notification {
     * */
     this.notificationOpenedListener = firebase.notifications()
       .onNotificationOpened((notificationOpen) => {
+        if (!notificationOpen)
+          return
         const { title, body } = notificationOpen.notification;
         this.context.dropdownAlert('info', title, body);
       });
@@ -31,26 +37,27 @@ export default class Notification {
     firebase.notifications()
       .getInitialNotification()
       .then(notificationOpen => {
-        if (notificationOpen) {
-          const { title, body, data } = notificationOpen.notification;
+        if (!notificationOpen)
+          return
+        console.log(notificationOpen)
+        const { title, body, data } = notificationOpen.notification;
 
-          switch (data) {
-            case notificationTypes.addUser:
-              this.context.navigation.navigate("Amis")
-              break
-            default:
-              this.context.dropdownAlert('info',title, body)
-              break
-          }
+        switch (data) {
+          case notificationTypes.addUser:
+            this.context.navigation.navigate("Amis")
+            break
+          default:
+            this.context.dropdownAlert('info', title, body)
+            break
         }
       })
-        /*
-        * Triggered for data only payload in foreground
-        * */
-        this.messageListener = firebase.messaging()
-          .onMessage((message) => {
-            //process data message
-            console.log(JSON.stringify(message));
-          });
-      }
+    /*
+    * Triggered for data only payload in foreground
+    * */
+    this.messageListener = firebase.messaging()
+      .onMessage((message) => {
+        //process data message
+        console.log(JSON.stringify(message));
+      });
   }
+}

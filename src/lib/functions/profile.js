@@ -1,4 +1,5 @@
 import firebase from "react-native-firebase"
+import { notificationTypes } from "../responsive";
 
 export const changeFriendStatus = (currentEmail, email, status, setFriend) => {
   if (currentEmail === email) return
@@ -24,6 +25,20 @@ export const changeFriendStatus = (currentEmail, email, status, setFriend) => {
       if (status === "OK" && setFriend) {
         setFriend(email, status)
         changeFriendStatus(email, currentEmail, "OK")
+      }
+      if(status === "OK" && !setFriend) {
+        let message = {
+          notification: {
+            title: 'Demande d\'ami accepté',
+            body: ''
+          } ,
+          data: {
+            type: notificationTypes.friendReqAccepted
+          }
+        }
+
+        firebase.functions()
+          .httpsCallable("sendNotification")({message, email})
       }
     })
     .catch(error => console.warn(error))
