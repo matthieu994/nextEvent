@@ -11,6 +11,7 @@ import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
 import { displayDate } from "../lib/functions/tools"
+import BottomButton from "../Modules/BottomButton"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -33,7 +34,8 @@ export default class CreateEventScreen extends Component {
     name: "",
     desc: "",
     date: new Date(),
-    selectedFriends: []
+    selectedFriends: [],
+    coords: { latitude: null, longitude: null }
   }
 
   async datePicker() {
@@ -85,7 +87,11 @@ export default class CreateEventScreen extends Component {
         description: this.state.desc,
         date: this.state.date,
         users,
-        owner: this.context.user.email
+        owner: this.context.user.email,
+        coords: new firebase.firestore.GeoPoint(
+          this.state.coords.latitude,
+          this.state.coords.longitude
+        )
       })
       .then(event => {
         this.context.userRef
@@ -107,6 +113,10 @@ export default class CreateEventScreen extends Component {
 
         this.props.navigation.navigate("EventsList", { refresh: true })
       })
+  }
+
+  setCoords = coords => {
+    this.setState({ coords })
   }
 
   render() {
@@ -174,6 +184,36 @@ export default class CreateEventScreen extends Component {
           <Text style={{ fontSize: 18 }}>
             {displayDate(this.state.date, "dddd D MMMM YYYY")}
           </Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Button
+            containerStyle={{ marginBottom: 10, marginTop: 2 }}
+            onPress={() =>
+              this.props.navigation.navigate("MapPicker", {
+                name: this.state.name,
+                setCoords: this.setCoords
+              })
+            }
+            title="Définir la localisation"
+            icon={
+              <Icon
+                containerStyle={{ marginRight: 5 }}
+                name="map"
+                type="material-community"
+                size={24}
+                color="white"
+              />
+            }
+          />
+          {this.state.coords.latitude && (
+            <Icon
+              containerStyle={{ margin: 5, marginBottom: 16 }}
+              name="check"
+              type="material-community"
+              size={24}
+              color="green"
+            />
+          )}
         </View>
         <ScrollView
           style={{

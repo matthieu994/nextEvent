@@ -23,6 +23,8 @@ import PaymentListScreen from "./Event/PaymentListScreen"
 import ModifyPayment from "./Event/ModifyPayment"
 import CreatePayment from "./Event/CreatePayment"
 import UserProvider from "./Provider/UserProvider"
+import MapPicker from "./Event/MapPicker"
+import EventsMap from "./Event/EventsMap"
 
 const EventsListStack = createStackNavigator(
   {
@@ -31,7 +33,9 @@ const EventsListStack = createStackNavigator(
     },
     CreateEvent: {
       screen: CreateEventScreen
-    }
+    },
+    MapPicker,
+    EventsMap
   },
   {
     defaultNavigationOptions: defaultSettings.defaultNavigationOptions,

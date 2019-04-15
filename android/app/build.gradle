@@ -166,9 +166,13 @@ android {
 }
 
 dependencies {
+    implementation(project(':react-native-maps')) {
+      exclude group: 'com.android.support'
+      exclude module: 'appcompat-v7'
+      exclude module: 'support-v4'
+    }
     implementation project(':react-native-charts-wrapper')
     implementation project(':react-native-image-picker')
-    compile project(':react-native-image-picker')
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-gesture-handler')
@@ -185,7 +189,7 @@ dependencies {
   // Required dependencies
   //noinspection GradleCompatible
   implementation "com.google.firebase:firebase-core:16.0.6"
-  implementation "com.google.android.gms:play-services-base:16.0.1"
+  implementation "com.google.android.gms:play-services-base:16.1.0"
 
   /* -------------------------
    *   OPTIONAL FIREBASE SDKS

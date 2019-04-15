@@ -27,6 +27,7 @@ class UserProvider extends Component {
       initProvider: () => this.initProvider(),
       clearState: () => this.clearState(),
       setUserState: obj => this.setState({ user: { ...this.state.user, ...obj } })
+
     }
   }
 
@@ -76,11 +77,21 @@ class UserProvider extends Component {
         docs.forEach(doc => {
           events[doc.id] = {}
         })
-        Promise.all(
-          Object.keys(events)
-            .map(async doc => {
-              events[doc] = await this.getEventData(doc)
-              return events[doc]
+        return Promise.all(
+          Object.keys(events).map(async doc => {
+            events[doc] = await this.getEventData(doc)
+            return events[doc]
+          })
+        ).then(() => {
+          let sortedEvents = sortObject(events, "date")
+
+          return Promise.all(
+            sortedEvents.map(async event => {
+              event.properties.users = await this.getEventUsers(event)
+            })
+          ).then(() => {
+            this.setState({
+              events: sortedEvents
             })
         )
           .then(() => {
@@ -152,7 +163,7 @@ class UserProvider extends Component {
   }
 
   async getEventUsers(event) {
-    if (!event.properties) return []
+    if (!event.properties || !event.properties.users) return []
 
     const friends = this.state.friends
     let users = {}

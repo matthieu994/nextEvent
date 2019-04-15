@@ -44,9 +44,9 @@ export default class BottomButton extends Component {
             raised
             icon={
               <Icon
-                name="plus"
-                type="material-community"
-                size={30}
+                name={this.props.name || "plus"}
+                type={this.props.type || "material-community"}
+                size={this.props.size || 30}
                 color="white"
               />
             }
