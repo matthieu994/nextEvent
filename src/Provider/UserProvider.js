@@ -175,17 +175,20 @@ class UserProvider extends Component {
     let friends = this.state.friends
     if (status === "SENT") {
       this.getFriends()
-      let message = {
+      const message = {
         notification: {
-          title: 'Nouvelle Demande d\'ami !!',
-          body: this.state.user.displayName + ' Vous a envoyé une demande d\'ami !'
+          title: "Nouvelle demande d'ami !",
+          body:
+            this.state.user.displayName + " Vous a envoyé une demande d'ami !"
         },
         data: {
           type: notificationTypes.addUser
         }
       }
 
-      return firebase.functions().httpsCallable("sendNotification")({message, email})
+      return firebase
+        .functions()
+        .httpsCallable("sendNotification")({ message, email })
         .catch(err => console.error(err))
     }
     if (status === "DELETE") delete friends[email]
