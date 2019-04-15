@@ -137,6 +137,12 @@ export default class EventsMap extends Component {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.coords = position.coords
+        this._map.animateToRegion({
+          latitude: this.coords.latitude,
+          longitude: this.coords.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121
+        })
       },
       error => console.warn(error),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
@@ -172,7 +178,6 @@ export default class EventsMap extends Component {
   }
 
   render() {
-    if (!this.coords) return null
     return (
       <View style={styles.container}>
         <Overlay
@@ -187,18 +192,19 @@ export default class EventsMap extends Component {
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
-          region={{
-            latitude: this.coords.latitude,
-            longitude: this.coords.longitude,
+          initialRegion={{
+            latitude: 45.5087,
+            longitude: -73.554,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121
           }}
+          ref={component => (this._map = component)}
+          customMapStyle={mapConfig}
           showsCompass
           showsMyLocationButton
           showsUserLocation
           loadingEnabled
           toolbarEnabled
-          customMapStyle={mapConfig}
         >
           {this.renderMarkers()}
         </MapView>
