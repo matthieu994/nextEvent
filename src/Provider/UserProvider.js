@@ -26,16 +26,15 @@ class UserProvider extends Component {
       dropdownAlert: this.dropdownAlert,
       initProvider: () => this.initProvider(),
       clearState: () => this.clearState(),
-      setUserState: obj => this.setState({ user: { ...this.state.user, ...obj } })
-
+      setUserState: obj =>
+        this.setState({ user: { ...this.state.user, ...obj } })
     }
   }
 
   updateToken() {
     checkPermission()
       .then(fcmToken => {
-        if (!fcmToken || fcmToken === this.state.user.fcmToken)
-          return
+        if (!fcmToken || fcmToken === this.state.user.fcmToken) return
         return this.userRef.update({ fcmToken })
       })
       .catch(err => console.error(err))
@@ -52,9 +51,12 @@ class UserProvider extends Component {
           let user = {}
           user.email = firebase.auth().currentUser.email
           Object.assign(user, res.data)
-          this.setState({
-            user
-          }, this.updateToken)
+          this.setState(
+            {
+              user
+            },
+            this.updateToken
+          )
           this.getFriends()
           this.getEvents()
           resolve(user)
@@ -93,21 +95,8 @@ class UserProvider extends Component {
             this.setState({
               events: sortedEvents
             })
-        )
-          .then(() => {
-            let sortedEvents = sortObject(events, "date")
-
-            Promise.all(
-              sortedEvents.map(async event => {
-                event.properties.users = await this.getEventUsers(event)
-              })
-            )
-              .then(() => {
-                this.setState({
-                  events: sortedEvents
-                })
-              })
           })
+        })
       })
       .catch(err => {
         console.warn(err)
@@ -137,25 +126,23 @@ class UserProvider extends Component {
           friends[doc.id] = doc.data().status
         })
         Promise.all(
-          Object.keys(friends)
-            .map(async friendID => {
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(friendID)
-                .get()
-                .then(friend => {
-                  const status = friends[friendID]
-                  friends[friendID] = friend.data()
-                  friends[friendID].status = status
-                })
-            })
-        )
-          .then(() => {
-            this.setState({
-              friends
-            })
+          Object.keys(friends).map(async friendID => {
+            await firebase
+              .firestore()
+              .collection("users")
+              .doc(friendID)
+              .get()
+              .then(friend => {
+                const status = friends[friendID]
+                friends[friendID] = friend.data()
+                friends[friendID].status = status
+              })
           })
+        ).then(() => {
+          this.setState({
+            friends
+          })
+        })
       })
       .catch(err => {
         console.warn("Error getting documents", err)
@@ -228,9 +215,10 @@ class UserProvider extends Component {
   render() {
     return (
       <UserContext.Provider value={this.state}>
-        <DropdownAlert safeAreaStyle={{}}
-                       ref={ref => (this.dropdown = ref)}
-                       closeInterval={2500}
+        <DropdownAlert
+          safeAreaStyle={{}}
+          ref={ref => (this.dropdown = ref)}
+          closeInterval={2500}
         />
         {this.props.children}
       </UserContext.Provider>
