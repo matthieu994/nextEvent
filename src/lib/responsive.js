@@ -30,3 +30,8 @@ export const bottomContainer = {
   overflow: "hidden",
   elevation: 2
 }
+
+export const notificationTypes = {
+  addUser: 'addUser',
+  newEvent: 'newEvent'
+}

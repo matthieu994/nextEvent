@@ -12,13 +12,17 @@ import { DrawerItems, SafeAreaView, DrawerActions } from "react-navigation"
 import firebase from "react-native-firebase"
 import { Icon, Avatar } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
+import Notification from '../Modules/Notificaton'
 
 export default class drawerScreen extends Component {
   state = {
     defaultProfileImage: ""
   }
 
+  notif = new Notification(this.context)
+
   componentDidMount() {
+    this.notif.createNotificationListeners()
     AppState.addEventListener("change", () => this.props.navigation.dispatch(DrawerActions.closeDrawer()))
     firebase
       .storage()
@@ -28,6 +32,11 @@ export default class drawerScreen extends Component {
         this.context.setDefaultProfileImage(url)
       })
       .catch(err => console.warn(err))
+  }
+
+  componentWillUnmount(){
+    this.notif.notificationListener()
+    this.notif.notificationOpenedListener()
   }
 
   getProfileImage() {

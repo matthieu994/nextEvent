@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React, { createContext, Component, useReducer } from "react"
 import firebase from "react-native-firebase"
-import { sortObject, checkPermission } from "../lib"
+import { sortObject, checkPermission, notificationTypes } from "../lib"
 import DropdownAlert from "react-native-dropdownalert"
 
 export const UserContext = createContext()
@@ -173,7 +173,21 @@ class UserProvider extends Component {
 
   setFriend = (email, status) => {
     let friends = this.state.friends
-    if (status === "SENT") return this.getFriends()
+    if (status === "SENT") {
+      this.getFriends()
+      let message = {
+        notification: {
+          title: 'Nouvel Demande d\'ami !!',
+          body: this.state.user.displayName + ' Vous a envoyé une demande d\'ami !'
+        },
+        data: {
+          type: notificationTypes.addUser
+        }
+      }
+
+      firebase.functions().httpsCallable("sendNotification")({message, email})
+        .catch(err => console.error(err))
+    }
     if (status === "DELETE") delete friends[email]
     else friends[email].status = status
     this.setState({ friends })
