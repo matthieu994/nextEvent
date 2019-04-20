@@ -11,7 +11,7 @@ import { sortObject, sortArray, listenerFunction } from "../lib/functions/tools"
 export default class SingleEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: "Événement"
+      headerTitle: "test"
     }
   }
 
@@ -139,9 +139,6 @@ export default class SingleEventScreen extends Component {
             />
           </View>
         )}
-        <BottomButton
-          onPress={() => this.props.navigation.navigate("CreatePayment")}
-        />
       </View>
     )
   }

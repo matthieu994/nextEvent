@@ -3,10 +3,11 @@ import {
   createStackNavigator,
   createSwitchNavigator,
   createAppContainer,
-  createDrawerNavigator,
-  createMaterialTopTabNavigator
+  createDrawerNavigator
 } from "react-navigation"
+import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs"
 import { fromRight } from "react-navigation-transitions"
+import { Icon } from "react-native-elements"
 import { flipX, zoomIn } from "./Modules/react-navigation-transitions"
 import defaultSettings from "./Drawer/header"
 import Loading from "./Auth/Loading"
@@ -16,15 +17,17 @@ import drawerScreen from "./Drawer/drawerScreen"
 import EventsListScreen from "./Profile/EventsListScreen"
 import FriendsListScreen from "./Profile/FriendsListScreen"
 import UserSettingsScreen from "./Profile/UserSettingsScreen"
-import EventHeader from "./Event/Header"
+import { BottomBarHeader } from "./Event/Header"
 import CreateEventScreen from "./Event/CreateEventScreen"
 import SingleEventScreen from "./Event/SingleEventScreen"
 import PaymentListScreen from "./Event/PaymentListScreen"
 import ModifyPayment from "./Event/ModifyPayment"
 import CreatePayment from "./Event/CreatePayment"
+import EditEvent from "./Event/EditEvent"
 import UserProvider from "./Provider/UserProvider"
 import MapPicker from "./Event/MapPicker"
 import EventsMap from "./Event/EventsMap"
+import { colors } from "./lib"
 
 const EventsListStack = createStackNavigator(
   {
@@ -72,37 +75,54 @@ const PaymentStack = createStackNavigator(
   }
 )
 
-const EventTabNavigator = createMaterialTopTabNavigator(
+const EventTabNavigator = createMaterialBottomTabNavigator(
   {
     SingleEvent: {
-      screen: SingleEventScreen
+      screen: SingleEventScreen,
+      navigationOptions: {
+        tabBarIcon: (
+          <Icon
+            name="calendar"
+            type="material-community"
+            size={24}
+            color="white"
+          />
+        ),
+        tabBarLabel: "Événement"
+      }
     },
     PaymentStack: {
       screen: PaymentStack,
       navigationOptions: {
+        shifting: true,
+        tabBarIcon: (
+          <Icon
+            name="cash-multiple"
+            type="material-community"
+            size={24}
+            color="white"
+          />
+        ),
         tabBarLabel: "Dépenses"
       }
     }
   },
   {
-    tabBarOptions: {
-      style: {
-        backgroundColor: "rgb(39, 137, 173)"
-      },
-      indicatorStyle: {
-        backgroundColor: "rgb(88, 221, 195)"
-      }
-    }
+    shifting: true,
+    activeColor: "white",
+    inactiveColor: "#b3d7e5",
+    barStyle: { backgroundColor: colors.headerColor }
   }
 )
 
 const EventStackTabNavigator = createStackNavigator(
   {
-    EventTabNavigator
+    EventTabNavigator,
+    EditEvent
   },
   {
     headerMode: "screen",
-    defaultNavigationOptions: EventHeader.defaultNavigationOptions
+    defaultNavigationOptions: BottomBarHeader.defaultNavigationOptions
   }
 )
 
@@ -187,7 +207,6 @@ const handleCustomTransition = ({ scenes }) => {
 const AppContainer = createAppContainer(appStack)
 
 class App extends React.Component {
-
   render() {
     return (
       <UserProvider>

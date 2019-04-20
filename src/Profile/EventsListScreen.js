@@ -81,7 +81,7 @@ export default class EventsListScreen extends Component {
           style={{ alignItems: "flex-start" }}
         />
         <BottomButton
-          name="arrow-right"
+          name="map"
           width={60}
           onPress={() =>
             this.props.navigation.navigate("EventsMap", {
@@ -100,7 +100,7 @@ class SingleEvent extends Component {
   redirectToEvent() {
     this.props.navigation.setParams({ name: this.props.event.properties.name })
     this.context.setCurrentEvent(this.props.id)
-    this.props.navigation.navigate("Event")
+    this.props.navigation.navigate("Event", { eventName: "test" })
   }
 
   render() {

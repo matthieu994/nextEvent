@@ -1,4 +1,5 @@
 export const colors = {
+  headerColor: "rgb(39, 137, 173)",
   inputStyle: "#2E6171",
   inputPlaceholder: "#62717E",
   buttonBackground: "#2E6171",
