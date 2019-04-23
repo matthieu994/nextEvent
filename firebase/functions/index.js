@@ -13,9 +13,10 @@ const runtimeOpts = {
 }
 const bucket = admin.storage().bucket()
 
-const NotifcationTypes = {
+const notifcationTypes = {
   newEvent: 'Event',
-  addUser: 'addUser'
+  addUser: 'addUser',
+  newPayment:'newPayment'
 }
 
 exports.setPhotoURL = functions
@@ -83,6 +84,30 @@ exports.sendNotification = functions
       .catch(err => console.error(err))
   })
 
+exports.paymentsNotification = functions.firestore.document('events/{eventId}/payments/{paymentId}')
+  .onCreate(async (change, context) => {
+    const payment = change.data()
+
+    const paymentFrom = await getUser(payment.owner)
+
+    if(paymentFrom.fcmToken && paymentFrom.email !== context.auth.token.email) {
+      let message = {
+        notification: {
+          title: 'Nouvelle dépense',
+          body: 'Une nouvelle dépense a été ajoutée'
+        },
+        token: paymentFrom.fcmToken,
+        data: {
+          type: notifcationTypes.newPayment
+        }
+      }
+
+      sendNotification({message})
+        .then(() => console.log("Nouvelle dépense"))
+        .catch(err => console.error(err))
+    }
+  })
+
 exports.eventNotification = functions.firestore.document('events/{eventId}')
   .onCreate(async (change, context) => {
     const event = change.data()
@@ -100,7 +125,7 @@ exports.eventNotification = functions.firestore.document('events/{eventId}')
           body: eventOwner.displayName + " vous a ajouté dans l'événement : " + event.name
         },
         data: {
-          type: NotifcationTypes.newEvent
+          type: notifcationTypes.newEvent
         }
       }
 

@@ -33,9 +33,8 @@ export default class EventsListScreen extends Component {
   }
 
   refresh() {
-    this.context.getEvents().then(() => {
-      this.setState({ events: this.context.events })
-    })
+    this.context.getEvents()
+      .then(() => this.setState({ events: this.context.events }))
   }
 
   componentDidMount() {
@@ -73,7 +72,10 @@ export default class EventsListScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
+        <View style={{
+          flex: 1,
+          alignItems: "center"
+        }}>
           <ScrollView>{this.renderEvents()}</ScrollView>
         </View>
         <BottomButton
@@ -117,10 +119,10 @@ class SingleEvent extends Component {
             <Text>{this.props.event.properties.description}</Text>
           </View>
           <View style={styles.dateContainer}>
-            <Text
-              style={styles.date}
-            >{`${this.props.event.properties.date.getDate()}/${this.props.event.properties.date.getMonth() +
-              1}/${this.props.event.properties.date.getFullYear()}`}</Text>
+            <Text style={styles.date}>
+              {`${this.props.event.properties.date.getDate()}/${this.props.event.properties.date.getMonth() +
+              1}/${this.props.event.properties.date.getFullYear()}`}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
