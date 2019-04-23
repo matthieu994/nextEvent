@@ -27,7 +27,7 @@ export const changeFriendStatus = (currentEmail, email, status, setFriend) => {
         changeFriendStatus(email, currentEmail, "OK")
         let message = {
           notification: {
-            title: "Demande d'ami acceptée",
+            title: 'Demande d\'ami accepté',
             body: `${currentEmail} a accepté votre demande !`
           },
           data: {

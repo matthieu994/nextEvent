@@ -11,13 +11,23 @@ export default class Notification {
     * Triggered when a particular notification has been received in foreground
     * */
     this.notificationListener = firebase.notifications()
-      .onNotification((notification) => {
+      .onNotification(notification => {
         if (!notification)
           return
-        const { title, body } = notification;
+        const { title, body, data } = notification;
         this.context.dropdownAlert('info', title, body);
-        if (notification.data.type === notificationTypes.addUser)
-          this.context.getFriends()
+        switch (data.type) {
+          case notificationTypes.addUser:
+            this.context.getFriends()
+            break
+          case notificationTypes.friendReqAccepted:
+            this.context.getFriends()
+            this.context.navigation.navigate("Amis")
+            break
+          case notificationTypes.newEvent:
+            this.context.getEvents()
+            break
+        }
       });
 
     /*
@@ -27,8 +37,8 @@ export default class Notification {
       .onNotificationOpened((notificationOpen) => {
         if (!notificationOpen)
           return
-        const { title, body } = notificationOpen.notification;
-        this.context.dropdownAlert('info', title, body);
+        //const { title, body } = notificationOpen.notification;
+        console.warn(notificationOpen)
       });
 
     /*
@@ -39,15 +49,19 @@ export default class Notification {
       .then(notificationOpen => {
         if (!notificationOpen)
           return
-        console.log(notificationOpen)
+
         const { title, body, data } = notificationOpen.notification;
 
         switch (data) {
           case notificationTypes.addUser:
-            this.context.navigation.navigate("Amis")
+            this.context.getFriends()
+            break
+          case notificationTypes.friendReqAccepted:
+            this.context.getFriends()
             break
           default:
-            this.context.dropdownAlert('info', title, body)
+            //this.context.dropdownAlert('info', title, body)
+            console.warn(notificationOpen)
             break
         }
       })
@@ -55,9 +69,6 @@ export default class Notification {
     * Triggered for data only payload in foreground
     * */
     this.messageListener = firebase.messaging()
-      .onMessage((message) => {
-        //process data message
-        console.log(JSON.stringify(message));
-      });
+      .onMessage(message => console.log(JSON.stringify(message)));
   }
 }
