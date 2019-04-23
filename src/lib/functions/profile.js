@@ -1,5 +1,5 @@
 import firebase from "react-native-firebase"
-import { notificationTypes } from "../responsive";
+import { notificationTypes } from "../responsive"
 
 export const changeFriendStatus = (currentEmail, email, status, setFriend) => {
   if (currentEmail === email) return
@@ -35,8 +35,10 @@ export const changeFriendStatus = (currentEmail, email, status, setFriend) => {
           }
         }
 
-        firebase.functions()
-          .httpsCallable("sendNotification")({message, email})
+        firebase.functions().httpsCallable("sendNotification")({
+          message,
+          email
+        })
       }
     })
     .catch(error => console.warn(error))

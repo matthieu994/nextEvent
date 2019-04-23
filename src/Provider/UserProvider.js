@@ -179,9 +179,9 @@ class UserProvider extends Component {
       this.getFriends()
       const message = {
         notification: {
-          title: "Nouvelle demande d'ami !",
+          title: "Nouvelle demande d'ami.",
           body:
-            this.state.user.displayName + " Vous a envoyé une demande d'ami !"
+            this.state.user.displayName + " vous a envoyé une demande d'ami !"
         },
         data: {
           type: notificationTypes.addUser
