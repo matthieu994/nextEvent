@@ -31,7 +31,7 @@ import { pick, displayDate } from "../lib/functions/tools"
 export default class ModifyPayment extends Component {
   static navigationOptions = {
     title: "Modifier dépense",
-    header: null
+    headerStyle: { height: 55 }
   }
 
   constructor(props) {
@@ -45,6 +45,7 @@ export default class ModifyPayment extends Component {
       currentSelect: this.payment.from,
       selection: [],
       spent: {},
+      comment: this.payment.comment,
       amount: this.payment.amount,
       name: this.payment.name,
       date: this.payment.date
@@ -188,6 +189,8 @@ export default class ModifyPayment extends Component {
       payment.from = this.state.currentSelect
     else payment.from = this.state.selection[0].email
 
+    if (this.state.comment) payment.comment = this.state.comment
+
     firebase
       .firestore()
       .collection("events")
@@ -204,7 +207,7 @@ export default class ModifyPayment extends Component {
     if (!this.state.event.properties) return null
 
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
         <View style={[styles.contents, styles.info]}>
           <View style={{}}>
             <Input
@@ -219,7 +222,7 @@ export default class ModifyPayment extends Component {
               }}
             />
           </View>
-          <View style={{ marginTop: 20, flexDirection: "row" }}>
+          <View style={{ marginTop: 10, flexDirection: "row" }}>
             <View
               style={{
                 alignItems: "flex-start",
@@ -251,11 +254,11 @@ export default class ModifyPayment extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 10 }}>
             <Text>Payé par</Text>
             <Picker
               selectedValue={this.state.currentSelect}
-              style={{ backgroundColor: "rgb(210, 225, 230)", height: 50 }}
+              style={{ backgroundColor: "rgb(210, 225, 230)", height: 40 }}
               onValueChange={email => this.setState({ currentSelect: email })}
             >
               {Object.keys(this.state.event.properties.users).map(
@@ -272,7 +275,7 @@ export default class ModifyPayment extends Component {
             </Picker>
           </View>
         </View>
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 5 }} />
         <View style={[styles.contents, styles.member]}>
           {this.state.selection.map((item, i) => (
             <ListItem
@@ -295,20 +298,27 @@ export default class ModifyPayment extends Component {
               containerStyle={{
                 padding: 0,
                 backgroundColor: "rgb(232, 243, 250)",
-                marginBottom: 10
+                marginBottom: 0
               }}
-              //contentContainerStyle={{backgroundColor : 'green'}}
-              //rightContentContainerStyle={{ backgroundColor : 'grey'}}
             />
           ))}
         </View>
 
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
-        <View style={[styles.contents, styles.extra]}>
-          <Text>Commentaires</Text>
-          <Text>{this.state.spent.extra}</Text>
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 5 }} />
+        <View style={[styles.contents, styles.comment]}>
+          <Input
+            label="Commentaire"
+            placeholder="Ajouter un commentaire"
+            value={this.state.comment}
+            onChangeText={comment => this.setState({ comment })}
+            inputContainerStyle={[styles.inputs]}
+            style={{
+              backgroundColor: colors.inputBackground,
+              color: colors.inputStyle
+            }}
+          />
         </View>
-        <View style={styles.button}>
+        <View style={styles.buttonContainer}>
           <Button
             title="Modifier dépense"
             onPress={() => this.modifyPayment()}
@@ -327,12 +337,12 @@ const styles = StyleSheet.create({
     display: "flex"
   },
   contents: {
-    padding: 20,
-    paddingTop: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
     backgroundColor: "rgb(232, 243, 250)"
   },
   inputs: {
-    height: 40,
+    height: 30,
     marginLeft: -10
   },
   date: {
@@ -340,7 +350,10 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     fontSize: 20
   },
-  info: {},
-  member: {},
-  extra: {}
+  buttonContainer: {
+    flex: 1,
+    marginTop: 5,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 })

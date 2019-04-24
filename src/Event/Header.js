@@ -27,7 +27,7 @@ export const BottomBarHeader = {
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
           activeOpacity={0.6}
-          onPress={() => navigation.navigate("CreatePayment")}
+          onPress={() => navigation.navigate("AddFriend")}
           style={{ paddingVertical: 10, paddingHorizontal: 8 }}
         >
           <Icon

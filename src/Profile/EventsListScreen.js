@@ -117,10 +117,10 @@ class SingleEvent extends Component {
             <Text>{this.props.event.properties.description}</Text>
           </View>
           <View style={styles.dateContainer}>
-            <Text
-              style={styles.date}
-            >{`${this.props.event.properties.date.getDate()}/${this.props.event.properties.date.getMonth() +
-              1}/${this.props.event.properties.date.getFullYear()}`}</Text>
+            <Text style={styles.date}>
+              {`${this.props.event.properties.date.getDate()}/${this.props.event.properties.date.getMonth() +
+                1}/${this.props.event.properties.date.getFullYear()}`}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>

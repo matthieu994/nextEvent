@@ -21,17 +21,18 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import { Header } from "react-navigation"
 import moment from "moment"
 import "moment/locale/fr"
-import { colors } from "../lib"
-import { UserContext } from "../Provider/UserProvider"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import firebase from "react-native-firebase"
 import { isFloat, isInt } from "validator"
 import { pick, displayDate } from "../lib/functions/tools"
+import { colors } from "../lib"
+import defaultSettings from "../Drawer/header"
+import { UserContext } from "../Provider/UserProvider"
 
 export default class CreatePayment extends Component {
   static navigationOptions = {
-    title: "Modifier dépense",
-    header: null
+    title: "Créer dépense",
+    headerStyle: { height: 55 }
   }
 
   constructor(props) {
@@ -41,10 +42,10 @@ export default class CreatePayment extends Component {
       event: {},
       currentSelect: [],
       selection: [],
-      spent: {},
       amount: "",
       name: "",
-      date: new Date()
+      date: new Date(),
+      comment: ""
     }
   }
 
@@ -183,6 +184,8 @@ export default class CreatePayment extends Component {
       payment.from = this.state.currentSelect
     else payment.from = this.state.selection[0].email
 
+    if (this.state.comment) payment.comment = this.state.comment
+
     firebase
       .firestore()
       .collection("events")
@@ -198,7 +201,7 @@ export default class CreatePayment extends Component {
     if (!this.state.event.properties) return null
 
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
         <View style={[styles.contents, styles.info]}>
           <View style={{}}>
             <Input
@@ -213,7 +216,7 @@ export default class CreatePayment extends Component {
               }}
             />
           </View>
-          <View style={{ marginTop: 20, flexDirection: "row" }}>
+          <View style={{ marginTop: 10, flexDirection: "row" }}>
             <View
               style={{
                 alignItems: "flex-start",
@@ -245,11 +248,11 @@ export default class CreatePayment extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 10 }}>
             <Text>Payé par</Text>
             <Picker
               selectedValue={this.state.currentSelect}
-              style={{ backgroundColor: "rgb(210, 225, 230)", height: 50 }}
+              style={{ backgroundColor: "rgb(210, 225, 230)", height: 40 }}
               onValueChange={email => this.setState({ currentSelect: email })}
             >
               {Object.keys(this.state.event.properties.users).map(
@@ -266,7 +269,7 @@ export default class CreatePayment extends Component {
             </Picker>
           </View>
         </View>
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 5 }} />
         <View style={[styles.contents, styles.member]}>
           {this.state.selection.map((item, i) => (
             <ListItem
@@ -289,18 +292,27 @@ export default class CreatePayment extends Component {
               containerStyle={{
                 padding: 0,
                 backgroundColor: "rgb(232, 243, 250)",
-                marginBottom: 10
+                marginBottom: 0
               }}
             />
           ))}
         </View>
 
-        <Divider style={{ backgroundColor: "#b3bfc9", height: 10 }} />
-        <View style={[styles.contents, styles.extra]}>
-          <Text>Commentaires</Text>
-          <Text>{this.state.spent.extra}</Text>
+        <Divider style={{ backgroundColor: "#b3bfc9", height: 5 }} />
+        <View style={[styles.contents, styles.comment]}>
+          <Input
+            label="Commentaire"
+            placeholder="Ajouter un commentaire"
+            value={this.state.comment}
+            onChangeText={comment => this.setState({ comment })}
+            inputContainerStyle={[styles.inputs]}
+            style={{
+              backgroundColor: colors.inputBackground,
+              color: colors.inputStyle
+            }}
+          />
         </View>
-        <View style={styles.button}>
+        <View style={styles.buttonContainer}>
           <Button title="Créer dépense" onPress={() => this.createPayment()} />
         </View>
       </ScrollView>
@@ -314,15 +326,14 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "rgb(232, 243, 250)",
     display: "flex"
-    //height : (Dimensions.get('window').height - Header.HEIGHT - 24) // extra 24 unit (notif bar)
   },
   contents: {
-    padding: 20,
-    paddingTop: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     backgroundColor: "rgb(232, 243, 250)"
   },
   inputs: {
-    height: 40,
+    height: 30,
     marginLeft: -10
   },
   date: {
@@ -330,7 +341,10 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     fontSize: 20
   },
-  info: {},
-  member: {},
-  extra: {}
+  buttonContainer: {
+    flex: 1,
+    marginBottom: 5,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 })

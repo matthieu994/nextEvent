@@ -71,7 +71,7 @@ const PaymentStack = createStackNavigator(
     CreatePayment
   },
   {
-    headerMode: "none"
+    headerMode: "screen"
   }
 )
 

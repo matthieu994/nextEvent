@@ -4,7 +4,9 @@ import {
   View,
   ScrollView,
   Dimensions,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  PanResponder,
+  Animated
 } from "react-native"
 import { ListItem, Text, Icon } from "react-native-elements"
 import { Header } from "react-navigation"
@@ -21,7 +23,8 @@ import {
 } from "../lib/functions/tools"
 import {
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  PanGestureHandler
 } from "react-native-gesture-handler"
 
 /* TEMPLATE DATABASE-> DEPENSE
@@ -40,9 +43,9 @@ import {
 */
 
 export default class PaymentListScreen extends Component {
-  static navigationOptions = ({ navigation, screenProps }) => {
-    // console.warn("screenProps: ", screenProps)
-    return { tabBarLabel: "Liste des dépenses" }
+  static navigationOptions = {
+    headerMode: "none",
+    header: null
   }
 
   state = {
@@ -107,32 +110,36 @@ export default class PaymentListScreen extends Component {
         e => e.id === this.context.currentEvent
       ).properties.users[item.properties.from]
       return (
-        <TouchableOpacity
-          activeOpacity={0.7}
-          key={i}
-          onPress={() => this.props.navigation.navigate("ModifyPayment", item)}
-        >
+        <TouchableOpacity activeOpacity={0.7} key={i}>
           <View style={styles.paymentContainer}>
             <ListItem
               containerStyle={styles.payment}
               title={item.properties.name}
-              rightTitle={item.properties.amount + "€"}
               rightContentContainerStyle={{
-                flex: 1,
-                margin: 0
+                maxWidth: 80
               }}
-              rightTitleStyle={{ textAlign: "right" }}
-              rightIcon={
-                item.properties.from === this.context.user.email && (
+              rightElement={
+                <View style={{ flexDirection: "row" }}>
                   <Icon
                     type="material-community"
-                    name="delete"
-                    iconStyle={{ color: colors.redButtonBackground }}
-                    containerStyle={{ margin: 0 }}
-                    onPress={() => this.deletePayment(item.id)}
+                    name="pencil"
+                    iconStyle={{ color: colors.headerColor }}
+                    onPress={() =>
+                      this.props.navigation.navigate("ModifyPayment", item)
+                    }
                   />
-                )
+                  {item.properties.from === this.context.user.email && (
+                    <Icon
+                      type="material-community"
+                      name="delete"
+                      iconStyle={{ color: colors.redButtonBackground }}
+                      containerStyle={{ marginLeft: 10 }}
+                      onPress={() => this.deletePayment(item.id)}
+                    />
+                  )}
+                </View>
               }
+              rightTitle={item.properties.amount + "€"}
               subtitle={`${displayName(user)}, le ${displayDate(
                 item.properties.date,
                 "DD/MM"
