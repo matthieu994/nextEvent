@@ -79,6 +79,8 @@ export default class CreateEventScreen extends Component {
     let users = this.state.selectedFriends
     users.push(this.context.user.email)
 
+    let coords = this.state.coords.latitude ? this.state.coords : null
+
     firebase
       .firestore()
       .collection("events")
@@ -88,10 +90,7 @@ export default class CreateEventScreen extends Component {
         date: this.state.date,
         users,
         owner: this.context.user.email,
-        coords: new firebase.firestore.GeoPoint(
-          this.state.coords.latitude,
-          this.state.coords.longitude
-        )
+        coords
       })
       .then(event => {
         this.context.userRef
@@ -252,7 +251,7 @@ export default class CreateEventScreen extends Component {
 
 CreateEventScreen.contextType = UserContext
 
-class FriendsList extends Component {
+export class FriendsList extends Component {
   render() {
     return Object.keys(this.props.friends).map((friend, index) => {
       if (this.props.friends[friend].status != "OK") return null
@@ -265,7 +264,11 @@ class FriendsList extends Component {
           >
             <ListItem
               key={index}
-              title={friend}
+              title={
+                this.props.friends[friend].displayName +
+                " " +
+                this.props.friends[friend].familyName
+              }
               containerStyle={[
                 {
                   paddingHorizontal: 9,

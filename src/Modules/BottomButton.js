@@ -41,6 +41,7 @@ export default class BottomButton extends Component {
               true
             )}
             onPress={this.props.onPress}
+            title={this.props.title}
             raised
             icon={
               <Icon

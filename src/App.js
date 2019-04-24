@@ -24,6 +24,7 @@ import PaymentListScreen from "./Event/PaymentListScreen"
 import ModifyPayment from "./Event/ModifyPayment"
 import CreatePayment from "./Event/CreatePayment"
 import EditEvent from "./Event/EditEvent"
+import AddFriend from "./Event/AddFriend"
 import UserProvider from "./Provider/UserProvider"
 import MapPicker from "./Event/MapPicker"
 import EventsMap from "./Event/EventsMap"
@@ -118,7 +119,8 @@ const EventTabNavigator = createMaterialBottomTabNavigator(
 const EventStackTabNavigator = createStackNavigator(
   {
     EventTabNavigator,
-    EditEvent
+    EditEvent,
+    AddFriend
   },
   {
     headerMode: "screen",
