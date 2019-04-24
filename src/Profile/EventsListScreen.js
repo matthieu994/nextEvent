@@ -33,9 +33,8 @@ export default class EventsListScreen extends Component {
   }
 
   refresh() {
-    this.context.getEvents().then(() => {
-      this.setState({ events: this.context.events })
-    })
+    this.context.getEvents()
+      .then(() => this.setState({ events: this.context.events }))
   }
 
   componentDidMount() {
@@ -73,7 +72,10 @@ export default class EventsListScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
+        <View style={{
+          flex: 1,
+          alignItems: "center"
+        }}>
           <ScrollView>{this.renderEvents()}</ScrollView>
         </View>
         <BottomButton

@@ -152,7 +152,7 @@ export default class UserSettingsScreen extends Component {
   }
 
   selectImage() {
-    if(this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
+    if (this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
       return
 
     ImagePicker.showImagePicker(options, response => {
@@ -199,7 +199,7 @@ export default class UserSettingsScreen extends Component {
   }
 
   deleteProfileImage() {
-    if(this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
+    if (this.state.loadingDeletePhotoButton || this.state.loadingUploadingButton)
       return
     if (!this.context.user.photoURL)
       return this.dropdownAlert(
@@ -277,7 +277,7 @@ export default class UserSettingsScreen extends Component {
               buttonStyle={styles.buttonStyle}
               containerStyle={{ width: '48%' }}
               onPress={() => this.selectImage()}
-              title="Ajouter une photo"
+              title={(this.context.user.photoURL ? 'Modifier la' : 'Ajouter une') + ' photo'}
             />
             <Button
               icon={
