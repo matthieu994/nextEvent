@@ -11,12 +11,13 @@ admin.initializeApp({
 const runtimeOpts = {
   timeoutSeconds: 10
 }
-const bucket = admin.storage().bucket()
+const bucket = admin.storage()
+  .bucket()
 
 const notifcationTypes = {
   newEvent: 'Event',
   addUser: 'addUser',
-  newPayment:'newPayment'
+  newPayment: 'newPayment'
 }
 
 exports.setPhotoURL = functions
@@ -31,6 +32,19 @@ exports.setPhotoURL = functions
         photoURL
       })
   })
+
+async function sendNotification(message, email = null) {
+  if (email) {
+    let { fcmToken } = await getDocument('users', email)
+    message.token = fcmToken
+  }
+
+  if (!message.token)
+    return Promise.resolve()
+
+  return admin.messaging()
+    .send(message)
+}
 
 exports.createUserDocument = functions
   .runWith(runtimeOpts)
@@ -49,74 +63,83 @@ exports.createUserDocument = functions
 exports.getUserData = functions
   .runWith(runtimeOpts)
   .https
-  .onCall((_data, context) => {
-    return new Promise((resolve, reject) => {
-      getUser(context.auth.token.email)
-        .then(user => resolve(user))
-        .catch(error => reject(error))
-    })
-  })
+  .onCall((_data, context) =>
+    getDocument('users', context.auth.token.email)
+      .catch(error => {
+        return error
+      })
+  )
+
 
 exports.searchUser = functions
   .runWith(runtimeOpts)
   .https
-  .onCall(({ email }, context) => {
-    return getUser(email)
+  .onCall(({ email }) =>
+    getDocument('users', email)
       .catch(error => {
         return error
-      })
-  })
+      }))
 
 exports.sendNotification = functions
   .runWith(runtimeOpts)
   .https
-  .onCall(async ({message, email}) => {
-    if(email) {
-      let { fcmToken } = await getUser(email)
-      message.token = fcmToken
-    }
-
-    if(!message.token)
-      return Promise.resolve()
-
-    console.log(message)
-    return await admin.messaging().send(message)
-      .catch(err => console.error(err))
-  })
+  .onCall(data => sendNotification(data.message, data.email))
 
 exports.paymentsNotification = functions.firestore.document('events/{eventId}/payments/{paymentId}')
   .onCreate(async (change, context) => {
-    const payment = change.data()
+    const { name, users } = await getDocument('events', context.params.eventId)//getEvent(context.params.eventId)
 
-    const paymentFrom = await getUser(payment.owner)
-
-    if(paymentFrom.fcmToken && paymentFrom.email !== context.auth.token.email) {
-      let message = {
-        notification: {
-          title: 'Nouvelle dépense',
-          body: 'Une nouvelle dépense a été ajoutée'
-        },
-        token: paymentFrom.fcmToken,
-        data: {
-          type: notifcationTypes.newPayment
-        }
+    let message = {
+      notification: {
+        title: 'Nouvelle dépense',
+        body: `Une nouvelle dépense a été ajoutée dans ${name}`
+      },
+      data: {
+        type: notifcationTypes.newPayment
       }
-
-      sendNotification({message})
-        .then(() => console.log("Nouvelle dépense"))
-        .catch(err => console.error(err))
     }
+
+    users.splice(users.indexOf(context.auth.token.email), 1)
+
+    users.forEach(async user => {
+      await sendNotification(message, user)
+        .then(() => console.log(`Nouveau payement ${name}`))
+        .catch(err => console.error(err))
+    })
   })
 
-exports.eventNotification = functions.firestore.document('events/{eventId}')
+exports.eventNotification = functions.firestore.document('users/{userId}/events/{eventId}')
+  .onCreate(async (change, context) => {
+    const { owner, name: eventName } = await getDocument('events', context.params.eventId)
+
+    if (context.params.userId === owner)
+      return
+
+    const { displayName, familyName } = await getDocument('users', owner)
+    const message = {
+      notification: {
+        title: 'Nouvel événement',
+        body: `${displayName} ${familyName} vous a ajouté dans l'événement : ${eventName}`,
+      },
+      data: {
+        type: notifcationTypes.newEvent
+      }
+    }
+
+    await sendNotification(message, context.params.userId)
+      .then(() => console.log(`${context.params.userId} invité dans l'événement ${eventName}`))
+      .catch(err => console.error(err))
+  })
+
+/*exports.eventNotification = functions.firestore.document('events/{eventId}')
   .onCreate(async (change, context) => {
     const event = change.data()
 
-    event.users.splice(event.users.findIndex(user => user === event.owner),1)
+    event.users.splice(event.users.findIndex(user => user === event.owner), 1)
     const eventOwner = await getUser(event.owner)
     event.users.forEach(async user => {
-      const {fcmToken} = await getUser(user)
-      if(!fcmToken) return
+      const { fcmToken } = await getUser(user)
+      if (!fcmToken) return
 
       const message = {
         token: fcmToken,
@@ -129,14 +152,18 @@ exports.eventNotification = functions.firestore.document('events/{eventId}')
         }
       }
 
-      sendNotification({message})
+      sendNotification({ message })
         .then(() => console.log('Message de l\'événement ' + event.name))
         .catch(err => console.error(err))
     })
-  })
+  })*/
 
-function getUser(user) {
-  return admin.firestore().collection('users').doc(user).get().then(user => user.data() )
+function getDocument(path, doc) {
+  return admin.firestore()
+    .collection(path)
+    .doc(doc)
+    .get()
+    .then(_doc => _doc.data())
 }
 
 exports.deletePhoto = functions.firestore.document('users/{emailId}')
@@ -147,13 +174,11 @@ exports.deletePhoto = functions.firestore.document('users/{emailId}')
     if (!newValue.photoURL)
       bucket.file(`${emailId}/images/profile.jpg`)
         .delete()
-        .then(() => {
-          return console.log("photo supprimé")
-        })
+        .then(() => console.log("photo supprimé"))
         .catch(err => console.error(err))
 
     return change.after.ref.set(newValue)
-      .then(() => console.log("all done !!"))
+      .then(() => console.log("photo supprimé !"))
       .catch(err => console.error(err))
   })
 /*
