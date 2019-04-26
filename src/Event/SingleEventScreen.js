@@ -6,6 +6,7 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { colors, bottomContainer } from "../lib"
 import { UserContext } from "../Provider/UserProvider"
 import BottomButton from "../Modules/BottomButton"
+import RefundList from "./RefundList"
 import { sortObject, sortArray, listenerFunction } from "../lib/functions/tools"
 
 export default class SingleEventScreen extends Component {
@@ -117,8 +118,11 @@ export default class SingleEventScreen extends Component {
     if (!this.state.event) return null
 
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Chart event={this.state.event} payments={this.state.payments} />
+      <View style={{ flex: 1 }}>
+        <View style={styles.parentContainer}>
+          <Chart event={this.state.event} payments={this.state.payments} />
+          <RefundList event={this.state.event} payments={this.state.payments} />
+        </View>
         {this.isOwner() && (
           <View style={[bottomContainer]}>
             <Button
@@ -162,7 +166,7 @@ class Chart extends Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         {this.renderUsersBalance()}
       </ScrollView>
     )
@@ -241,8 +245,13 @@ class UserBalance extends Component {
 UserBalance.contextType = UserContext
 
 const styles = StyleSheet.create({
+  parentContainer: {
+    flexDirection: "column"
+  },
   container: {
-    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     margin: 8
   },
   balanceContainer: {
