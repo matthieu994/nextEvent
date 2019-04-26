@@ -24,9 +24,7 @@ export default class SingleEventScreen extends Component {
     let event = this.context.events.find(
       e => e.id === this.context.currentEvent
     )
-    this.setState({
-      event
-    })
+    this.setState({ event })
 
     this.setListener()
 
@@ -36,7 +34,7 @@ export default class SingleEventScreen extends Component {
     })
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(nextProps, nextContext) {
     this.setListener()
   }
 
@@ -80,7 +78,7 @@ export default class SingleEventScreen extends Component {
     this.backHandler.remove()
   }
 
-  goBack = async eventId => {
+  goBack = eventId => {
     if (eventId)
       this.props.navigation.navigate("EventsList", { delete: eventId })
     else this.props.navigation.navigate("EventsList")

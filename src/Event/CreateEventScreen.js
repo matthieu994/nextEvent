@@ -1,17 +1,13 @@
 import React, { Component } from "react"
-import {
-  View,
-  DatePickerAndroid,
-  TouchableHighlight,
-  BackHandler
-} from "react-native"
+import { View, DatePickerAndroid } from "react-native"
 import firebase from "react-native-firebase"
 import { ScrollView } from "react-native-gesture-handler"
-import { Button, Icon, ListItem, Text, Input } from "react-native-elements"
+import { Button, Icon, Text, Input } from "react-native-elements"
 import { UserContext } from "../Provider/UserProvider"
 import { colors, inputContainer } from "../lib"
 import { displayDate } from "../lib/functions/tools"
 import BottomButton from "../Modules/BottomButton"
+import FriendsList from "../Modules/FriendsList"
 
 export default class CreateEventScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -251,47 +247,3 @@ export default class CreateEventScreen extends Component {
 }
 
 CreateEventScreen.contextType = UserContext
-
-class FriendsList extends Component {
-  render() {
-    return Object.keys(this.props.friends).map((friend, index) => {
-      if (this.props.friends[friend].status != "OK") return null
-      const selected = this.props.selectedFriends.includes(friend)
-      return (
-        <View key={index} style={{ width: "50%" }}>
-          <TouchableHighlight
-            activeOpacity={0.9}
-            onPress={() => this.props.selectFriend(friend)}
-          >
-            <ListItem
-              key={index}
-              title={friend}
-              containerStyle={[
-                {
-                  paddingHorizontal: 9,
-                  paddingVertical: 4,
-                  borderWidth: 0.5,
-                  borderColor: "rgba(150, 150, 160, 0.5)",
-                  backgroundColor: "rgb(242, 245, 250)"
-                },
-                selected && {
-                  backgroundColor: "rgb(210, 215, 230)",
-                  elevation: 1
-                }
-              ]}
-              leftAvatar={{
-                rounded: true,
-                size: 35,
-                source: {
-                  uri:
-                    this.props.friends[friend].photoURL ||
-                    this.props.defaultProfileURL
-                }
-              }}
-            />
-          </TouchableHighlight>
-        </View>
-      )
-    })
-  }
-}

@@ -12,14 +12,10 @@ export default class EventsListScreen extends Component {
     title: "Mes événements"
   })
 
-  state = {
-    events: []
-  }
-
   renderEvents() {
-    if (!this.state.events) return null
-    return this.state.events.map(doc => {
-      let event = this.state.events.find(e => e.id === doc.id)
+    if (!this.context.events) return null
+    return this.context.events.map(doc => {
+      let event = this.context.events.find(e => e.id === doc.id)
       if (event.properties)
         return (
           <SingleEvent
@@ -34,16 +30,9 @@ export default class EventsListScreen extends Component {
 
   refresh() {
     this.context.getEvents()
-      .then(() => this.setState({ events: this.context.events }))
   }
 
-  componentDidMount() {
-    if (this.context.events) this.setState({ events: this.context.events })
-  }
-
-  componentWillReceiveProps() {
-    if (this.context.events) this.setState({ events: this.context.events })
-
+  componentWillReceiveProps(nextProps, nextContext) {
     if (
       this.context.events &&
       this.props.navigation.state.params &&

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-wrap-multilines */
 import React, { Component } from "react"
-import { StyleSheet, View } from "react-native"
+import { Keyboard, StyleSheet, View } from "react-native"
 import { Input, Button, Icon, Text } from "react-native-elements"
 import firebase from "react-native-firebase"
 import DropdownAlert from "react-native-dropdownalert"
@@ -41,6 +41,7 @@ export default class SignUp extends Component {
       return
 
     this.setState({ buttonLoading: true }, () => {
+      Keyboard.dismiss()
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
