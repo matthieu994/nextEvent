@@ -59,7 +59,6 @@
     "react-navigation": "^3.3.2",
     "react-navigation-material-bottom-tabs": "^1.0.0",
     "react-navigation-transitions": "^1.0.8",
-    "replace-in-file": "^3.4.3",
     "rn-fetch-blob": "^0.10.15",
     "validator": "^10.11.0"
   }

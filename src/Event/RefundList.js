@@ -14,10 +14,10 @@ export default class RefundList extends Component {
     }
   }
 
-  setUsers(props) {
+  setUsers(nextProps) {
     let users = {}
-    Object.keys(props.event.properties.users).forEach(user => {
-      let realUser = props.event.properties.users[user]
+    Object.keys(nextProps.event.properties.users).forEach(user => {
+      let realUser = nextProps.event.properties.users[user]
       users[user] = {
         name: realUser.displayName,
         familyName: realUser.familyName,

@@ -38,9 +38,10 @@ export default class MapPicker extends Component {
                 events[doc.id] = event.data()
               })
           })
-        ).then(() => {
-          this.setState({ events })
-        })
+        )
+          .then(() => {
+            this.setState({ events })
+          })
       })
   }
 
@@ -57,7 +58,11 @@ export default class MapPicker extends Component {
         })
       },
       error => console.warn(error),
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 1000
+      }
     )
   }
 
@@ -70,28 +75,32 @@ export default class MapPicker extends Component {
       this.state.selectCoordinates && this.state.selectCoordinates.latitude
         ? this.state.selectCoordinates
         : this.coords
-    this.props.navigation.goBack()
     this.props.navigation.state.params.setCoords(coords)
+    if (!this.props.navigation.state.params.route)
+      this.props.navigation.goBack()
+    else
+      this.props.navigation.state.params.route()
   }
 
   renderMarkers() {
     if (this.state.events.length < 1) return
 
-    return Object.keys(this.state.events).map(id => {
-      const event = this.state.events[id]
-      if (!event.coords) return null
-      return (
-        <Marker
-          key={id}
-          title={event.name}
-          description={event.description}
-          coordinate={{
-            latitude: event.coords._latitude,
-            longitude: event.coords._longitude
-          }}
-        />
-      )
-    })
+    return Object.keys(this.state.events)
+      .map(id => {
+        const event = this.state.events[id]
+        if (!event.coords) return null
+        return (
+          <Marker
+            key={id}
+            title={event.name}
+            description={event.description}
+            coordinate={{
+              latitude: event.coords._latitude,
+              longitude: event.coords._longitude
+            }}
+          />
+        )
+      })
   }
 
   render() {
