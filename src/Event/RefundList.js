@@ -1,16 +1,20 @@
 import React, { Component } from "react"
 import { View, StyleSheet } from "react-native"
-import { Text } from "react-native-elements"
-import { ScrollView } from "react-native-gesture-handler"
+import { Text, Overlay, Input, Button } from "react-native-elements"
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { UserContext } from "../Provider/UserProvider"
 
 export default class RefundList extends Component {
   state = {
-    users: {}
+    users: {},
+    overlay: false,
+    currentRefund: {
+      from: null,
+      to: null
+    }
   }
 
-  componentWillReceiveProps(props) {
-    // console.warn(props.event.properties.users)
+  setUsers(props) {
     let users = {}
     Object.keys(props.event.properties.users).forEach(user => {
       let realUser = props.event.properties.users[user]
@@ -20,11 +24,7 @@ export default class RefundList extends Component {
         refunds: {}
       }
     })
-    this.setState({ users })
-  }
 
-  renderList() {
-    let users = this.state.users
     this.props.payments.forEach(payment => {
       payment.properties.to.forEach(to => {
         if (payment.properties.from !== to.email) {
@@ -53,7 +53,16 @@ export default class RefundList extends Component {
       })
     })
 
+    this.setState({ users })
+  }
+
+  componentWillReceiveProps(props) {
+    this.setUsers(props)
+  }
+
+  renderList() {
     // console.warn(users)
+    let users = this.state.users
 
     return Object.keys(users).map(userID => {
       let user = users[userID]
@@ -62,21 +71,69 @@ export default class RefundList extends Component {
         let sum = users[userID].refunds[refundID]
         if (sum > 0)
           return (
-            <View style={styles.refundContainer} key={userID + refundID}>
-              <Text style={styles.name}>
-                {user.name + " " + user.familyName}
-              </Text>
-              <Text>{" doit " + sum + "$" + " à "}</Text>
-              <Text style={styles.name}>{to.name + " " + to.familyName}</Text>
-            </View>
+            <TouchableOpacity
+              activeOpacity={0.65}
+              key={userID + refundID}
+              onPress={() => this.openRefund(userID, refundID)}
+            >
+              <View style={styles.refundContainer}>
+                <Text style={styles.name}>
+                  {user.name + " " + user.familyName}
+                </Text>
+                <Text>{" doit " + sum + "$" + " à "}</Text>
+                <Text style={styles.name}>{to.name + " " + to.familyName}</Text>
+              </View>
+            </TouchableOpacity>
           )
       })
     })
   }
 
+  openRefund(from, to) {
+    const currentRefund = { from, to }
+    this.setState({ overlay: true, currentRefund })
+  }
+
+  renderRefund() {
+    if (!this.state.overlay) return <View />
+
+    const from = this.state.users[this.state.currentRefund.from]
+    const to = this.state.users[this.state.currentRefund.to]
+    const sum = from.refunds[this.state.currentRefund.to]
+
+    return (
+      <View style={{ flexDirection: "column", alignItems: "center" }}>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.name}>{from.name + " " + from.familyName}</Text>
+          <Text>{" rembourse: "}</Text>
+        </View>
+        <Input
+          keyboardType="number-pad"
+          placeholder={`${sum}`}
+          defaultValue={`${sum}`}
+          inputContainerStyle={{ width: 100 }}
+        />
+        <View style={{ flexDirection: "row", marginVertical: 10 }}>
+          <Text>{" à "}</Text>
+          <Text style={styles.name}>{to.name + " " + to.familyName}</Text>
+        </View>
+        <Button title="Rembourser" />
+      </View>
+    )
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.container}>
+        <Overlay
+          width="auto"
+          height="auto"
+          isVisible={this.state.overlay}
+          overlayStyle={{ alignItems: "center" }}
+          onBackdropPress={() => this.setState({ overlay: false })}
+        >
+          {this.renderRefund()}
+        </Overlay>
         {this.renderList()}
       </ScrollView>
     )
