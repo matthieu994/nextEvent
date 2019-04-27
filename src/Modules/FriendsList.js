@@ -15,7 +15,11 @@ export default function FriendsList({ friends, selectedFriends, selectFriend, ..
           >
             <ListItem
               key={index}
-              title={friend}
+              title={
+                friends[friend].displayName +
+                " " +
+                friends[friend].familyName
+              }
               containerStyle={[
                 styles.listItemContainer,
                 selected && styles.selectedFriend
